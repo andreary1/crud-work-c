@@ -20,9 +20,11 @@ int main() {
         }
     }
 
-    int total_ufs = 0;
+    int total_ufs = carregarUFs(ufs);
+
+    int codigo_uf_atual = 0;
     while (fread(&ufs[total_ufs], sizeof(UF), 1, fuf) == 1) {
-        total_ufs++;
+        codigo_uf_atual++;
     }
 
     int opcao;
@@ -52,19 +54,35 @@ int main() {
                 scanf("%d", &opcao_uf);
                 switch (opcao_uf) {
                     case 1:
-                        adicionarUF(ufs, &total_ufs);
+                        adicionarUF(ufs, &total_ufs, &codigo_uf_atual);
+                        total_ufs = carregarUFs(ufs);
                         break;
                     case 2:
+                        total_ufs = carregarUFs(ufs);
                         alterarUF(ufs, total_ufs);
                         break;
+                    case 3:
+                        excluirUF(ufs, &total_ufs, &codigo_uf_atual);
+                        total_ufs = carregarUFs(ufs);
+                        break;
                     case 4:
-                        mostrarDados(ufs, total_ufs);
+                        total_ufs = carregarUFs(ufs);
+                        mostrarDados(total_ufs);
+                        break;
+                    case 5:
+                        total_ufs = carregarUFs(ufs);
+                        mostrarUF(ufs, total_ufs);
+                        break;
+                    case 0:
+                        printf("Saindo\n");
+                        break;
+                    default:
+                        printf("Opcao invalida!\n");
                         break;
                 }
         }
 
     } while (opcao != 0);
-
 
     return 0;
 }

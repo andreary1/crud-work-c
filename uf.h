@@ -6,8 +6,9 @@ struct UF {
 
 typedef struct UF UF;
 
-void adicionarUF(UF *uf, int *total_ufs);
-void mostrarDados(UF *uf, int total_ufs);
+int carregarUFs(UF *ufs);
+void adicionarUF(UF *uf, int *total_ufs, int *codigo_uf);
+void mostrarDados(int total_ufs);
 void alterarUF(UF *uf, int total_ufs);
-void excluirUF(UF *uf);
-void mostrarUF(UF *uf);
+void excluirUF(UF *uf, int *total_ufs, int *codigo_uf);
+void mostrarUF(UF *ufs, int total_ufs);
