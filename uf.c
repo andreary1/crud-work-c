@@ -1,6 +1,48 @@
 #include <stdio.h>
 #include "uf.h"
 #include <stdlib.h>
+#include <string.h>
+
+void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
+    int opcao_uf;
+    printf("----OPCOES DE UNIDADES FEDERATIVA----\n");
+    printf("1. Inserir UF\n");
+    printf("2. Alterar UF\n");
+    printf("3. Excluir UF\n");
+    printf("4. Mostrar dados de todas as UFs\n");
+    printf("5. Mostrar dados de uma UF\n");
+    printf("0. Sair\n");
+    printf("-------------------------------------\n");
+    scanf("%d", &opcao_uf);
+    switch (opcao_uf) {
+        case 1:
+            adicionarUF(total_ufs, codigo_uf_atual);
+            *total_ufs = carregarUFs(ufs);
+            break;
+        case 2:
+            *total_ufs = carregarUFs(ufs);
+            alterarUF(ufs, *total_ufs);
+            break;
+        case 3:
+            excluirUF(ufs, total_ufs, codigo_uf_atual);
+            *total_ufs = carregarUFs(ufs);
+            break;
+        case 4:
+            *total_ufs = carregarUFs(ufs);
+            mostrarDadosDasUFs(*total_ufs);
+            break;
+        case 5:
+            *total_ufs = carregarUFs(ufs);
+            mostrarUF(ufs, *total_ufs);
+            break;
+        case 0:
+            printf("Saindo\n");
+            break;
+        default:
+            printf("Opcao invalida!\n");
+            break;
+    }
+}
 
 int carregarUFs(UF *ufs) {
     FILE *fuf = fopen("uf.data", "rb+");
@@ -14,7 +56,7 @@ int carregarUFs(UF *ufs) {
     return total;
 }
 
-void adicionarUF(UF *ufs, int *total_ufs, int *codigo_uf) {
+void adicionarUF(int *total_ufs, int *codigo_uf) {
     FILE *fuf = fopen("uf.data", "rb+");
     if (*total_ufs > 50) {
         printf("maximo de UFs atingido\n");
@@ -24,9 +66,11 @@ void adicionarUF(UF *ufs, int *total_ufs, int *codigo_uf) {
     UF uf;
 
     uf.codigo = (*codigo_uf)++;
+
     printf("Digite o nome da UF: ");
     fflush(stdin);
     gets(uf.descricao);
+
     printf("Digite a sigla da UF: ");
     fflush(stdin);
     gets(uf.sigla);
@@ -85,7 +129,7 @@ void alterarUF(UF *ufs, const int total_ufs) {
     fclose(fuf);
 }
 
-void mostrarDados(const int total_ufs) {
+void mostrarDadosDasUFs(const int total_ufs) {
     FILE *fuf = fopen("uf.data", "rb+");
     if (total_ufs == 0) {
         printf("Nao ha UFs cadastradas\n");
