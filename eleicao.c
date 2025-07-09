@@ -8,7 +8,7 @@ int carregarEleicoes(Eleicao *eleicoes) {
     if (feleicao == NULL) return 0;
 
     int total = 0;
-    while (fread(&eleicoes, sizeof(Eleicao), 1, feleicao) == 1) {
+    while (fread(&eleicoes[total], sizeof(Eleicao), 1, feleicao)) {
         total++;
     }
 
@@ -16,7 +16,7 @@ int carregarEleicoes(Eleicao *eleicoes) {
     return total;
 }
 
-void menuEleicao(Eleicao *eleicoes, int *total_eleicoes, int *codigo_uf_atual) {
+void menuEleicao(Eleicao *eleicoes, int *total_eleicoes) {
     int opcao_eleicao;
     printf("----OPCOES DE ELEICOES----\n");
     printf("1. Inserir Eleicao\n");
@@ -29,6 +29,152 @@ void menuEleicao(Eleicao *eleicoes, int *total_eleicoes, int *codigo_uf_atual) {
     scanf("%d", &opcao_eleicao);
     switch (opcao_eleicao) {
         case 1:
+            inserirEleicao(total_eleicoes);
+            carregarEleicoes(eleicoes);
+            break;
+        case 2:
+            alterarEleicao(eleicoes, *total_eleicoes);
+            break;
+        case 4:
+            carregarEleicoes(eleicoes);
+            mostrarDadosDasEleicoes(*total_eleicoes);
+            break;
+        case 5:
+            carregarEleicoes(eleicoes);
+            mostrarEleicao(*total_eleicoes);
             break;
     }
+}
+
+void inserirEleicao(int *total_eleicoes) {
+    FILE *feleicao = fopen("eleicao.data", "rb+");
+    if (*total_eleicoes >= 100) {
+        printf("maximo de Eleicoes atingido\n");
+        return;
+    }
+    int codigo_uf;
+    printf("Digite o codigo da UF em que ocorreu a eleicao: ");
+
+    scanf("%d", &codigo_uf);
+    if (!verificarCodigo(codigo_uf)) {
+        printf("nao existe uf com esse codigo\n");
+        return;
+    }
+
+    Eleicao eleicao;
+    eleicao.codigo_uf = codigo_uf;
+    printf("Digite o ano da eleicao: ");
+    scanf("%d", &eleicao.ano);
+    printf("Digite a descricao da eleicao: ");
+    fflush(stdin);
+    gets(eleicao.descricao);
+    fseek(feleicao, 0, SEEK_END);
+    fwrite(&eleicao, sizeof(Eleicao), 1, feleicao);
+    fclose(feleicao);
+    printf("Eleicao adicionada!\n");
+    (*total_eleicoes)++;
+}
+
+void mostrarDadosDasEleicoes(int total_eleicoes) {
+    FILE *feleicoes = fopen("eleicao.data", "rb+");
+    if (total_eleicoes == 0) {
+        printf("Nao ha eleicoes cadastradas\n");
+        return;
+    }
+    Eleicao eleicao;
+    while (fread(&eleicao, sizeof(Eleicao), 1, feleicoes)) {
+        printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicao.codigo_uf, eleicao.ano, eleicao.descricao);
+    }
+    fclose(feleicoes);
+}
+
+void mostrarEleicao(int total_eleicoes) {
+    FILE *feleicao = fopen("eleicao.data", "rb+");
+    if (total_eleicoes == 0) {
+        printf("Nao ha eleicoes cadastradas\n");
+        return;
+    }
+
+    Eleicao eleicao;
+
+    int codigo_uf;
+    int ano;
+
+    int encontrado = 0;
+    printf("Digite o codigo da UF: ");
+    scanf("%d", &codigo_uf);
+    printf("Digite o ano da eleicao: ");
+    scanf("%d", &ano);
+    while (fread(&eleicao, sizeof(Eleicao), 1, feleicao)) {
+        if (eleicao.codigo_uf == codigo_uf && eleicao.ano == ano) {
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Nao ha uma eleicao cadastrada com essa configuracao\n");
+        return;
+    }
+
+    printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicao.codigo_uf, eleicao.ano, eleicao.descricao);
+
+    fclose(feleicao);
+}
+
+void alterarEleicao(Eleicao *eleicao, int total_eleicoes) {
+    FILE *feleicao = fopen("eleicao.data", "rb+");
+    int codigo_uf;
+    int ano;
+    int opcao_alterar_uf;
+    printf("Digite o codigo da eleicao a ser alterada: ");
+    scanf("%d", &codigo_uf);
+    printf("Digite o ano da eleicao: ");
+    scanf("%d", &ano);
+    for (int i = 0; i < total_eleicoes; i++) {
+        if (eleicao[i].codigo_uf == codigo_uf && eleicao[i].ano == ano) {
+            do {
+                printf("O que gostaria de alterar nessa Eleicao?\n");
+                printf("1. Codigo (atual: %d)\n", eleicao[i].codigo_uf);
+                printf("2. Descricao (atual: %s)\n", eleicao[i].descricao);
+                printf("3. Ano (atual: %d)\n", eleicao[i].ano);
+                printf("0. Nada\n");
+                scanf("%d", &opcao_alterar_uf);
+                switch (opcao_alterar_uf) {
+                    case 1:
+                        printf("Digite o codigo da UF a qual pertence essa eleicao: ");
+                        scanf("%d", &eleicao[i].codigo_uf);
+                        fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
+                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        printf("Localizacao da eleicao alterada!\n");
+                        break;
+                    case 2:
+                        printf("Digite a nova descricao da Eleicao: ");
+                        fflush(stdin);
+                        gets(eleicao[i].descricao);
+                        fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
+                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        printf("Descricao da eleicao alterada!\n");
+                        break;
+                    case 3:
+                        printf("Digite o ano em que essa eleicao foi realizada: ");
+                        scanf("%d", &eleicao[i].ano);
+                        fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
+                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        printf("Ano da Eleicao alterado!\n");
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        printf("opcao invalida!\n");
+                        break;
+                }
+            } while (opcao_alterar_uf != 0);
+
+            fclose(feleicao);
+            return;
+        }
+    }
+    printf("Nao existe Eleicao com essa configuracao\n");
+    fclose(feleicao);
 }

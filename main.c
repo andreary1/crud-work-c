@@ -10,7 +10,7 @@ int main() {
 
     FILE *fuf = fopen("uf.data", "rb+");
     //FILE *fpessoa = fopen("pessoas.data", "rb+");
-    FILE *feleicao = fopen("eleicoes.data", "rb+");
+    FILE *feleicao = fopen("eleicao.data", "rb+");
     //FILE *fcandidato_eleicao = fopen("candidatos.data", "rb+");
     //FILE *fvoto = fopen("votos.data", "rb+");
     //FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
@@ -33,11 +33,6 @@ int main() {
     int total_ufs = carregarUFs(ufs);
     int total_eleicoes = carregarEleicoes(eleicoes);
 
-    int codigo_uf_atual = 0;
-    while (fread(ufs, sizeof(UF), 1, fuf) == 1) {
-        codigo_uf_atual++;
-    }
-
     int opcao;
     do {
         printf("--------MENU--------\n");
@@ -53,10 +48,10 @@ int main() {
         scanf("%d", &opcao);
         switch (opcao) {
             case 1:
-                menuUF(ufs, &total_ufs, &codigo_uf_atual);
+                menuUF(ufs, &total_ufs);
                 break;
             case 3:
-                menuEleicao(eleicoes, &total_eleicoes, &codigo_uf_atual);
+                menuEleicao(eleicoes, &total_eleicoes);
                 break;
         }
     } while (opcao != 0);

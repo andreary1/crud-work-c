@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
+void menuUF(UF *ufs, int *total_ufs) {
     int opcao_uf;
     printf("----OPCOES DE UNIDADES FEDERATIVA----\n");
     printf("1. Inserir UF\n");
@@ -16,7 +16,7 @@ void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
     scanf("%d", &opcao_uf);
     switch (opcao_uf) {
         case 1:
-            adicionarUF(total_ufs, codigo_uf_atual);
+            adicionarUF(total_ufs);
             *total_ufs = carregarUFs(ufs);
             break;
         case 2:
@@ -24,7 +24,7 @@ void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
             alterarUF(ufs, *total_ufs);
             break;
         case 3:
-            excluirUF(ufs, total_ufs, codigo_uf_atual);
+            excluirUF(ufs, total_ufs);
             *total_ufs = carregarUFs(ufs);
             break;
         case 4:
@@ -33,7 +33,7 @@ void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
             break;
         case 5:
             *total_ufs = carregarUFs(ufs);
-            mostrarUF(ufs, *total_ufs);
+            mostrarUF(*total_ufs);
             break;
         case 0:
             printf("Saindo\n");
@@ -42,6 +42,20 @@ void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual) {
             printf("Opcao invalida!\n");
             break;
     }
+}
+
+int verificarCodigo(int codigo_uf) {
+    int codigo_existe = 0;
+
+    FILE *fuf = fopen("uf.data", "rb+");
+    UF *uf = (UF *)malloc(sizeof(UF));
+    while (fread(uf, sizeof(UF), 1, fuf) == 1) {
+        if (uf->codigo ==  codigo_uf)
+            codigo_existe++;
+    }
+    free(uf);
+    fclose(fuf);
+    return codigo_existe;
 }
 
 int carregarUFs(UF *ufs) {
@@ -56,17 +70,20 @@ int carregarUFs(UF *ufs) {
     return total;
 }
 
-void adicionarUF(int *total_ufs, int *codigo_uf) {
+void adicionarUF(int *total_ufs) {
     FILE *fuf = fopen("uf.data", "rb+");
-    if (*total_ufs > 50) {
+    if (*total_ufs >= 50) {
         printf("maximo de UFs atingido\n");
         return;
     }
 
     UF uf;
 
-    uf.codigo = (*codigo_uf)++;
+    do {
+        uf.codigo = rand() % 100 + 1;
+    } while (verificarCodigo(uf.codigo));
 
+    printf("codigo atribuido: %d\n", uf.codigo);
     printf("Digite o nome da UF: ");
     fflush(stdin);
     gets(uf.descricao);
@@ -142,7 +159,7 @@ void mostrarDadosDasUFs(const int total_ufs) {
     fclose(fuf);
 }
 
-void mostrarUF(UF *ufs, const int total_ufs) {
+void mostrarUF(const int total_ufs) {
 
     FILE *fuf = fopen("uf.data", "rb+");
 
@@ -156,8 +173,8 @@ void mostrarUF(UF *ufs, const int total_ufs) {
     scanf("%d", &codigo_uf);
 
     int encontrado = 0;
-    for (int i = 0; i < total_ufs; i++) {
-        if (ufs[i].codigo == codigo_uf) {
+    while (fread(&uf, sizeof(UF), 1, fuf)) {
+        if (uf.codigo == codigo_uf) {
             encontrado = 1;
             break;
         }
@@ -168,13 +185,13 @@ void mostrarUF(UF *ufs, const int total_ufs) {
         return;
     }
 
-    printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", ufs[codigo_uf].codigo, ufs[codigo_uf].descricao,
-        ufs[codigo_uf].sigla);
+    printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", uf.codigo, uf.descricao,
+        uf.sigla);
 
     fclose(fuf);
 }
 
-void excluirUF(UF *ufs, int *total_ufs, int *codigo_uf_seguinte) {
+void excluirUF(UF *ufs, int *total_ufs) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
@@ -187,7 +204,6 @@ void excluirUF(UF *ufs, int *total_ufs, int *codigo_uf_seguinte) {
                 *(ufs + j) = *(ufs + j + 1);
             }
             (*total_ufs)--;
-            (*codigo_uf_seguinte)--;
             encontrado = 1;
             break;
         }
@@ -196,10 +212,6 @@ void excluirUF(UF *ufs, int *total_ufs, int *codigo_uf_seguinte) {
     if (!encontrado) {
         printf("Nao existe UF com esse codigo\n");
         return;
-    }
-
-    for (int i = 0; i < *total_ufs; i++) {
-        ufs[i].codigo = i;
     }
 
     FILE *fuf = fopen("uf.data", "wb+");

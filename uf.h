@@ -6,10 +6,11 @@ struct UF {
 
 typedef struct UF UF;
 
-void menuUF(UF *ufs, int *total_ufs, int *codigo_uf_atual);
+int verificarCodigo(int codigo_uf);
+void menuUF(UF *ufs, int *total_ufs);
 int carregarUFs(UF *ufs);
-void adicionarUF(int *total_ufs, int *codigo_uf);
+void adicionarUF(int *total_ufs);
 void mostrarDadosDasUFs(int total_ufs);
 void alterarUF(UF *uf, int total_ufs);
-void excluirUF(UF *uf, int *total_ufs, int *codigo_uf);
-void mostrarUF(UF *uf, int total_ufs);
+void excluirUF(UF *uf, int *total_ufs);
+void mostrarUF(int total_ufs);
