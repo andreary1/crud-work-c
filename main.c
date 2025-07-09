@@ -8,27 +8,7 @@ int main() {
     UF ufs[50];
     Eleicao eleicoes[100];
 
-    FILE *fuf = fopen("uf.data", "rb+");
-    //FILE *fpessoa = fopen("pessoas.data", "rb+");
-    FILE *feleicao = fopen("eleicao.data", "rb+");
-    //FILE *fcandidato_eleicao = fopen("candidatos.data", "rb+");
-    //FILE *fvoto = fopen("votos.data", "rb+");
-    //FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
-    if (fuf == NULL) {
-        FILE *fuf = fopen("uf.data", "wb+");
-        if (fuf == NULL) {
-            printf("erro ao criar arquivo da uf\n");
-            return -1;
-        }
-    }
-
-    if (feleicao == NULL) {
-        FILE *feleicao = fopen("eleicao.data", "wb+");
-        if (feleicao == NULL) {
-            printf("erro ao criar arquivo da eleicao\n");
-            return -1;
-        }
-    }
+    carregarArquivos();
 
     int total_ufs = carregarUFs(ufs);
     int total_eleicoes = carregarEleicoes(eleicoes);
@@ -52,6 +32,9 @@ int main() {
                 break;
             case 3:
                 menuEleicao(eleicoes, &total_eleicoes);
+                break;
+            case 4:
+                //menuCandidato();
                 break;
         }
     } while (opcao != 0);

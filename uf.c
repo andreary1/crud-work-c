@@ -1,7 +1,67 @@
 #include <stdio.h>
 #include "uf.h"
+#include "eleicao.h"
 #include <stdlib.h>
+#include<time.h>
 #include <string.h>
+
+void carregarArquivos() {
+
+    FILE *fuf = fopen("uf.data", "rb+");
+    FILE *fpessoa = fopen("pessoas.data", "rb+");
+    FILE *feleicao = fopen("eleicao.data", "rb+");
+    FILE *fcandidato_eleicao = fopen("candidatos.data", "rb+");
+    FILE *fvoto = fopen("votos.data", "rb+");
+    FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
+
+    if (fuf == NULL) {
+        FILE *fuf = fopen("uf.data", "wb+");
+        if (fuf == NULL) {
+            printf("erro ao criar arquivo da uf\n");
+            return;
+        }
+    }
+
+    if (fpessoa == NULL) {
+        FILE *fpessoa = fopen("pessoas.data", "wb+");
+        if (fpessoa == NULL) {
+            printf("erro ao criar arquivo das pessoa\n");
+            return;
+        }
+    }
+
+    if (feleicao == NULL) {
+        FILE *feleicao = fopen("eleicao.data", "wb+");
+        if (feleicao == NULL) {
+            printf("erro ao criar arquivo da eleicao\n");
+            return;
+        }
+    }
+
+    if (fcandidato_eleicao == NULL) {
+        FILE *fcandidato_eleicao = fopen("candidatos.data", "wb+");
+        if (fcandidato_eleicao == NULL) {
+            printf("erro ao criar arquivo dos candidatos\n");
+            return;
+        }
+    }
+
+    if (fvoto == NULL) {
+        FILE *fvoto = fopen("votos.data", "wb+");
+        if (fvoto == NULL) {
+            printf("erro ao criar arquivo da voto\n");
+            return;
+        }
+    }
+
+    if (fcomparecimento == NULL) {
+        FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
+        if (fcomparecimento == NULL) {
+            printf("erro ao criar arquivo do comparecimento\n");
+            return;
+        }
+    }
+}
 
 void menuUF(UF *ufs, int *total_ufs) {
     int opcao_uf;
@@ -23,7 +83,7 @@ void menuUF(UF *ufs, int *total_ufs) {
             *total_ufs = carregarUFs(ufs);
             alterarUF(ufs, *total_ufs);
             break;
-        case 3:
+        case 3:;
             excluirUF(ufs, total_ufs);
             *total_ufs = carregarUFs(ufs);
             break;
@@ -79,6 +139,7 @@ void adicionarUF(int *total_ufs) {
 
     UF uf;
 
+    srand(time(NULL));
     do {
         uf.codigo = rand() % 100 + 1;
     } while (verificarCodigo(uf.codigo));
@@ -218,4 +279,5 @@ void excluirUF(UF *ufs, int *total_ufs) {
     fwrite(ufs, sizeof(UF), *total_ufs, fuf);
     fclose(fuf);
     printf("UF removida!\n");
+    excluirEleicoesPorUF(codigo_uf);
 }

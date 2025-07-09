@@ -1,8 +1,13 @@
-//
-// Created by andre on 07/07/2025.
-//
+struct candidato {
+    int ano;
+    int codigo_uf;
+    char CPF[30];
+    int numero;
+};
 
-#ifndef CANDIDATO_ELEICAO_H
-#define CANDIDATO_ELEICAO_H
+typedef struct candidato Candidato;
 
-#endif //CANDIDATO_ELEICAO_H
+void menuCandidato();
+void inserirCandidato();
+void excluirCandidato();
+void mostrarCandidato();

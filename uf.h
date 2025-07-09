@@ -1,3 +1,4 @@
+#pragma once
 struct UF {
     int codigo;
     char descricao[30];
@@ -6,6 +7,7 @@ struct UF {
 
 typedef struct UF UF;
 
+void carregarArquivos();
 int verificarCodigo(int codigo_uf);
 void menuUF(UF *ufs, int *total_ufs);
 int carregarUFs(UF *ufs);
