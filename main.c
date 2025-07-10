@@ -2,16 +2,19 @@
 #include <stdlib.h>
 #include "uf.h"
 #include "eleicao.h"
+#include "candidato_eleicao.h"
 
 int main() {
 
-    UF ufs[50];
-    Eleicao eleicoes[100];
+    UF *ufs[50];
+    Eleicao *eleicoes[100];
+    //Candidato candidatos[200];
 
     carregarArquivos();
 
-    int total_ufs = carregarUFs(ufs);
-    int total_eleicoes = carregarEleicoes(eleicoes);
+    carregarUFs(ufs, 50);
+    carregarEleicoes(eleicoes, 100);
+    //int total_candidatos = carregarCandidatos(candidatos);
 
     int opcao;
     do {
@@ -28,16 +31,22 @@ int main() {
         scanf("%d", &opcao);
         switch (opcao) {
             case 1:
-                menuUF(ufs, &total_ufs);
+                menuUF(ufs);
                 break;
             case 3:
-                menuEleicao(eleicoes, &total_eleicoes);
+                menuEleicao(eleicoes);
                 break;
             case 4:
-                //menuCandidato();
+                //menuCandidato(candidatos, &total_candidatos);
+                break;
+            default:
+                printf("Opcao invalida!\n");
                 break;
         }
     } while (opcao != 0);
+
+    liberarUFs(ufs, 50);
+    liberarEleicoes(eleicoes, 100);
 
     return 0;
 }

@@ -3,20 +3,30 @@
 #include <stdlib.h>
 #include "uf.h"
 
-int carregarEleicoes(Eleicao *eleicoes) {
+int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     FILE *feleicao = fopen("eleicao.data", "rb+");
     if (feleicao == NULL) return 0;
 
-    int total = 0;
-    while (fread(&eleicoes[total], sizeof(Eleicao), 1, feleicao)) {
-        total++;
+    fseek(feleicao, 0, SEEK_END);
+    long int num_eleicoes = ftell(feleicao);
+    num_eleicoes /= sizeof(Eleicao);
+
+    for (int i = 0; i < total_eleicoes; i++) {
+        eleicoes[i] = NULL;
+    }
+    fseek(feleicao, 0, SEEK_SET);
+    for (int i = 0; i < total_eleicoes; i++) {
+        Eleicao *eleicao = (Eleicao *)malloc(sizeof(Eleicao));
+        fread(eleicao, sizeof(Eleicao), 1, feleicao);
+
+        eleicoes[i] = eleicao;
     }
 
     fclose(feleicao);
-    return total;
+    return num_eleicoes;
 }
 
-void menuEleicao(Eleicao *eleicoes, int *total_eleicoes) {
+void menuEleicao(Eleicao *eleicoes[]) {
     int opcao_eleicao;
     printf("----OPCOES DE ELEICOES----\n");
     printf("1. Inserir Eleicao\n");
@@ -29,36 +39,49 @@ void menuEleicao(Eleicao *eleicoes, int *total_eleicoes) {
     scanf("%d", &opcao_eleicao);
     switch (opcao_eleicao) {
         case 1:
-            inserirEleicao(total_eleicoes);
-            carregarEleicoes(eleicoes);
+            inserirEleicao(eleicoes);
+            carregarEleicoes(eleicoes, 100);
             break;
         case 2:
-            alterarEleicao(eleicoes, *total_eleicoes);
-            carregarEleicoes(eleicoes);
+            //alterarEleicao(eleicoes, *total_eleicoes);
             break;
         case 3:
-            excluirEleicao(eleicoes, total_eleicoes);
-            carregarEleicoes(eleicoes);
+            //excluirEleicao(eleicoes, total_eleicoes);
             break;
         case 4:
-            carregarEleicoes(eleicoes);
-            mostrarDadosDasEleicoes(*total_eleicoes);
+            //carregarEleicoes(eleicoes);
+            //mostrarDadosDasEleicoes(*total_eleicoes);
             break;
         case 5:
-            carregarEleicoes(eleicoes);
-            mostrarEleicao(*total_eleicoes);
+            //carregarEleicoes(eleicoes);
+            //mostrarEleicao(*total_eleicoes);
             break;
         case 0:
             break;
     }
 }
 
-void inserirEleicao(int *total_eleicoes) {
+void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
+    for (int i = 0; i < total_eleicoes; i++) {
+        if (eleicoes[i] != NULL) {
+            free(eleicoes[i]);
+            eleicoes[i] = NULL;
+        }
+    }
+};
+
+void inserirEleicao(Eleicao *eleicoes[]) {
     FILE *feleicao = fopen("eleicao.data", "rb+");
-    if (*total_eleicoes >= 100) {
+
+    fseek(feleicao, 0, SEEK_END);
+    long int num_eleicoes = ftell(feleicao);
+    num_eleicoes /= sizeof(Eleicao);
+
+    if (num_eleicoes >= 100) {
         printf("maximo de Eleicoes atingido\n");
         return;
     }
+
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");
 
@@ -68,18 +91,32 @@ void inserirEleicao(int *total_eleicoes) {
         return;
     }
 
-    Eleicao eleicao;
-    eleicao.codigo_uf = codigo_uf;
+    int ano;
     printf("Digite o ano da eleicao: ");
-    scanf("%d", &eleicao.ano);
+    scanf("%d", &ano);
+
+    if (verificarAnoeCodigo(codigo_uf, ano)) {
+        printf("Ja existe uma eleicao com essa configuracao\n");
+        return;
+    }
+
+    eleicoes[num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
+    if (eleicoes[num_eleicoes] == NULL) {
+        printf("Erro ao alocar memória para nova UF.\n");
+        fclose(feleicao);
+        return;
+    }
+
+    eleicoes[num_eleicoes]->codigo_uf = codigo_uf;
+    eleicoes[num_eleicoes]->ano = ano;
+
     printf("Digite a descricao da eleicao: ");
-    fflush(stdin);
-    gets(eleicao.descricao);
+    ler(eleicoes[num_eleicoes]->descricao, sizeof(eleicoes[num_eleicoes]->descricao));
+
     fseek(feleicao, 0, SEEK_END);
-    fwrite(&eleicao, sizeof(Eleicao), 1, feleicao);
+    fwrite(eleicoes[num_eleicoes], sizeof(Eleicao), 1, feleicao);
     fclose(feleicao);
     printf("Eleicao adicionada!\n");
-    (*total_eleicoes)++;
 }
 
 void mostrarDadosDasEleicoes(int total_eleicoes) {
@@ -246,6 +283,7 @@ void excluirEleicao(Eleicao *eleicoes, int *total_eleicoes) {
     fwrite(eleicoes, sizeof(Eleicao), novo_total_eleicoes, feleicao);
     fclose(feleicao);
     printf("Eleicao removida!\n");
+
     *total_eleicoes = novo_total_eleicoes;
 }
 

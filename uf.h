@@ -7,12 +7,14 @@ struct UF {
 
 typedef struct UF UF;
 
+void ler(char sentenca[], int tamanho);
 void carregarArquivos();
 int verificarCodigo(int codigo_uf);
-void menuUF(UF *ufs, int *total_ufs);
-int carregarUFs(UF *ufs);
-void adicionarUF(int *total_ufs);
-void mostrarDadosDasUFs(int total_ufs);
-void alterarUF(UF *uf, int total_ufs);
-void excluirUF(UF *uf, int *total_ufs);
-void mostrarUF(int total_ufs);
+void menuUF(UF *ufs[]);
+int carregarUFs(UF *ufs[], int total_ufs);
+void liberarUFs(UF *ufs[], int total_ufs);
+void adicionarUF(UF *ufs[]);
+void mostrarDadosDasUFs(UF *ufs[]);
+void alterarUF(UF *ufs[]);
+void excluirUF(UF *ufs[]);
+void mostrarUF(UF *ufs[]);
