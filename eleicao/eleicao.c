@@ -29,38 +29,46 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
 void menuEleicao(Eleicao *eleicoes[]) {
     int opcao_eleicao;
     int num_eleicoes;
-    printf("----------OPCOES DE ELEICOES---------\n");
-    printf("1. Inserir Eleicao\n");
-    printf("2. Alterar Eleicao\n");
-    printf("3. Excluir Eleicao\n");
-    printf("4. Mostrar dados de todas as eleicoes\n");
-    printf("5. Mostrar dados de uma eleicao\n");
-    printf("0. Sair\n");
-    printf("-------------------------------------\n");
-    scanf("%d", &opcao_eleicao);
-    switch (opcao_eleicao) {
-        case 1:
-            num_eleicoes = carregarEleicoes(eleicoes, 100);
-            inserirEleicao(eleicoes, &num_eleicoes);
-            break;
-        case 2:
-            num_eleicoes = carregarEleicoes(eleicoes, 100);
-            alterarEleicao(eleicoes);
-            break;
-        case 3:
-            //excluirEleicao(eleicoes, total_eleicoes);
-            break;
-        case 4:
-            num_eleicoes = carregarEleicoes(eleicoes, 100);
-            mostrarDadosDasEleicoes(eleicoes, num_eleicoes);
-            break;
-        case 5:
-            num_eleicoes = carregarEleicoes(eleicoes, 100);
-            mostrarEleicao(eleicoes, num_eleicoes);
-            break;
-        case 0:
-            break;
-    }
+    do {
+        printf("----------OPCOES DE ELEICOES---------\n");
+        printf("1. Inserir Eleicao\n");
+        printf("2. Alterar Eleicao\n");
+        printf("3. Excluir Eleicao\n");
+        printf("4. Mostrar dados de todas as eleicoes\n");
+        printf("5. Mostrar dados de uma eleicao\n");
+        printf("0. Sair\n");
+        printf("-------------------------------------\n");
+        scanf("%d", &opcao_eleicao);
+        switch (opcao_eleicao) {
+            case 1:
+                num_eleicoes = carregarEleicoes(eleicoes, 100);
+                inserirEleicao(eleicoes, &num_eleicoes);
+                break;
+            case 2:
+                num_eleicoes = carregarEleicoes(eleicoes, 100);
+                alterarEleicao(eleicoes, num_eleicoes);
+                break;
+            case 3:
+                //excluirEleicao(eleicoes, total_eleicoes);
+                break;
+            case 4:
+                num_eleicoes = carregarEleicoes(eleicoes, 100);
+                mostrarDadosDasEleicoes(eleicoes, num_eleicoes);
+                break;
+            case 5:
+                num_eleicoes = carregarEleicoes(eleicoes, 100);
+                mostrarEleicao(eleicoes, num_eleicoes);
+                break;
+            case 0:
+                printf("saindo\n");
+                break;
+            default:
+                printf("opcao invalida!\n");
+                printf("Digite outra opcao\n");
+                break;
+        }
+    } while (opcao_eleicao != 0);
+
 }
 
 void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
@@ -167,15 +175,11 @@ void mostrarEleicao(Eleicao *eleicoes[], int total_eleicoes) {
 
 }
 
-void alterarEleicao(Eleicao *eleicoes[]) {
-    FILE *feleicao = fopen("eleicao.data", "rb+");
+void alterarEleicao(Eleicao *eleicoes[], int num_eleicoes) {
+
     int codigo_uf;
     int ano;
     int opcao_alterar_uf;
-
-    fseek(feleicao, 0, SEEK_END);
-    long int num_eleicoes = ftell(feleicao);
-    num_eleicoes /= sizeof(UF);
 
     printf("Digite o codigo da eleicao a ser alterada: ");
     scanf("%d", &codigo_uf);
@@ -184,6 +188,11 @@ void alterarEleicao(Eleicao *eleicoes[]) {
     for (int i = 0; i < num_eleicoes; i++) {
         if (eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
             do {
+                FILE *feleicao = fopen("eleicao.data", "rb+");
+                if (feleicao == NULL) {
+                    printf("Erro ao abrir arquivo para alterar\n");
+                    return;
+                }
                 printf("O que gostaria de alterar nessa Eleicao?\n");
                 printf("1. Codigo (atual: %d)\n", eleicoes[i]->codigo_uf);
                 printf("2. Descricao (atual: %s)\n", eleicoes[i]->descricao);
@@ -212,6 +221,7 @@ void alterarEleicao(Eleicao *eleicoes[]) {
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
                         fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Descricao da eleicao alterada!\n");
+                        fclose(feleicao);
                         break;
                     case 3:
                         int novo_ano;
@@ -225,21 +235,21 @@ void alterarEleicao(Eleicao *eleicoes[]) {
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
                         fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Ano da Eleicao alterado!\n");
+                        fclose(feleicao);
                         break;
                     case 0:
                         break;
                     default:
                         printf("opcao invalida!\n");
+                        printf("Digite outra opcao\n");
                         break;
                 }
             } while (opcao_alterar_uf != 0);
 
-            fclose(feleicao);
             return;
         }
     }
     printf("Nao existe eleicao com essa configuracao\n");
-    fclose(feleicao);
 }
 
 int verificarAnoeCodigo(int codigo_uf, int ano) {
@@ -256,7 +266,7 @@ int verificarAnoeCodigo(int codigo_uf, int ano) {
     return ano_e_codigo_existe;
 }
 
-void excluirEleicao(Eleicao *eleicoes, int *total_eleicoes) {
+void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes) {
 
     int codigo_uf;
     int ano;
