@@ -43,7 +43,8 @@ void menuEleicao(Eleicao *eleicoes[]) {
             carregarEleicoes(eleicoes, 100);
             break;
         case 2:
-            //alterarEleicao(eleicoes, *total_eleicoes);
+            carregarEleicoes(eleicoes, 100);
+            alterarEleicao(eleicoes);
             break;
         case 3:
             //excluirEleicao(eleicoes, total_eleicoes);
@@ -166,22 +167,27 @@ void mostrarEleicao(int total_eleicoes) {
     fclose(feleicao);
 }
 
-void alterarEleicao(Eleicao *eleicao, int total_eleicoes) {
+void alterarEleicao(Eleicao *eleicoes[]) {
     FILE *feleicao = fopen("eleicao.data", "rb+");
     int codigo_uf;
     int ano;
     int opcao_alterar_uf;
+
+    fseek(feleicao, 0, SEEK_END);
+    long int num_eleicoes = ftell(feleicao);
+    num_eleicoes /= sizeof(UF);
+
     printf("Digite o codigo da eleicao a ser alterada: ");
     scanf("%d", &codigo_uf);
     printf("Digite o ano da eleicao: ");
     scanf("%d", &ano);
-    for (int i = 0; i < total_eleicoes; i++) {
-        if (eleicao[i].codigo_uf == codigo_uf && eleicao[i].ano == ano) {
+    for (int i = 0; i < num_eleicoes; i++) {
+        if (eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
             do {
                 printf("O que gostaria de alterar nessa Eleicao?\n");
-                printf("1. Codigo (atual: %d)\n", eleicao[i].codigo_uf);
-                printf("2. Descricao (atual: %s)\n", eleicao[i].descricao);
-                printf("3. Ano (atual: %d)\n", eleicao[i].ano);
+                printf("1. Codigo (atual: %d)\n", eleicoes[i]->codigo_uf);
+                printf("2. Descricao (atual: %s)\n", eleicoes[i]->descricao);
+                printf("3. Ano (atual: %d)\n", eleicoes[i]->ano);
                 printf("0. Nada\n");
                 scanf("%d", &opcao_alterar_uf);
                 switch (opcao_alterar_uf) {
@@ -191,34 +197,33 @@ void alterarEleicao(Eleicao *eleicao, int total_eleicoes) {
                         do {
                             scanf("%d", &novo_codigo_uf);
                         } while (!verificarCodigo(novo_codigo_uf));
-                        if (verificarAnoeCodigo(novo_codigo_uf, eleicao[i].ano)) {
+                        if (verificarAnoeCodigo(novo_codigo_uf, eleicoes[i]->ano)) {
                             printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
                             return;
                         }
-                        eleicao[i].codigo_uf = novo_codigo_uf;
+                        eleicoes[i]->codigo_uf = novo_codigo_uf;
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
-                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Localizacao da eleicao alterada!\n");
                         break;
                     case 2:
                         printf("Digite a nova descricao da Eleicao: ");
-                        fflush(stdin);
-                        gets(eleicao[i].descricao);
+                        ler(eleicoes[i]->descricao, sizeof(eleicoes[i]->descricao));
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
-                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Descricao da eleicao alterada!\n");
                         break;
                     case 3:
                         int novo_ano;
                         printf("Digite o ano em que essa eleicao foi realizada: ");
                         scanf("%d", &novo_ano);
-                        if (verificarAnoeCodigo(eleicao[i].codigo_uf, novo_ano)) {
+                        if (verificarAnoeCodigo(eleicoes[i]->codigo_uf, novo_ano)) {
                             printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
                             return;
                         }
-                        eleicao[i].ano = novo_ano;
+                        eleicoes[i]->ano = novo_ano;
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
-                        fwrite(&eleicao[i], sizeof(Eleicao), 1, feleicao);
+                        fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Ano da Eleicao alterado!\n");
                         break;
                     case 0:

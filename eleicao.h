@@ -14,7 +14,7 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes);
 void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes);
 void inserirEleicao(Eleicao *eleicoes[]);
 void mostrarDadosDasEleicoes(int total_eleicoes);
-void alterarEleicao(Eleicao *eleicao, int total_eleicoes);
+void alterarEleicao(Eleicao *eleicoes[]);
 void excluirEleicao(Eleicao *eleicao, int *total_eleicoes);
 void excluirEleicoesPorUF(int codigo_uf);
 void mostrarEleicao(int total_eleicoes);
