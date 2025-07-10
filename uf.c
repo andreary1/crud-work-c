@@ -70,6 +70,7 @@ void carregarArquivos() {
 }
 
 void menuUF(UF *ufs[]) {
+    int num_ufs;
     int opcao_uf;
     printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
     printf("1. Inserir UF\n");
@@ -83,23 +84,22 @@ void menuUF(UF *ufs[]) {
     switch (opcao_uf) {
         case 1:
             adicionarUF(ufs);
-            carregarUFs(ufs, 50);
             break;
         case 2:
-            carregarUFs(ufs, 50);
+            num_ufs = carregarUFs(ufs, 50);
             alterarUF(ufs);
             break;
         case 3:
-            carregarUFs(ufs, 50);
+            num_ufs = carregarUFs(ufs, 50);
             excluirUF(ufs);
             break;
         case 4:
-            carregarUFs(ufs, 50);
-            mostrarDadosDasUFs(ufs);
+            num_ufs = carregarUFs(ufs, 50);
+            mostrarDadosDasUFs(ufs, num_ufs);
             break;
         case 5:
-            carregarUFs(ufs, 50);
-            mostrarUF(ufs);
+            num_ufs = carregarUFs(ufs, 50);
+            mostrarUF(ufs, num_ufs);
             break;
         case 0:
             printf("Saindo\n");
@@ -243,12 +243,7 @@ void alterarUF(UF *ufs[]) {
     fclose(fuf);
 }
 
-void mostrarDadosDasUFs(UF *ufs[]) {
-    FILE *fuf = fopen("uf.data", "rb+");
-
-    fseek(fuf, 0, SEEK_END);
-    long int num_ufs = ftell(fuf);
-    num_ufs /= sizeof(UF);
+void mostrarDadosDasUFs(UF *ufs[], int num_ufs) {
 
     if (num_ufs == 0) {
         printf("Nao ha ufs cadastradas\n");
@@ -260,16 +255,9 @@ void mostrarDadosDasUFs(UF *ufs[]) {
         printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", ufs[i]->codigo, ufs[i]->descricao, ufs[i]->sigla);
     }
 
-    fclose(fuf);
 }
 
-void mostrarUF(UF *ufs[]) {
-
-    FILE *fuf = fopen("uf.data", "rb+");
-
-    fseek(fuf, 0, SEEK_END);
-    long int num_ufs = ftell(fuf);
-    num_ufs /= sizeof(UF);
+void mostrarUF(UF *ufs[], int num_ufs) {
 
     if (num_ufs == 0) {
         printf("Nao ha UFs cadastradas\n");
@@ -295,7 +283,6 @@ void mostrarUF(UF *ufs[]) {
     printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", ufs[encontrado]->codigo, ufs[encontrado]->descricao,
         ufs[encontrado]->sigla);
 
-    fclose(fuf);
 }
 
 void excluirUF(UF *ufs[]) {
@@ -312,7 +299,7 @@ void excluirUF(UF *ufs[]) {
 
     int encontrado = -1;
     for (int i = 0; i < num_ufs; i++) {
-        if (ufs[i]->codigo == codigo_uf) {
+        if (ufs[i] != NULL && ufs[i]->codigo == codigo_uf) {
             free(ufs[i]);
             ufs[i] = NULL;
             encontrado = i;
@@ -329,11 +316,6 @@ void excluirUF(UF *ufs[]) {
         ufs[i] = ufs[i + 1];
     }
     ufs[num_ufs - 1] = NULL;
-
-    fuf = fopen("uf.data", "wb+");
-    for (int i = 0; i < num_ufs - 1; i++) {
-        fwrite(ufs[i], sizeof(UF), 1, fuf);
-    }
 
     fclose(fuf);
     printf("UF removida!\n");
