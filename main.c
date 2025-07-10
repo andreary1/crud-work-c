@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "uf.h"
-#include "eleicao.h"
+#include "UF/uf.h"
+#include "eleicao/eleicao.h"
 #include "candidato_eleicao.h"
 
 int main() {
