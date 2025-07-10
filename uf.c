@@ -91,7 +91,7 @@ void menuUF(UF *ufs[]) {
             break;
         case 3:
             num_ufs = carregarUFs(ufs, 50);
-            excluirUF(ufs);
+            excluirUF(ufs, &num_ufs);
             break;
         case 4:
             num_ufs = carregarUFs(ufs, 50);
@@ -285,20 +285,14 @@ void mostrarUF(UF *ufs[], int num_ufs) {
 
 }
 
-void excluirUF(UF *ufs[]) {
-
-    FILE *fuf = fopen("uf.data", "rb+");
-
-    fseek(fuf, 0, SEEK_END);
-    long int num_ufs = ftell(fuf);
-    num_ufs /= sizeof(UF);
+void excluirUF(UF *ufs[], int *num_ufs) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
     scanf("%d", &codigo_uf);
 
     int encontrado = -1;
-    for (int i = 0; i < num_ufs; i++) {
+    for (int i = 0; i < *num_ufs; i++) {
         if (ufs[i] != NULL && ufs[i]->codigo == codigo_uf) {
             free(ufs[i]);
             ufs[i] = NULL;
@@ -312,12 +306,12 @@ void excluirUF(UF *ufs[]) {
         return;
     }
 
-    for (int i = encontrado; i < num_ufs - 1; i++) {
+    for (int i = encontrado; i < *num_ufs - 1; i++) {
         ufs[i] = ufs[i + 1];
     }
-    ufs[num_ufs - 1] = NULL;
+    ufs[*num_ufs - 1] = NULL;
+    (*num_ufs)--;
 
-    fclose(fuf);
     printf("UF removida!\n");
     //excluirEleicoesPorUF(codigo_uf);
 }
