@@ -1,7 +1,7 @@
-#include "eleicao.h"
+#include "../eleicao/eleicao.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "uf.h"
+#include "../UF/uf.h"
 
 int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     FILE *feleicao = fopen("eleicao.data", "rb+");
@@ -28,7 +28,8 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
 
 void menuEleicao(Eleicao *eleicoes[]) {
     int opcao_eleicao;
-    printf("----OPCOES DE ELEICOES----\n");
+    int num_eleicoes;
+    printf("----------OPCOES DE ELEICOES---------\n");
     printf("1. Inserir Eleicao\n");
     printf("2. Alterar Eleicao\n");
     printf("3. Excluir Eleicao\n");
@@ -39,23 +40,23 @@ void menuEleicao(Eleicao *eleicoes[]) {
     scanf("%d", &opcao_eleicao);
     switch (opcao_eleicao) {
         case 1:
-            inserirEleicao(eleicoes);
-            carregarEleicoes(eleicoes, 100);
+            num_eleicoes = carregarEleicoes(eleicoes, 100);
+            inserirEleicao(eleicoes, &num_eleicoes);
             break;
         case 2:
-            carregarEleicoes(eleicoes, 100);
+            num_eleicoes = carregarEleicoes(eleicoes, 100);
             alterarEleicao(eleicoes);
             break;
         case 3:
             //excluirEleicao(eleicoes, total_eleicoes);
             break;
         case 4:
-            //carregarEleicoes(eleicoes);
-            //mostrarDadosDasEleicoes(*total_eleicoes);
+            num_eleicoes = carregarEleicoes(eleicoes, 100);
+            mostrarDadosDasEleicoes(eleicoes, num_eleicoes);
             break;
         case 5:
-            //carregarEleicoes(eleicoes);
-            //mostrarEleicao(*total_eleicoes);
+            num_eleicoes = carregarEleicoes(eleicoes, 100);
+            mostrarEleicao(eleicoes, num_eleicoes);
             break;
         case 0:
             break;
@@ -71,14 +72,9 @@ void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     }
 };
 
-void inserirEleicao(Eleicao *eleicoes[]) {
-    FILE *feleicao = fopen("eleicao.data", "rb+");
+void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
 
-    fseek(feleicao, 0, SEEK_END);
-    long int num_eleicoes = ftell(feleicao);
-    num_eleicoes /= sizeof(Eleicao);
-
-    if (num_eleicoes >= 100) {
+    if (*num_eleicoes >= 100) {
         printf("maximo de Eleicoes atingido\n");
         return;
     }
@@ -101,70 +97,74 @@ void inserirEleicao(Eleicao *eleicoes[]) {
         return;
     }
 
-    eleicoes[num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
-    if (eleicoes[num_eleicoes] == NULL) {
+    eleicoes[*num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
+    if (eleicoes[*num_eleicoes] == NULL) {
         printf("Erro ao alocar memória para nova UF.\n");
-        fclose(feleicao);
         return;
     }
 
-    eleicoes[num_eleicoes]->codigo_uf = codigo_uf;
-    eleicoes[num_eleicoes]->ano = ano;
+    eleicoes[*num_eleicoes]->codigo_uf = codigo_uf;
+    eleicoes[*num_eleicoes]->ano = ano;
 
     printf("Digite a descricao da eleicao: ");
-    ler(eleicoes[num_eleicoes]->descricao, sizeof(eleicoes[num_eleicoes]->descricao));
+    ler(eleicoes[*num_eleicoes]->descricao, sizeof(eleicoes[*num_eleicoes]->descricao));
 
-    fseek(feleicao, 0, SEEK_END);
-    fwrite(eleicoes[num_eleicoes], sizeof(Eleicao), 1, feleicao);
-    fclose(feleicao);
+    FILE *feleicao = fopen("eleicao.data", "rb+");
+    if (feleicao != NULL) {
+        fseek(feleicao, 0, SEEK_END);
+        fwrite(eleicoes[*num_eleicoes], sizeof(Eleicao), 1, feleicao);
+        fclose(feleicao);
+    }
+    else {
+        printf("Erro ao abrir arquivo para escrita\n");
+        return;
+    }
     printf("Eleicao adicionada!\n");
 }
 
-void mostrarDadosDasEleicoes(int total_eleicoes) {
-    FILE *feleicoes = fopen("eleicao.data", "rb+");
+void mostrarDadosDasEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     if (total_eleicoes == 0) {
         printf("Nao ha eleicoes cadastradas\n");
         return;
     }
-    Eleicao eleicao;
-    while (fread(&eleicao, sizeof(Eleicao), 1, feleicoes)) {
-        printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicao.codigo_uf, eleicao.ano, eleicao.descricao);
+
+    for (int i = 0; i < total_eleicoes; i++) {
+        printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicoes[i]->codigo_uf, eleicoes[i]->ano,
+            eleicoes[i]->descricao);
     }
-    fclose(feleicoes);
 }
 
-void mostrarEleicao(int total_eleicoes) {
-    FILE *feleicao = fopen("eleicao.data", "rb+");
+void mostrarEleicao(Eleicao *eleicoes[], int total_eleicoes) {
+
     if (total_eleicoes == 0) {
         printf("Nao ha eleicoes cadastradas\n");
         return;
     }
-
-    Eleicao eleicao;
 
     int codigo_uf;
     int ano;
 
-    int encontrado = 0;
     printf("Digite o codigo da UF: ");
     scanf("%d", &codigo_uf);
     printf("Digite o ano da eleicao: ");
     scanf("%d", &ano);
-    while (fread(&eleicao, sizeof(Eleicao), 1, feleicao)) {
-        if (eleicao.codigo_uf == codigo_uf && eleicao.ano == ano) {
-            encontrado = 1;
-            break;
-        }
-    }
 
-    if (!encontrado) {
+    int encontrado = -1;
+     for (int i = 0; i < total_eleicoes; i++) {
+         if (eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
+             encontrado = i;
+             break;
+         }
+     }
+
+    if (encontrado == -1) {
         printf("Nao ha uma eleicao cadastrada com essa configuracao\n");
         return;
     }
 
-    printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicao.codigo_uf, eleicao.ano, eleicao.descricao);
+    printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicoes[encontrado]->codigo_uf,
+        eleicoes[encontrado]->ano, eleicoes[encontrado]->descricao);
 
-    fclose(feleicao);
 }
 
 void alterarEleicao(Eleicao *eleicoes[]) {

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "uf.h"
-#include "eleicao.h"
+#include "../eleicao/eleicao.h"
 #include <stdlib.h>
 #include<time.h>
 #include <string.h>
