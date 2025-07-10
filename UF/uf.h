@@ -15,6 +15,6 @@ int carregarUFs(UF *ufs[], int total_ufs);
 void liberarUFs(UF *ufs[], int total_ufs);
 void adicionarUF(UF *ufs[], int *total_ufs);
 void mostrarDadosDasUFs(UF *ufs[], int num_ufs);
-void alterarUF(UF *ufs[]);
+void alterarUF(UF *ufs[], int num_ufs);
 void excluirUF(UF *ufs[], int *total_ufs);
 void mostrarUF(UF *ufs[], int num_ufs);

@@ -72,43 +72,46 @@ void carregarArquivos() {
 void menuUF(UF *ufs[]) {
     int num_ufs;
     int opcao_uf;
-    printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
-    printf("1. Inserir UF\n");
-    printf("2. Alterar UF\n");
-    printf("3. Excluir UF\n");
-    printf("4. Mostrar dados de todas as UFs\n");
-    printf("5. Mostrar dados de uma UF\n");
-    printf("0. Sair\n");
-    printf("----------------------------------------\n");
-    scanf("%d", &opcao_uf);
-    switch (opcao_uf) {
-        case 1:
-            num_ufs = carregarUFs(ufs, 50);
-            adicionarUF(ufs, &num_ufs);
-            break;
-        case 2:
-            num_ufs = carregarUFs(ufs, 50);
-            alterarUF(ufs);
-            break;
-        case 3:
-            num_ufs = carregarUFs(ufs, 50);
-            excluirUF(ufs, &num_ufs);
-            break;
-        case 4:
-            num_ufs = carregarUFs(ufs, 50);
-            mostrarDadosDasUFs(ufs, num_ufs);
-            break;
-        case 5:
-            num_ufs = carregarUFs(ufs, 50);
-            mostrarUF(ufs, num_ufs);
-            break;
-        case 0:
-            printf("Saindo\n");
-            break;
-        default:
-            printf("Opcao invalida!\n");
-            break;
-    }
+    do {
+        printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
+        printf("1. Inserir UF\n");
+        printf("2. Alterar UF\n");
+        printf("3. Excluir UF\n");
+        printf("4. Mostrar dados de todas as UFs\n");
+        printf("5. Mostrar dados de uma UF\n");
+        printf("0. Sair\n");
+        printf("----------------------------------------\n");
+        scanf("%d", &opcao_uf);
+        switch (opcao_uf) {
+            case 1:
+                num_ufs = carregarUFs(ufs, 50);
+                adicionarUF(ufs, &num_ufs);
+                break;
+            case 2:
+                num_ufs = carregarUFs(ufs, 50);
+                alterarUF(ufs, num_ufs);
+                break;
+            case 3:
+                num_ufs = carregarUFs(ufs, 50);
+                excluirUF(ufs, &num_ufs);
+                break;
+            case 4:
+                num_ufs = carregarUFs(ufs, 50);
+                mostrarDadosDasUFs(ufs, num_ufs);
+                break;
+            case 5:
+                num_ufs = carregarUFs(ufs, 50);
+                mostrarUF(ufs, num_ufs);
+                break;
+            case 0:
+                printf("Saindo\n");
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                printf("digite outra opcao\n");
+                break;
+        }
+    } while (opcao_uf != 0);
 }
 
 int verificarCodigo(int codigo_uf) {
@@ -195,20 +198,21 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
     printf("UF adicionada!\n");
 }
 
-void alterarUF(UF *ufs[]) {
-    FILE *fuf = fopen("uf.data", "rb+");
+void alterarUF(UF *ufs[], int num_ufs) {
+
     int codigo_uf;
     int opcao_alterar_uf;
-
-    fseek(fuf, 0, SEEK_END);
-    long int num_ufs = ftell(fuf);
-    num_ufs /= sizeof(UF);
 
     printf("Digite o codigo da UF a ser alterada: ");
     scanf("%d", &codigo_uf);
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i]->codigo == codigo_uf) {
             do {
+                FILE *fuf = fopen("uf.data", "rb+");
+                if (fuf == NULL) {
+                    printf("Erro ao abrir arquivo para alterar\n");
+                    return;
+                }
                 printf("O que gostaria de alterar nessa UF?\n");
                 printf("1. Nome (atual: %s)\n", ufs[i]->descricao);
                 printf("2. Sigla (atual: %s)\n", ufs[i]->sigla);
@@ -221,6 +225,7 @@ void alterarUF(UF *ufs[]) {
                         fseek(fuf, i * sizeof(UF), SEEK_SET);
                         fwrite(ufs[i], sizeof(UF), 1, fuf);
                         printf("Nome da UF alterado!\n");
+                        fclose(fuf);
                         break;
                     case 2:
                         printf("Nova sigla da UF: ");
@@ -228,21 +233,22 @@ void alterarUF(UF *ufs[]) {
                         fseek(fuf, i * sizeof(UF), SEEK_SET);
                         fwrite(ufs[i], sizeof(UF), 1, fuf);
                         printf("Sigla da UF alterada!\n");
+                        fclose(fuf);
                         break;
                     case 0:
                         break;
                     default:
                         printf("opcao invalida!\n");
+                        fclose(fuf);
                         break;
                 }
             } while (opcao_alterar_uf != 0);
 
-            fclose(fuf);
             return;
         }
     }
+
     printf("Nao existe UF com esse codigo\n");
-    fclose(fuf);
 }
 
 void mostrarDadosDasUFs(UF *ufs[], int num_ufs) {
