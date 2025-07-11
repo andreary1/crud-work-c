@@ -3,4 +3,4 @@ project(trabalho_ajalmar C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(trabalho_ajalmar main.c UF/uf.c eleicao/eleicao.c)
+add_executable(trabalho_ajalmar main.c UF/uf.c eleicao/eleicao.c candidato/candidato_eleicao.c)

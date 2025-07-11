@@ -15,7 +15,7 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
         eleicoes[i] = NULL;
     }
     fseek(feleicao, 0, SEEK_SET);
-    for (int i = 0; i < total_eleicoes; i++) {
+    for (int i = 0; i < num_eleicoes; i++) {
         Eleicao *eleicao = (Eleicao *)malloc(sizeof(Eleicao));
         fread(eleicao, sizeof(Eleicao), 1, feleicao);
 
@@ -276,30 +276,43 @@ void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes) {
     printf("Digite o ano da eleicao que deseja excluir: ");
     scanf("%d", &ano);
 
-    int remover = 0;
-    int novo_total_eleicoes = 0;
+    int encontrado = -1;
 
     for (int i = 0; i < *total_eleicoes; i++) {
-        if (eleicoes[i].codigo_uf == codigo_uf && eleicoes[i].ano == ano) {
-            remover++;
-        }
-        else {
-            eleicoes[novo_total_eleicoes] = eleicoes[i];
-            novo_total_eleicoes++;
+        if (eleicoes[i] != NULL && eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
+            free(eleicoes[i]);
+            eleicoes[i] = NULL;
+            encontrado = i;
+            break;
         }
     }
 
-    if (!remover) {
+    if (encontrado == -1) {
         printf("Nao existe eleicao com essa configuracao\n");
         return;
     }
 
+    for (int i = 0; i < *total_eleicoes - 1; i++) {
+        eleicoes[i] = eleicoes[i + 1];
+    }
+
+    eleicoes[*total_eleicoes - 1] = NULL;
+    (*total_eleicoes)--;
+
+
     FILE *feleicao = fopen("eleicao.data", "wb+");
-    fwrite(eleicoes, sizeof(Eleicao), novo_total_eleicoes, feleicao);
+    if (feleicao == NULL) {
+        printf("erro ao abrir arquivo\n");
+        return;
+    }
+    for (int i = 0; i < *total_eleicoes; i++) {
+        if (eleicoes[i] != NULL) {
+            fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
+        }
+    }
+
     fclose(feleicao);
     printf("Eleicao removida!\n");
-
-    *total_eleicoes = novo_total_eleicoes;
 }
 
 void excluirEleicoesPorUF(int codigo_uf) {

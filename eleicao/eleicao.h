@@ -1,4 +1,3 @@
-#include "../UF/uf.h"
 
 struct eleicao {
     int ano;

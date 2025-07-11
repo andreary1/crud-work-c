@@ -1,0 +1,156 @@
+#include "candidato_eleicao.h"
+#include "../UF/uf.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+void menuCandidatos(Candidato *candidatos[]) {
+    int opcao_candidato;
+    int num_candidatos;
+    do {
+        printf("--------------OPCOES PARA CANDIDATOS--------------\n");
+        printf("1. Inserir candidato\n");
+        printf("2. Excluir candidato\n");
+        printf("3. Mostrar candidatos de uma eleicao por UF e ano\n");
+        printf("4. Mostrar candidatos das eleicoes por ano\n");
+        printf("0. Sair\n");
+        printf("--------------------------------------------------\n");
+        scanf("%d", &opcao_candidato);
+        switch (opcao_candidato) {
+            case 1:
+                num_candidatos = carregarCandidatos(candidatos, 200);
+                inserirCandidato(candidatos, &num_candidatos);
+                break;
+            case 2:
+                break;
+            case 3:
+                num_candidatos = carregarCandidatos(candidatos, 200);
+                mostrarCandidatosPorUFeAno(candidatos, num_candidatos);
+                break;
+            case 4:
+                break;
+            case 0:
+                break;
+        }
+    } while (opcao_candidato != 0);
+}
+
+int carregarCandidatos(Candidato *candidatos[], int total_candidatos) {
+
+    FILE *fcandidato = fopen("candidatos.data", "rb+");
+    if (fcandidato == NULL) return 0;
+
+    fseek(fcandidato, 0, SEEK_END);
+    long int num_candidatos = ftell(fcandidato);
+    num_candidatos /= sizeof(Candidato);
+
+    for (int i = 0; i < total_candidatos; i++) {
+        candidatos[i] = NULL;
+    }
+    fseek(fcandidato, 0, SEEK_SET);
+    for (int i = 0; i < num_candidatos; i++) {
+        Candidato *candidato = (Candidato *)malloc(sizeof(Candidato));
+        fread(candidato, sizeof(Candidato), 1, fcandidato);
+
+        candidatos[i] = candidato;
+    }
+
+    fclose(fcandidato);
+    return num_candidatos;
+}
+
+void liberarCandidatos(Candidato *candidatos[], int total_cand) {
+    for (int i = 0; i < total_cand; i++) {
+        if (candidatos[i] != NULL) {
+            free(candidatos[i]);
+            candidatos[i] = NULL;
+        }
+    }
+}
+
+void inserirCandidato(Candidato *candidatos[], int *total_cand) {
+    if (*total_cand >= 200) {
+        printf("maximo de Candidatos atingido\n");
+        return;
+    }
+
+    int codigo_uf;
+    printf("Digite o codigo da UF a qual o candidato pertence: ");
+
+    scanf("%d", &codigo_uf);
+    if (!verificarCodigo(codigo_uf)) {
+        printf("nao existe uf com esse codigo\n");
+        return;
+    }
+
+
+
+    int ano;
+    printf("Digite o ano em que ele concorreu: ");
+    scanf("%d", &ano);
+
+    int numero_candidato;
+    printf("Digite o numero desse candidato: ");
+    scanf("%d", &numero_candidato);
+
+    candidatos[*total_cand] = (Candidato *)malloc(sizeof(Candidato));
+    if (candidatos[*total_cand] == NULL) {
+        printf("Erro ao alocar memória para nova UF.\n");
+        return;
+    }
+
+    candidatos[*total_cand]->codigo_uf = codigo_uf;
+    candidatos[*total_cand]->ano = ano;
+    candidatos[*total_cand]->numero = numero_candidato;
+
+    printf("Digite o CPF do candidato: ");
+    ler(candidatos[*total_cand]->CPF, sizeof(candidatos[*total_cand]->CPF));
+
+
+    FILE *fcandidato = fopen("candidatos.data", "rb+");
+    if (fcandidato != NULL) {
+        fseek(fcandidato, 0, SEEK_END);
+        fwrite(candidatos[*total_cand], sizeof(Candidato), 1, fcandidato);
+        fclose(fcandidato);
+    }
+    else {
+        printf("Erro ao abrir arquivo para escrita\n");
+        return;
+    }
+
+    printf("Candidato adicionado!\n");
+}
+
+void mostrarCandidatosPorUFeAno(Candidato *candidatos[], int total_cand) {
+    if (total_cand == 0) {
+        printf("Nao ha candidatos cadastrados\n");
+        return;
+    }
+
+    int codigo_uf;
+    printf("Digite o codigo da UF em que a eleicao concorreu: ");
+    scanf("%d", &codigo_uf);
+
+    int ano;
+    printf("Digite o ano em que a eleicao ocorreu: ");
+    scanf("%d", &ano);
+
+    int encontrado = -1;
+    for (int i = 0; i < total_cand; i++) {
+        if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
+            encontrado++;
+        }
+    }
+
+    if (encontrado == -1) {
+        printf("Nao existe candidato cadastrado com essa configuracao\n");
+        return;
+    }
+
+    printf("Candidatos da UF codigo %d, no ano de %d:\n", codigo_uf, ano);
+    for (int i = 0; i < total_cand; i++) {
+        if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
+            printf("numero: %d | CPF: %s\n", candidatos[i]->numero, candidatos[i]->CPF);
+        }
+    }
+
+};

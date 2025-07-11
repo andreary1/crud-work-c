@@ -70,7 +70,7 @@ void carregarArquivos() {
 }
 
 void menuUF(UF *ufs[]) {
-    int num_ufs;
+    int num_ufs = 0;
     int opcao_uf;
     do {
         printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
@@ -84,23 +84,23 @@ void menuUF(UF *ufs[]) {
         scanf("%d", &opcao_uf);
         switch (opcao_uf) {
             case 1:
-                num_ufs = carregarUFs(ufs, 50);
+                num_ufs = carregarUFs(ufs, num_ufs);
                 adicionarUF(ufs, &num_ufs);
                 break;
             case 2:
-                num_ufs = carregarUFs(ufs, 50);
+                num_ufs = carregarUFs(ufs, num_ufs);
                 alterarUF(ufs, num_ufs);
                 break;
             case 3:
-                num_ufs = carregarUFs(ufs, 50);
+                num_ufs = carregarUFs(ufs, num_ufs);
                 excluirUF(ufs, &num_ufs);
                 break;
             case 4:
-                num_ufs = carregarUFs(ufs, 50);
+                num_ufs = carregarUFs(ufs, num_ufs);
                 mostrarDadosDasUFs(ufs, num_ufs);
                 break;
             case 5:
-                num_ufs = carregarUFs(ufs, 50);
+                num_ufs = carregarUFs(ufs, num_ufs);
                 mostrarUF(ufs, num_ufs);
                 break;
             case 0:
@@ -127,7 +127,8 @@ int verificarCodigo(int codigo_uf) {
     return codigo_existe;
 }
 
-int carregarUFs(UF *ufs[], int total_uf) {
+int carregarUFs(UF *ufs[], int total_ufs) {
+
     FILE *fuf = fopen("uf.data", "rb+");
     if (fuf == NULL) return 0;
 
@@ -135,7 +136,7 @@ int carregarUFs(UF *ufs[], int total_uf) {
     long int num_ufs = ftell(fuf);
     num_ufs /= sizeof(UF);
 
-    for (int i = 0; i < total_uf; i++) {
+    for (int i = 0; i < total_ufs; i++) {
         ufs[i] = NULL;
     }
     fseek(fuf, 0, SEEK_SET);
@@ -334,5 +335,5 @@ void excluirUF(UF *ufs[], int *num_ufs) {
 
     fclose(fuf);
     printf("UF removida!\n");
-    //excluirEleicoesPorUF(codigo_uf);
+    excluirEleicoesPorUF(codigo_uf);
 }
