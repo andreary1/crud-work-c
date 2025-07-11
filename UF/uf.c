@@ -331,4 +331,5 @@ void excluirUF(UF *ufs[], int *num_ufs, int *total_eleicoes) {
     fclose(fuf);
     printf("UF removida!\n");
     //excluirEleicoesPorUF(eleicoes, codigo_uf, total_eleicoes);
+    //
 }
