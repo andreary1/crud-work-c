@@ -2,8 +2,9 @@
 #include "../UF/uf.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-void menuCandidatos(Candidato *candidatos[]) {
+void menuCandidatos(Candidato *candidatos[], UF *ufs[]) {
     int opcao_candidato;
     int num_candidatos;
     do {
@@ -27,6 +28,8 @@ void menuCandidatos(Candidato *candidatos[]) {
                 mostrarCandidatosPorUFeAno(candidatos, num_candidatos);
                 break;
             case 4:
+                num_candidatos = carregarCandidatos(candidatos, 200);
+                mostrarCandidatosPorUFeAno(candidatos, num_candidatos);
                 break;
             case 0:
                 break;
@@ -67,6 +70,15 @@ void liberarCandidatos(Candidato *candidatos[], int total_cand) {
     }
 }
 
+int verificarCPF(Candidato *candidatos[], char cpf[], int total_cand) {
+    for (int i = 0; i < total_cand; i++) {
+        if (strcmp(candidatos[i]->CPF, cpf) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     if (*total_cand >= 200) {
         printf("maximo de Candidatos atingido\n");
@@ -82,8 +94,6 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
         return;
     }
 
-
-
     int ano;
     printf("Digite o ano em que ele concorreu: ");
     scanf("%d", &ano);
@@ -91,6 +101,15 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     int numero_candidato;
     printf("Digite o numero desse candidato: ");
     scanf("%d", &numero_candidato);
+
+    char cpf[30];
+    printf("Digite o CPF do candidato: ");
+    ler(cpf, sizeof(cpf));
+
+    if (verificarCPF(candidatos, cpf, *total_cand)) {
+        printf("Este CPF ja foi cadastrado para um candidato.\n");
+        return;
+    }
 
     candidatos[*total_cand] = (Candidato *)malloc(sizeof(Candidato));
     if (candidatos[*total_cand] == NULL) {
@@ -101,10 +120,7 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     candidatos[*total_cand]->codigo_uf = codigo_uf;
     candidatos[*total_cand]->ano = ano;
     candidatos[*total_cand]->numero = numero_candidato;
-
-    printf("Digite o CPF do candidato: ");
-    ler(candidatos[*total_cand]->CPF, sizeof(candidatos[*total_cand]->CPF));
-
+    strcpy(candidatos[*total_cand]->CPF, cpf);
 
     FILE *fcandidato = fopen("candidatos.data", "rb+");
     if (fcandidato != NULL) {
@@ -152,5 +168,22 @@ void mostrarCandidatosPorUFeAno(Candidato *candidatos[], int total_cand) {
             printf("numero: %d | CPF: %s\n", candidatos[i]->numero, candidatos[i]->CPF);
         }
     }
+}
 
-};
+void mostrarTodosOsCandidatos(Candidato *candidatos[], int total_cand) {
+
+    FILE *fuf = fopen("uf.data", "rb+");
+    UF *uf = (UF *)malloc(sizeof(UF) * 50);
+    int total_ufs = 0;
+    while (fread(uf, sizeof(UF), 1, fuf)) {
+        total_ufs++;
+    }
+
+    for (int i = 0; i < total_ufs; i++) {
+        printf("Eleicoes %s", uf[i].descricao);
+        for (int j = 0; j < total_cand; j++) {
+            printf("numero: %d | CPF: %s\n", candidatos[j]->numero, candidatos[j]->CPF);
+        }
+    }
+
+}

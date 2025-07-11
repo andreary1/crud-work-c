@@ -8,12 +8,12 @@ struct eleicao {
 typedef struct eleicao Eleicao;
 
 int verificarAnoeCodigo(int codigo_uf, int ano);
-void menuEleicao(Eleicao *eleicoes[]);
+void menuEleicao(Eleicao *eleicoes[], int *total_eleicoes);
 int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes);
 void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes);
 void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes);
 void mostrarDadosDasEleicoes(Eleicao *eleicoes[], int total_eleicoes);
 void alterarEleicao(Eleicao *eleicoes[], int total_eleicoes);
 void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes);
-void excluirEleicoesPorUF(int codigo_uf);
+void excluirEleicoesPorUF(Eleicao *eleicoes[], int codigo_uf, int *total_eleicoes);
 void mostrarEleicao(Eleicao *eleicoes[], int total_eleicoes);

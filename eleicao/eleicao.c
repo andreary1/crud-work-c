@@ -26,9 +26,8 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     return num_eleicoes;
 }
 
-void menuEleicao(Eleicao *eleicoes[]) {
+void menuEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
     int opcao_eleicao;
-    int num_eleicoes;
     do {
         printf("----------OPCOES DE ELEICOES---------\n");
         printf("1. Inserir Eleicao\n");
@@ -41,23 +40,19 @@ void menuEleicao(Eleicao *eleicoes[]) {
         scanf("%d", &opcao_eleicao);
         switch (opcao_eleicao) {
             case 1:
-                num_eleicoes = carregarEleicoes(eleicoes, 100);
-                inserirEleicao(eleicoes, &num_eleicoes);
+                inserirEleicao(eleicoes, num_eleicoes);
                 break;
             case 2:
-                num_eleicoes = carregarEleicoes(eleicoes, 100);
-                alterarEleicao(eleicoes, num_eleicoes);
+                alterarEleicao(eleicoes, *num_eleicoes);
                 break;
             case 3:
-                //excluirEleicao(eleicoes, total_eleicoes);
+                excluirEleicao(eleicoes, num_eleicoes);
                 break;
             case 4:
-                num_eleicoes = carregarEleicoes(eleicoes, 100);
-                mostrarDadosDasEleicoes(eleicoes, num_eleicoes);
+                mostrarDadosDasEleicoes(eleicoes, *num_eleicoes);
                 break;
             case 5:
-                num_eleicoes = carregarEleicoes(eleicoes, 100);
-                mostrarEleicao(eleicoes, num_eleicoes);
+                mostrarEleicao(eleicoes, *num_eleicoes);
                 break;
             case 0:
                 printf("saindo\n");
@@ -127,6 +122,8 @@ void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
         printf("Erro ao abrir arquivo para escrita\n");
         return;
     }
+
+    (*num_eleicoes)++;
     printf("Eleicao adicionada!\n");
 }
 
@@ -315,37 +312,37 @@ void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes) {
     printf("Eleicao removida!\n");
 }
 
-void excluirEleicoesPorUF(int codigo_uf) {
+void excluirEleicoesPorUF(Eleicao *eleicoes[], int codigo_uf, int *total_eleicoes) {
 
     FILE *feleicao = fopen("eleicao.data", "rb+");
+    int i = 0;
+    int removido = 0;
 
-    Eleicao eleicoes[100];
-
-    int novo_total_eleicoes = 0;
-    int remover = 0;
-
-    int total= 0;
-    while (fread(&eleicoes[total], sizeof(Eleicao), 1 ,feleicao))
-        total++;
-
-    fclose(feleicao);
-
-    for (int i = 0; i < total; i++) {
-        if (eleicoes[i].codigo_uf == codigo_uf) {
-            remover++;
-        }
-        else {
-            eleicoes[novo_total_eleicoes] = eleicoes[i];
-            novo_total_eleicoes++;
+    while (i < *total_eleicoes) {
+        if (eleicoes[i] != NULL && eleicoes[i]->codigo_uf == codigo_uf) {
+            free(eleicoes[i]);
+            for (int j = i; j < *total_eleicoes - 1; j++) {
+                eleicoes[j] = eleicoes[j + 1];
+            }
+            eleicoes[*total_eleicoes - 1] = NULL;
+            (*total_eleicoes)--;
+            removido = 1;
+        } else {
+            i++;
         }
     }
 
-    if (!remover) {
+    if (!removido) {
         return;
     }
 
     feleicao = fopen("eleicao.data", "wb+");
-    fwrite(eleicoes, sizeof(Eleicao), novo_total_eleicoes, feleicao);
+    if (feleicao == NULL) {
+        printf("erro ao abrir arquivo\n");
+        return;
+    }
+    fseek(feleicao, 0, SEEK_SET);
+    fwrite(eleicoes, sizeof(Eleicao), 1, feleicao);
     fclose(feleicao);
     printf("Todas as eleicoes associadas a UF foram removidas!\n");
 }

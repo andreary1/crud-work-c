@@ -69,8 +69,7 @@ void carregarArquivos() {
     }
 }
 
-void menuUF(UF *ufs[]) {
-    int num_ufs = 0;
+void menuUF(UF *ufs[], int *num_ufs, int *num_eleicoes) {
     int opcao_uf;
     do {
         printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
@@ -84,24 +83,19 @@ void menuUF(UF *ufs[]) {
         scanf("%d", &opcao_uf);
         switch (opcao_uf) {
             case 1:
-                num_ufs = carregarUFs(ufs, num_ufs);
-                adicionarUF(ufs, &num_ufs);
+                adicionarUF(ufs, num_ufs);
                 break;
             case 2:
-                num_ufs = carregarUFs(ufs, num_ufs);
-                alterarUF(ufs, num_ufs);
+                alterarUF(ufs, *num_ufs);
                 break;
             case 3:
-                num_ufs = carregarUFs(ufs, num_ufs);
-                excluirUF(ufs, &num_ufs);
+                excluirUF(ufs, num_ufs, num_eleicoes);
                 break;
             case 4:
-                num_ufs = carregarUFs(ufs, num_ufs);
-                mostrarDadosDasUFs(ufs, num_ufs);
+                mostrarDadosDasUFs(ufs, *num_ufs);
                 break;
             case 5:
-                num_ufs = carregarUFs(ufs, num_ufs);
-                mostrarUF(ufs, num_ufs);
+                mostrarUF(ufs, *num_ufs);
                 break;
             case 0:
                 printf("Saindo\n");
@@ -162,7 +156,7 @@ void liberarUFs(UF *ufs[], int total_uf) {
 
 void adicionarUF(UF *ufs[], int *num_ufs) {
 
-    if (*num_ufs >= 50) {
+    if (*num_ufs >= 35) {
         printf("maximo de UFs atingido\n");
         return;
     }
@@ -196,6 +190,7 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
         return;
     }
 
+    (*num_ufs)++;
     printf("UF adicionada!\n");
 }
 
@@ -294,7 +289,7 @@ void mostrarUF(UF *ufs[], int num_ufs) {
 
 }
 
-void excluirUF(UF *ufs[], int *num_ufs) {
+void excluirUF(UF *ufs[], int *num_ufs, int *total_eleicoes) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
@@ -335,5 +330,5 @@ void excluirUF(UF *ufs[], int *num_ufs) {
 
     fclose(fuf);
     printf("UF removida!\n");
-    excluirEleicoesPorUF(codigo_uf);
+    //excluirEleicoesPorUF(eleicoes, codigo_uf, total_eleicoes);
 }
