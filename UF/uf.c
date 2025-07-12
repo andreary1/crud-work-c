@@ -2,7 +2,6 @@
 #include "uf.h"
 #include "../eleicao/eleicao.h"
 #include <stdlib.h>
-#include<time.h>
 #include <string.h>
 
 void ler(char sentenca[], int tamanho) {
@@ -11,110 +10,13 @@ void ler(char sentenca[], int tamanho) {
     sentenca[strcspn(sentenca, "\n")] = '\0';
 }
 
-void carregarArquivos() {
-
-    FILE *fuf = fopen("uf.data", "rb+");
-    FILE *fpessoa = fopen("pessoas.data", "rb+");
-    FILE *feleicao = fopen("eleicao.data", "rb+");
-    FILE *fcandidato_eleicao = fopen("candidatos.data", "rb+");
-    FILE *fvoto = fopen("votos.data", "rb+");
-    FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
-
-    if (fuf == NULL) {
-        FILE *fuf = fopen("uf.data", "wb+");
-        if (fuf == NULL) {
-            printf("erro ao criar arquivo da uf\n");
-            return;
-        }
-    }
-
-    if (fpessoa == NULL) {
-        FILE *fpessoa = fopen("pessoas.data", "wb+");
-        if (fpessoa == NULL) {
-            printf("erro ao criar arquivo das pessoa\n");
-            return;
-        }
-    }
-
-    if (feleicao == NULL) {
-        FILE *feleicao = fopen("eleicao.data", "wb+");
-        if (feleicao == NULL) {
-            printf("erro ao criar arquivo da eleicao\n");
-            return;
-        }
-    }
-
-    if (fcandidato_eleicao == NULL) {
-        FILE *fcandidato_eleicao = fopen("candidatos.data", "wb+");
-        if (fcandidato_eleicao == NULL) {
-            printf("erro ao criar arquivo dos candidatos\n");
-            return;
-        }
-    }
-
-    if (fvoto == NULL) {
-        FILE *fvoto = fopen("votos.data", "wb+");
-        if (fvoto == NULL) {
-            printf("erro ao criar arquivo da voto\n");
-            return;
-        }
-    }
-
-    if (fcomparecimento == NULL) {
-        FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
-        if (fcomparecimento == NULL) {
-            printf("erro ao criar arquivo do comparecimento\n");
-            return;
-        }
-    }
-}
-
-void menuUF(UF *ufs[], int *num_ufs, int *num_eleicoes) {
-    int opcao_uf;
-    do {
-        printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
-        printf("1. Inserir UF\n");
-        printf("2. Alterar UF\n");
-        printf("3. Excluir UF\n");
-        printf("4. Mostrar dados de todas as UFs\n");
-        printf("5. Mostrar dados de uma UF\n");
-        printf("0. Sair\n");
-        printf("----------------------------------------\n");
-        scanf("%d", &opcao_uf);
-        switch (opcao_uf) {
-            case 1:
-                adicionarUF(ufs, num_ufs);
-                break;
-            case 2:
-                alterarUF(ufs, *num_ufs);
-                break;
-            case 3:
-                excluirUF(ufs, num_ufs, num_eleicoes);
-                break;
-            case 4:
-                mostrarDadosDasUFs(ufs, *num_ufs);
-                break;
-            case 5:
-                mostrarUF(ufs, *num_ufs);
-                break;
-            case 0:
-                printf("Saindo\n");
-                break;
-            default:
-                printf("Opcao invalida!\n");
-                printf("digite outra opcao\n");
-                break;
-        }
-    } while (opcao_uf != 0);
-}
-
 int verificarCodigo(int codigo_uf) {
     int codigo_existe = 0;
 
     FILE *fuf = fopen("uf.data", "rb+");
     UF uf;
     while (fread(&uf, sizeof(UF), 1, fuf) == 1) {
-        if (uf.codigo ==  codigo_uf)
+        if (uf.codigo == codigo_uf)
             codigo_existe++;
     }
     fclose(fuf);
@@ -154,6 +56,44 @@ void liberarUFs(UF *ufs[], int total_uf) {
     }
 }
 
+void menuUF(UF *ufs[], int *num_ufs, int *num_eleicoes) {
+    int opcao_uf;
+    do {
+        printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
+        printf("1. Inserir UF\n");
+        printf("2. Alterar UF\n");
+        printf("3. Excluir UF\n");
+        printf("4. Mostrar dados de todas as UFs\n");
+        printf("5. Mostrar dados de uma UF\n");
+        printf("0. Sair\n");
+        printf("----------------------------------------\n");
+        scanf("%d", &opcao_uf);
+        switch (opcao_uf) {
+            case 1:
+                adicionarUF(ufs, num_ufs);
+                break;
+            case 2:
+                alterarUF(ufs, *num_ufs);
+                break;
+            case 3:
+                excluirUF(ufs, num_ufs);
+                break;
+            case 4:
+                mostrarDadosDasUFs(ufs, *num_ufs);
+                break;
+            case 5:
+                mostrarUF(ufs, *num_ufs);
+                break;
+            case 0:
+                printf("Saindo\n");
+                break;
+            default:
+                printf("Opcao invalida!\nDigite outra opcao\n");
+                break;
+        }
+    } while (opcao_uf != 0);
+}
+
 void adicionarUF(UF *ufs[], int *num_ufs) {
 
     if (*num_ufs >= 35) {
@@ -167,9 +107,9 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
         return;
     }
 
-    srand(time(NULL));
     do {
-        ufs[*num_ufs]->codigo = rand() % 100 + 1;
+        printf("Digite um codigo valido pra UF\n");
+        scanf("%d", &ufs[*num_ufs]->codigo);
     } while (verificarCodigo(ufs[*num_ufs]->codigo));
 
     printf("codigo atribuido: %d\n", ufs[*num_ufs]->codigo);
@@ -197,7 +137,7 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
 void alterarUF(UF *ufs[], int num_ufs) {
 
     int codigo_uf;
-    int opcao_alterar_uf;
+    char opcao_alterar_uf;
 
     printf("Digite o codigo da UF a ser alterada: ");
     scanf("%d", &codigo_uf);
@@ -289,7 +229,7 @@ void mostrarUF(UF *ufs[], int num_ufs) {
 
 }
 
-void excluirUF(UF *ufs[], int *num_ufs, int *total_eleicoes) {
+void excluirUF(UF *ufs[], int *num_ufs) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
@@ -330,6 +270,4 @@ void excluirUF(UF *ufs[], int *num_ufs, int *total_eleicoes) {
 
     fclose(fuf);
     printf("UF removida!\n");
-    //excluirEleicoesPorUF(eleicoes, codigo_uf, total_eleicoes);
-    //
 }

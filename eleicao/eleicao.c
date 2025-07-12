@@ -26,6 +26,15 @@ int carregarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
     return num_eleicoes;
 }
 
+void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
+    for (int i = 0; i < total_eleicoes; i++) {
+        if (eleicoes[i] != NULL) {
+            free(eleicoes[i]);
+            eleicoes[i] = NULL;
+        }
+    }
+};
+
 void menuEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
     int opcao_eleicao;
     do {
@@ -55,25 +64,15 @@ void menuEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
                 mostrarEleicao(eleicoes, *num_eleicoes);
                 break;
             case 0:
-                printf("saindo\n");
+                printf("Saindo\n");
                 break;
             default:
-                printf("opcao invalida!\n");
-                printf("Digite outra opcao\n");
+                printf("Opcao invalida!\nDigite outra opcao\n");
                 break;
         }
     } while (opcao_eleicao != 0);
-
 }
 
-void liberarEleicoes(Eleicao *eleicoes[], int total_eleicoes) {
-    for (int i = 0; i < total_eleicoes; i++) {
-        if (eleicoes[i] != NULL) {
-            free(eleicoes[i]);
-            eleicoes[i] = NULL;
-        }
-    }
-};
 
 void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
 
@@ -310,39 +309,4 @@ void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes) {
 
     fclose(feleicao);
     printf("Eleicao removida!\n");
-}
-
-void excluirEleicoesPorUF(Eleicao *eleicoes[], int codigo_uf, int *total_eleicoes) {
-
-    FILE *feleicao = fopen("eleicao.data", "rb+");
-    int i = 0;
-    int removido = 0;
-
-    while (i < *total_eleicoes) {
-        if (eleicoes[i] != NULL && eleicoes[i]->codigo_uf == codigo_uf) {
-            free(eleicoes[i]);
-            for (int j = i; j < *total_eleicoes - 1; j++) {
-                eleicoes[j] = eleicoes[j + 1];
-            }
-            eleicoes[*total_eleicoes - 1] = NULL;
-            (*total_eleicoes)--;
-            removido = 1;
-        } else {
-            i++;
-        }
-    }
-
-    if (!removido) {
-        return;
-    }
-
-    feleicao = fopen("eleicao.data", "wb+");
-    if (feleicao == NULL) {
-        printf("erro ao abrir arquivo\n");
-        return;
-    }
-    fseek(feleicao, 0, SEEK_SET);
-    fwrite(eleicoes, sizeof(Eleicao), 1, feleicao);
-    fclose(feleicao);
-    printf("Todas as eleicoes associadas a UF foram removidas!\n");
 }

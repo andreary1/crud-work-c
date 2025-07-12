@@ -1,11 +1,17 @@
+// Versao adaptada com realloc para estruturas dinamicas
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "UF/uf.h"
 #include "eleicao/eleicao.h"
 #include "candidato/candidato_eleicao.h"
+#include "pessoa/pessoa.h"
+
+void carregarArquivos();
 
 int main() {
-
     UF *ufs[35];
     Eleicao *eleicoes[100];
     Candidato *candidatos[200];
@@ -16,10 +22,9 @@ int main() {
     int num_eleicoes = carregarEleicoes(eleicoes, 100);
     int num_candidatos = carregarCandidatos(candidatos, 200);
 
-    int opcao;
+    char opcao;
     do {
         printf("----------MENU----------\n");
-        printf("Selecione uma opcao:\n");
         printf("1 - Unidades Federativas\n");
         printf("2 - Pessoas\n");
         printf("3 - Eleicoes\n");
@@ -28,26 +33,56 @@ int main() {
         printf("6 - Comparecimentos\n");
         printf("0 - Sair\n");
         printf("------------------------\n");
-        scanf("%d", &opcao);
+        fflush(stdin);
+        opcao = getchar();
         switch (opcao) {
-            case 1:
+            case '1':
                 menuUF(ufs, &num_ufs, &num_eleicoes);
                 break;
-            case 3:
+            case '2':
+                break;
+            case '3':
                 menuEleicao(eleicoes, &num_eleicoes);
                 break;
-            case 4:
-                //menuCandidatos(candidatos, ufs, &num_candidatos);
+            case '4':
+                menuCandidatos(candidatos, ufs, &num_candidatos);
                 break;
             default:
                 printf("Opcao invalida!\n");
                 break;
         }
-    } while (opcao != 0);
+    } while (opcao != '0');
 
     liberarUFs(ufs, 35);
     liberarEleicoes(eleicoes, 100);
     liberarCandidatos(candidatos, 200);
 
     return 0;
+}
+
+void carregarArquivos() {
+    FILE *arquivos[] = {
+        fopen("uf.data", "rb+"),
+        fopen("pessoas.data", "rb+"),
+        fopen("eleicao.data", "rb+"),
+        fopen("candidatos.data", "rb+"),
+        fopen("votos.data", "rb+"),
+        fopen("comparecimentos.data", "rb+")
+    };
+    const char *nomes[] = {
+        "uf.data", "pessoas.data", "eleicao.data",
+        "candidatos.data", "votos.data", "comparecimentos.data"
+    };
+    for (int i = 0; i < 6; i++) {
+        if (arquivos[i] == NULL) {
+            arquivos[i] = fopen(nomes[i], "wb+");
+            if (arquivos[i] == NULL) {
+                printf("Erro ao criar arquivo %s\n", nomes[i]);
+            } else {
+                fclose(arquivos[i]);
+            }
+        } else {
+            fclose(arquivos[i]);
+        }
+    }
 }
