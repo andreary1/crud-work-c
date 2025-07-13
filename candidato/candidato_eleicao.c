@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../pessoa/pessoa.h"
+
 int carregarCandidatos(Candidato *candidatos[], int total_candidatos) {
 
     FILE *fcandidato = fopen("candidatos.data", "rb+");
@@ -37,16 +39,7 @@ void liberarCandidatos(Candidato *candidatos[], int total_cand) {
     }
 }
 
-int verificarCPF(Candidato *candidatos[], char cpf[], int total_cand) {
-    for (int i = 0; i < total_cand; i++) {
-        if (strcmp(candidatos[i]->CPF, cpf) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos) {
+void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos, int *total_ufs) {
     int opcao_candidato;
     do {
         printf("--------------OPCOES PARA CANDIDATOS--------------\n");
@@ -62,10 +55,10 @@ void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos) {
                 inserirCandidato(candidatos, num_candidatos);
                 break;
             case 2:
-                //excluirCandidato(candidatos, &num_candidatos);
+                excluirCandidato(candidatos, num_candidatos);
                 break;
             case 3:
-                mostrarCandidatosPorUFeAno(candidatos, ufs, *num_candidatos);
+                mostrarCandidatosPorUFeAno(candidatos, ufs, *num_candidatos, *total_ufs);
                 break;
             case 4:
                 //mostrarCandidatosPorAno(candidatos, num_candidatos);
@@ -106,14 +99,14 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     printf("Digite o CPF do candidato: ");
     ler(cpf, sizeof(cpf));
 
-    if (verificarCPF(candidatos, cpf, *total_cand)) {
-        printf("Este CPF ja foi cadastrado para um candidato.\n");
+    if (verificarCPF(cpf) == 0) {
+        printf("Nao existe cpf com esse CPF\n");
         return;
     }
 
     candidatos[*total_cand] = (Candidato *)malloc(sizeof(Candidato));
     if (candidatos[*total_cand] == NULL) {
-        printf("Erro ao alocar memória para nova UF.\n");
+        printf("Erro ao alocar memória para novo candidato.\n");
         return;
     }
 
@@ -137,7 +130,59 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     printf("Candidato adicionado!\n");
 }
 
-void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand) {
+void excluirCandidato(Candidato *candidatos[], int *total_cand) {
+
+    int codigo_uf;
+    printf("Digite o codigo da UF em que o candidato concorreu: ");
+    scanf("%d", &codigo_uf);
+
+    int ano;
+    printf("Digite o ano em que ele concorreu: ");
+    scanf("%d", &ano);
+
+    int numero_candidato;
+    printf("Digite o numero desse candidato: ");
+    scanf("%d", &numero_candidato);
+
+    int encontrado = -1;
+    for (int i = 0; i < *total_cand; i++) {
+        if (candidatos[i] != NULL && codigo_uf == candidatos[i]->codigo_uf && ano == candidatos[i]->ano &&
+            numero_candidato == candidatos[i]->numero) {
+            free(candidatos[i]);
+            candidatos[i] = NULL;
+            encontrado = i;
+            break;
+        }
+    }
+
+    if (encontrado == -1) {
+        printf("Nao existe candidato cadastrado com essa configuracao\n");
+        return;
+    }
+
+    for (int i = encontrado; i < *total_cand - 1; i++) {
+        candidatos[i] = candidatos[i + 1];
+    }
+    candidatos[*total_cand - 1] = NULL;
+    (*total_cand)--;
+
+    FILE *fcandidato = fopen("candidatos.data", "wb+");
+    if (fcandidato == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    for (int i = 0; i < *total_cand; i++) {
+        if (candidatos[i] != NULL) {
+            fwrite(candidatos[i], sizeof(Candidato), 1, fcandidato);
+        }
+    }
+
+    fclose(fcandidato);
+    printf("Candidato removido!\n");
+}
+
+void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs) {
     if (total_cand == 0) {
         printf("Nao ha candidatos cadastrados\n");
         return;
@@ -163,7 +208,7 @@ void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_ca
         return;
     }
 
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < total_ufs; i++) {
         if (ufs[i] != NULL && ufs[i]->codigo == codigo_uf) {
             printf("Eleicao %s %d\n", ufs[i]->descricao, ano);
             break;
@@ -176,3 +221,10 @@ void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_ca
         }
     }
 }
+
+void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs) {
+    for (int i = 0; i < total_ufs; i++) {
+        if (ufs[i] != NULL)
+            printf("%s:\n", ufs[i]->descricao);
+    }
+};

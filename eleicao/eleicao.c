@@ -252,12 +252,11 @@ int verificarAnoeCodigo(int codigo_uf, int ano) {
     int ano_e_codigo_existe = 0;
 
     FILE *feleicao = fopen("eleicao.data", "rb+");
-    Eleicao *eleicao = (Eleicao *)malloc(sizeof(Eleicao));
-    while (fread(eleicao, sizeof(Eleicao), 1, feleicao) == 1) {
-        if (eleicao->codigo_uf == codigo_uf && eleicao->ano == ano)
+    Eleicao eleicao;
+    while (fread(&eleicao, sizeof(Eleicao), 1, feleicao) == 1) {
+        if (eleicao.codigo_uf == codigo_uf && eleicao.ano == ano)
             ano_e_codigo_existe++;
     }
-    free(eleicao);
     fclose(feleicao);
     return ano_e_codigo_existe;
 }

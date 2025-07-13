@@ -4,10 +4,22 @@
 #include <stdlib.h>
 #include <string.h>
 
+void limparBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 void ler(char sentenca[], int tamanho) {
-    fflush(stdin);
-    fgets(sentenca, tamanho, stdin);
-    sentenca[strcspn(sentenca, "\n")] = '\0';
+    do {
+        fflush(stdin);
+        fgets(sentenca, tamanho, stdin);
+        sentenca[strcspn(sentenca, "\n")] = '\0';
+
+        if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
+            limparBuffer();
+        }
+
+    } while (strlen(sentenca) == 0);
 }
 
 int verificarCodigo(int codigo_uf) {
@@ -56,8 +68,8 @@ void liberarUFs(UF *ufs[], int total_uf) {
     }
 }
 
-void menuUF(UF *ufs[], int *num_ufs, int *num_eleicoes) {
-    int opcao_uf;
+void menuUF(UF *ufs[], int *num_ufs) {
+    char opcao_uf;
     do {
         printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
         printf("1. Inserir UF\n");
@@ -67,31 +79,32 @@ void menuUF(UF *ufs[], int *num_ufs, int *num_eleicoes) {
         printf("5. Mostrar dados de uma UF\n");
         printf("0. Sair\n");
         printf("----------------------------------------\n");
-        scanf("%d", &opcao_uf);
+        scanf("%c", &opcao_uf);
+        limparBuffer();
         switch (opcao_uf) {
-            case 1:
+            case '1':
                 adicionarUF(ufs, num_ufs);
                 break;
-            case 2:
+            case '2':
                 alterarUF(ufs, *num_ufs);
                 break;
-            case 3:
+            case '3':
                 excluirUF(ufs, num_ufs);
                 break;
-            case 4:
+            case '4':
                 mostrarDadosDasUFs(ufs, *num_ufs);
                 break;
-            case 5:
+            case '5':
                 mostrarUF(ufs, *num_ufs);
                 break;
-            case 0:
+            case '0':
                 printf("Saindo\n");
                 break;
             default:
                 printf("Opcao invalida!\nDigite outra opcao\n");
                 break;
         }
-    } while (opcao_uf != 0);
+    } while (opcao_uf != '0');
 }
 
 void adicionarUF(UF *ufs[], int *num_ufs) {
@@ -172,6 +185,7 @@ void alterarUF(UF *ufs[], int num_ufs) {
                         fclose(fuf);
                         break;
                     case 0:
+                        fclose(fuf);
                         break;
                     default:
                         printf("opcao invalida!\n");

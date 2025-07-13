@@ -17,11 +17,10 @@ enum opcaoCandidato {
 
 typedef struct candidato Candidato;
 
-int verificarCPF(Candidato *candidatos[],char cpf[], int total_cand);
 int carregarCandidatos(Candidato *candidatos[], int total_cand);
 void liberarCandidatos(Candidato *candidatos[], int total_cand);
-void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_cand);
+void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_cand, int *total_ufs);
 void inserirCandidato(Candidato *candidatos[], int *total_cand);
-void excluirCandidato(Candidato *eleicoes[], int *total_eleicoes);
-void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand);
-void mostraTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand);
+void excluirCandidato(Candidato *candidatos[], int *total_cand);
+void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
+void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
