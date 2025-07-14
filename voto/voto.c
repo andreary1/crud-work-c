@@ -27,7 +27,7 @@ int carregarVotos(Voto *votos[], int total_votos) {
 
     fclose(fvoto);
     return num_votos;
-};
+}
 
 void liberarVotos(Voto *votos[], int num_votos) {
     for (int i = 0; i < num_votos; i++) {
