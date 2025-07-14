@@ -243,42 +243,45 @@ void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand
         return;
     }
 
+    // 1. Coletar anos distintos
+    int anos[100];
+    int total_anos = 0;
     for (int i = 0; i < total_cand; i++) {
-        if (candidatos[i] == NULL) continue;
-
         int ano = candidatos[i]->ano;
-        int codigo_uf = candidatos[i]->codigo_uf;
-
-        // Evitar repetição: só imprime se for a primeira ocorrência desse ano+UF
-        int ja_impresso = 0;
-        for (int j = 0; j < i; j++) {
-            if (candidatos[j] != NULL &&
-                candidatos[j]->ano == ano &&
-                candidatos[j]->codigo_uf == codigo_uf) {
-                ja_impresso = 1;
-                break;
-                }
-        }
-        if (ja_impresso) continue;
-
-        // Mostrar UF
-        const char *nome_uf = "UF desconhecida";
-        for (int u = 0; u < total_ufs; u++) {
-            if (ufs[u] != NULL && ufs[u]->codigo == codigo_uf) {
-                nome_uf = ufs[u]->descricao;
+        int encontrado = 0;
+        for (int j = 0; j < total_anos; j++) {
+            if (anos[j] == ano) {
+                encontrado = 1;
                 break;
             }
         }
+        if (!encontrado) {
+            anos[total_anos++] = ano;
+        }
+    }
 
-        printf("\nAno %d - UF: %s (%d)\n", ano, nome_uf, codigo_uf);
+    // 2. Para cada ano, listar candidatos por UF
+    for (int i = 0; i < total_anos; i++) {
+        int ano_atual = anos[i];
+        printf("\n====== Ano %d ======\n", ano_atual);
 
-        // Mostrar candidatos desse ano e UF
-        for (int k = 0; k < total_cand; k++) {
-            if (candidatos[k] != NULL &&
-                candidatos[k]->ano == ano &&
-                candidatos[k]->codigo_uf == codigo_uf) {
-                printf("Numero: %d | CPF: %s\n", candidatos[k]->numero, candidatos[k]->CPF);
+        // Ordenar por código UF (você pode trocar por nome se quiser)
+        for (int u = 0; u < total_ufs; u++) {
+            if (ufs[u] == NULL) continue;
+
+            int uf_codigo = ufs[u]->codigo;
+            int candidatos_na_uf = 0;
+
+            // Verifica se existe algum candidato dessa UF nesse ano
+            for (int c = 0; c < total_cand; c++) {
+                if (candidatos[c] != NULL && candidatos[c]->codigo_uf == uf_codigo && candidatos[c]->ano == ano_atual) {
+                    if (candidatos_na_uf == 0) {
+                        printf("\nUF: %s (%d)\n", ufs[u]->descricao, uf_codigo);
+                    }
+                    printf("Número: %d | CPF: %s\n", candidatos[c]->numero, candidatos[c]->CPF);
+                    candidatos_na_uf++;
                 }
+            }
         }
     }
 }

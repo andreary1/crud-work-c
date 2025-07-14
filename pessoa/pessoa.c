@@ -147,7 +147,7 @@ void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
         if (strcmp(pessoas[i]->cpf, cpf) == 0) {
             do {
                 FILE *fpessoa = fopen("pessoas.data", "rb+");
-                if (fpessoa != NULL) {
+                if (fpessoa == NULL) {
                     printf("erro ao abrir arquivo para alterar\n");
                     return;
                 }

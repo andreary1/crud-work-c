@@ -6,6 +6,37 @@
 #include "../UF/uf.h"
 #include "../candidato/candidato_eleicao.h"
 
+void menuVotos(Voto *votos[], int *num_votos, UF *ufs[], int *num_ufs, Candidato *candidatos[], int *num_candidatos) {
+    char opcao_voto;
+    do {
+        printf("-------------------OPCOES PARA VOTO-------------------\n");
+        printf("1. Inserir Voto\n");
+        printf("2. Mostrar todos os votos por candidato de uma eleicao\n");
+        printf("3. Mostrar todos os votos das eleicoes\n");
+        printf("0. Sair\n");
+        printf("------------------------------------------------------\n");
+        scanf("%c", &opcao_voto);
+        limparBuffer();
+        switch (opcao_voto) {
+            case '1':
+                inserirVoto(votos, num_votos);
+                break;
+            case '2':
+                mostrarVotosPorCandidato(votos, *num_votos, ufs, num_ufs, candidatos, num_candidatos);
+                break;
+            case '3':
+                //excluirUF(ufs, num_ufs);
+                break;
+            case '0':
+                //printf("Saindo\n");
+                break;
+            default:
+                printf("Opcao invalida!\nDigite outra opcao\n");
+                break;
+        }
+    } while (opcao_voto != '0');
+}
+
 int carregarVotos(Voto *votos[], int total_votos) {
     FILE *fvoto = fopen("votos.data", "rb+");
     if (fvoto == NULL) return 0;
@@ -90,3 +121,43 @@ void inserirVoto(Voto *votos[], int *num_votos) {
     (*num_votos)++;
     printf("Voto adicionado!\n");
 }
+
+void mostrarVotosPorCandidato(Voto *votos[], int num_votos, UF *ufs[], int num_ufs, Candidato *candidatos[], int num_candidatos) {
+
+    int codigo_uf;
+    printf("Digite o codigo da UF dessa eleicao: ");
+    scanf("%d", &codigo_uf);
+
+    int ano;
+    printf("Digite o ano dessa eleicao: ");
+    scanf("%d", &ano);
+
+    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+        printf("Nao existe eleicao cadastrada com essa configuracao\n");
+        return;
+    }
+
+    for (int i = 0; i < num_ufs; i++) {
+        if (ufs[i] != NULL && ufs[i]->codigo == codigo_uf) {
+            printf("--------Eleicao %s %d--------", ufs[i]->descricao, ano);
+            break;
+        }
+    }
+
+    for (int i = 0; i < num_candidatos; i++) {
+        int num = 1;
+        printf("Votos para o candidato numero %d:\n", candidatos[i]->numero);
+        for (int j = 0; j < num_votos; i++) {
+            if (candidatos[i]->numero == votos[j]->numero_candidato) {
+                printf("%d. data e hora: %s\n", num, votos[j]->data_hora);
+                num++;
+            }
+        }
+    }
+
+
+}
+
+//void mostrarTodosOsVotos(Voto *votos[], int num_votos, UF *ufs[], int num_ufs, Candidato *candidatos[], int num_candidatos) {
+//
+//}

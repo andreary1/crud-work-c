@@ -25,6 +25,7 @@ int main() {
     int num_pessoas = carregarPessoas(pessoas, 400);
     int num_eleicoes = carregarEleicoes(eleicoes, 100);
     int num_candidatos = carregarCandidatos(candidatos, 200);
+    int num_votos = carregarVotos(votos, 1000);
 
     char opcao;
     do {
@@ -52,6 +53,9 @@ int main() {
             case '4':
                 menuCandidatos(candidatos, ufs, &num_candidatos, &num_ufs);
                 break;
+            case '5':
+                menuVotos(votos, &num_votos, ufs, &num_ufs, candidatos, &num_candidatos);
+                break;
             case '0':
                 break;
             default:
@@ -64,6 +68,7 @@ int main() {
     liberarPessoas(pessoas, 400);
     liberarEleicoes(eleicoes, 100);
     liberarCandidatos(candidatos, 200);
+    liberarVotos(votos, 1000);
 
     return 0;
 }

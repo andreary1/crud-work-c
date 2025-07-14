@@ -1,3 +1,6 @@
+#ifndef CANDIDATO_ELEICAO_H
+#define CANDIDATO_ELEICAO_H
+
 #include "../UF/uf.h"
 
 struct candidato {
@@ -25,3 +28,5 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand);
 void excluirCandidato(Candidato *candidatos[], int *total_cand);
 void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
 void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
+
+#endif
