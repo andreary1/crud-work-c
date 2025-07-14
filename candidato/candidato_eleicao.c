@@ -61,7 +61,7 @@ void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos, int
                 mostrarCandidatosPorUFeAno(candidatos, ufs, *num_candidatos, *total_ufs);
                 break;
             case 4:
-                //mostrarCandidatosPorAno(candidatos, num_candidatos);
+                mostrarTodosOsCandidatos(candidatos, ufs, *num_candidatos, *total_ufs);
                 break;
             case 0:
                 break;
@@ -70,6 +70,21 @@ void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos, int
                 break;
         }
     } while (opcao_candidato != 0);
+}
+
+int verificarNumero(int numero) {
+
+        FILE *fcandidato = fopen("candidatos.data", "rb+");
+        Candidato candidato;
+        while (fread(&candidato, sizeof(UF), 1, fcandidato) == 1) {
+            if (candidato.numero == numero) {
+                fclose(fcandidato);
+                return 1;
+            }
+        }
+        fclose(fcandidato);
+        return 0;
+
 }
 
 void inserirCandidato(Candidato *candidatos[], int *total_cand) {
@@ -223,8 +238,47 @@ void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_ca
 }
 
 void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs) {
-    for (int i = 0; i < total_ufs; i++) {
-        if (ufs[i] != NULL)
-            printf("%s:\n", ufs[i]->descricao);
+    if (total_cand == 0) {
+        printf("Nao ha candidatos cadastrados.\n");
+        return;
     }
-};
+
+    for (int i = 0; i < total_cand; i++) {
+        if (candidatos[i] == NULL) continue;
+
+        int ano = candidatos[i]->ano;
+        int codigo_uf = candidatos[i]->codigo_uf;
+
+        // Evitar repetição: só imprime se for a primeira ocorrência desse ano+UF
+        int ja_impresso = 0;
+        for (int j = 0; j < i; j++) {
+            if (candidatos[j] != NULL &&
+                candidatos[j]->ano == ano &&
+                candidatos[j]->codigo_uf == codigo_uf) {
+                ja_impresso = 1;
+                break;
+                }
+        }
+        if (ja_impresso) continue;
+
+        // Mostrar UF
+        const char *nome_uf = "UF desconhecida";
+        for (int u = 0; u < total_ufs; u++) {
+            if (ufs[u] != NULL && ufs[u]->codigo == codigo_uf) {
+                nome_uf = ufs[u]->descricao;
+                break;
+            }
+        }
+
+        printf("\nAno %d - UF: %s (%d)\n", ano, nome_uf, codigo_uf);
+
+        // Mostrar candidatos desse ano e UF
+        for (int k = 0; k < total_cand; k++) {
+            if (candidatos[k] != NULL &&
+                candidatos[k]->ano == ano &&
+                candidatos[k]->codigo_uf == codigo_uf) {
+                printf("Numero: %d | CPF: %s\n", candidatos[k]->numero, candidatos[k]->CPF);
+                }
+        }
+    }
+}

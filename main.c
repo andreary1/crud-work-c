@@ -6,20 +6,23 @@
 #include "eleicao/eleicao.h"
 #include "candidato/candidato_eleicao.h"
 #include "pessoa/pessoa.h"
+#include "voto/voto.h"
 
 void carregarArquivos();
 
 int main() {
 
     UF *ufs[35];
-    Pessoa *pessoas[200];
+    Pessoa *pessoas[400];
     Eleicao *eleicoes[100];
     Candidato *candidatos[200];
+    Voto *votos[1000];
+
 
     carregarArquivos();
 
     int num_ufs = carregarUFs(ufs, 35);
-    int num_pessoas = carregarPessoas(pessoas, 200);
+    int num_pessoas = carregarPessoas(pessoas, 400);
     int num_eleicoes = carregarEleicoes(eleicoes, 100);
     int num_candidatos = carregarCandidatos(candidatos, 200);
 
@@ -58,7 +61,7 @@ int main() {
     } while (opcao != '0');
 
     liberarUFs(ufs, 35);
-    liberarPessoas(pessoas, 200);
+    liberarPessoas(pessoas, 400);
     liberarEleicoes(eleicoes, 100);
     liberarCandidatos(candidatos, 200);
 

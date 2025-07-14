@@ -23,16 +23,17 @@ void ler(char sentenca[], int tamanho) {
 }
 
 int verificarCodigo(int codigo_uf) {
-    int codigo_existe = 0;
 
     FILE *fuf = fopen("uf.data", "rb+");
     UF uf;
     while (fread(&uf, sizeof(UF), 1, fuf) == 1) {
-        if (uf.codigo == codigo_uf)
-            codigo_existe++;
+        if (uf.codigo == codigo_uf) {
+            fclose(fuf);
+            return 1;
+        }
     }
     fclose(fuf);
-    return codigo_existe;
+    return 0;
 }
 
 int carregarUFs(UF *ufs[], int total_ufs) {
