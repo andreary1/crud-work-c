@@ -17,6 +17,7 @@ int main() {
     Eleicao *eleicoes[100];
     Candidato *candidatos[200];
     Voto *votos[1000];
+    Comparecimento *comparecimentos[1000];
 
 
     carregarArquivos();
@@ -26,6 +27,7 @@ int main() {
     int num_eleicoes = carregarEleicoes(eleicoes, 100);
     int num_candidatos = carregarCandidatos(candidatos, 200);
     int num_votos = carregarVotos(votos, 1000);
+    int num_comparecimentos = carregarComparecimentos(comparecimentos, 1000);
 
     char opcao;
     do {
@@ -54,8 +56,10 @@ int main() {
                 menuCandidatos(candidatos, ufs, &num_candidatos, &num_ufs);
                 break;
             case '5':
-                menuVotos(votos, &num_votos, ufs, &num_ufs, candidatos, &num_candidatos);
+                menuVotos(votos, &num_votos, ufs, &num_ufs, candidatos, &num_candidatos, comparecimentos ,&num_comparecimentos);
                 break;
+            case '6':
+                menuComparecimento(comparecimentos, &num_comparecimentos, ufs, &num_ufs, candidatos, &num_candidatos);
             case '0':
                 break;
             default:
@@ -69,6 +73,7 @@ int main() {
     liberarEleicoes(eleicoes, 100);
     liberarCandidatos(candidatos, 200);
     liberarVotos(votos, 1000);
+    liberarComparecimentos(comparecimentos, 1000);
 
     return 0;
 }
@@ -82,12 +87,12 @@ void carregarArquivos() {
         fopen("votos.data", "rb+"),
         fopen("comparecimentos.data", "rb+")
     };
-    const char *nomes[] = {
-        "uf.data", "pessoas.data", "eleicao.data",
-        "candidatos.data", "votos.data", "comparecimentos.data"
-    };
     for (int i = 0; i < 6; i++) {
         if (arquivos[i] == NULL) {
+            const char *nomes[] = {
+                "uf.data", "pessoas.data", "eleicao.data",
+                "candidatos.data", "votos.data", "comparecimentos.data"
+            };
             arquivos[i] = fopen(nomes[i], "wb+");
             if (arquivos[i] == NULL) {
                 printf("Erro ao criar arquivo %s\n", nomes[i]);

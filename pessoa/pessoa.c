@@ -108,15 +108,14 @@ void inserirPessoa(Pessoa *pessoas[], int *num_pessoas) {
     printf("Digite o nome da pessoa: ");
     ler(pessoas[*num_pessoas]->nome, sizeof(pessoas[*num_pessoas]->nome));
 
-
     printf("Digite o titulo da pessoa: ");
     ler(pessoas[*num_pessoas]->titulo, sizeof(pessoas[*num_pessoas]->titulo));
 
     printf("Digite o numero de telefone da pessoa:");
-    ler(pessoas[*num_pessoas]->fone, sizeof(pessoas[*num_pessoas]->fone));
+    lerNaoObrigatorio(pessoas[*num_pessoas]->fone, sizeof(pessoas[*num_pessoas]->fone));
 
     printf("Digite o endereco da pessoa: ");
-    ler(pessoas[*num_pessoas]->endereco, sizeof(pessoas[*num_pessoas]->endereco));
+    lerNaoObrigatorio(pessoas[*num_pessoas]->endereco, sizeof(pessoas[*num_pessoas]->endereco));
 
     printf("Digite a data de nascimento da pessoa: ");
     ler(pessoas[*num_pessoas]->data_nascimento, sizeof(pessoas[*num_pessoas]->data_nascimento));
@@ -159,6 +158,7 @@ void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
                 printf("5. data de nascimento (atual: %s)\n", pessoas[i]->data_nascimento);
                 printf("0. Sair\n");
                 scanf("%d", &opcao_alterar_pessoa);
+                limparBuffer();
                 switch (opcao_alterar_pessoa) {
                     case 1:
                         printf("Novo nome da pessoa: ");
@@ -170,7 +170,7 @@ void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
                         break;
                     case 2:
                         printf("Novo telefone da pessoa: ");
-                        ler(pessoas[i]->fone, sizeof(pessoas[i]->fone));
+                        lerNaoObrigatorio(pessoas[i]->fone, sizeof(pessoas[i]->fone));
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
                         printf("Telefone da pessoa alterado!\n");
@@ -186,7 +186,7 @@ void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
                         break;
                     case 4:
                         printf("Novo endereco da pessoa: ");
-                        ler(pessoas[i]->endereco, sizeof(pessoas[i]->endereco));
+                        lerNaoObrigatorio(pessoas[i]->endereco, sizeof(pessoas[i]->endereco));
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
                         printf("Endereco da pessoa alterado!\n");

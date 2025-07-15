@@ -21,6 +21,7 @@ typedef struct UF UF;
 
 void limparBuffer();
 void ler(char sentenca[], int tamanho);
+void lerNaoObrigatorio(char sentenca[], int tamanho);
 int verificarCodigo(int codigo_uf);
 int carregarUFs(UF *ufs[], int total_ufs);
 void liberarUFs(UF *ufs[], int total_ufs);

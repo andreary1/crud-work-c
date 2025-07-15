@@ -50,6 +50,7 @@ void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos, int
         printf("0. Sair\n");
         printf("--------------------------------------------------\n");
         scanf("%d", &opcao_candidato);
+        limparBuffer();
         switch (opcao_candidato) {
             case 1:
                 inserirCandidato(candidatos, num_candidatos);
@@ -76,7 +77,7 @@ int verificarNumero(int numero) {
 
         FILE *fcandidato = fopen("candidatos.data", "rb+");
         Candidato candidato;
-        while (fread(&candidato, sizeof(UF), 1, fcandidato) == 1) {
+        while (fread(&candidato, sizeof(Candidato), 1, fcandidato) == 1) {
             if (candidato.numero == numero) {
                 fclose(fcandidato);
                 return 1;
@@ -97,6 +98,7 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     printf("Digite o codigo da UF a qual o candidato pertence: ");
 
     scanf("%d", &codigo_uf);
+    limparBuffer();
     if (!verificarCodigo(codigo_uf)) {
         printf("nao existe uf com esse codigo\n");
         return;
@@ -105,10 +107,12 @@ void inserirCandidato(Candidato *candidatos[], int *total_cand) {
     int ano;
     printf("Digite o ano em que ele concorreu: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     int numero_candidato;
     printf("Digite o numero desse candidato: ");
     scanf("%d", &numero_candidato);
+    limparBuffer();
 
     char cpf[30];
     printf("Digite o CPF do candidato: ");
@@ -150,14 +154,17 @@ void excluirCandidato(Candidato *candidatos[], int *total_cand) {
     int codigo_uf;
     printf("Digite o codigo da UF em que o candidato concorreu: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
 
     int ano;
     printf("Digite o ano em que ele concorreu: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     int numero_candidato;
     printf("Digite o numero desse candidato: ");
     scanf("%d", &numero_candidato);
+    limparBuffer();
 
     int encontrado = -1;
     for (int i = 0; i < *total_cand; i++) {
@@ -206,10 +213,12 @@ void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_ca
     int codigo_uf;
     printf("Digite o codigo da UF em que a eleicao concorreu: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
 
     int ano;
     printf("Digite o ano em que a eleicao ocorreu: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     int encontrado = -1;
     for (int i = 0; i < total_cand; i++) {
@@ -243,45 +252,61 @@ void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand
         return;
     }
 
-    // 1. Coletar anos distintos
-    int anos[100];
-    int total_anos = 0;
-    for (int i = 0; i < total_cand; i++) {
-        int ano = candidatos[i]->ano;
-        int encontrado = 0;
-        for (int j = 0; j < total_anos; j++) {
-            if (anos[j] == ano) {
-                encontrado = 1;
-                break;
+    // Ordenar candidatos por codigo_uf
+    for (int i = 0; i < total_cand - 1; i++) {
+        for (int j = 0; j < total_cand - i - 1; j++) {
+            if (candidatos[j] == NULL || candidatos[j + 1] == NULL) continue;
+            if (candidatos[j]->codigo_uf > candidatos[j + 1]->codigo_uf) {
+                Candidato *temp = candidatos[j];
+                candidatos[j] = candidatos[j + 1];
+                candidatos[j + 1] = temp;
             }
-        }
-        if (!encontrado) {
-            anos[total_anos++] = ano;
         }
     }
 
-    // 2. Para cada ano, listar candidatos por UF
-    for (int i = 0; i < total_anos; i++) {
-        int ano_atual = anos[i];
-        printf("\n====== Ano %d ======\n", ano_atual);
+    int codigo_uf_atual = -1;
+    int anos_exibidos[100];
+    int total_anos = 0;
 
-        // Ordenar por código UF (você pode trocar por nome se quiser)
-        for (int u = 0; u < total_ufs; u++) {
-            if (ufs[u] == NULL) continue;
+    for (int i = 0; i < total_cand; i++) {
+        if (candidatos[i] == NULL) continue;
 
-            int uf_codigo = ufs[u]->codigo;
-            int candidatos_na_uf = 0;
+        int codigo_uf = candidatos[i]->codigo_uf;
+        int ano = candidatos[i]->ano;
 
-            // Verifica se existe algum candidato dessa UF nesse ano
-            for (int c = 0; c < total_cand; c++) {
-                if (candidatos[c] != NULL && candidatos[c]->codigo_uf == uf_codigo && candidatos[c]->ano == ano_atual) {
-                    if (candidatos_na_uf == 0) {
-                        printf("\nUF: %s (%d)\n", ufs[u]->descricao, uf_codigo);
-                    }
-                    printf("Número: %d | CPF: %s\n", candidatos[c]->numero, candidatos[c]->CPF);
-                    candidatos_na_uf++;
+        // Se mudou a UF, reinicia anos_exibidos e mostra cabeçalho da UF
+        if (codigo_uf != codigo_uf_atual) {
+            codigo_uf_atual = codigo_uf;
+            total_anos = 0;
+
+            // Cabeçalho da UF
+            for (int j = 0; j < total_ufs; j++) {
+                if (ufs[j] != NULL && ufs[j]->codigo == codigo_uf) {
+                    printf("\n===== UF: %s (%s) =====\n", ufs[j]->descricao, ufs[j]->sigla);
+                    break;
                 }
             }
+        }
+
+        // Verificar se ano já foi exibido para essa UF
+        int ano_ja_exibido = 0;
+        for (int i = 0; i < total_anos; i++) {
+            if (anos_exibidos[i] == ano) {
+                ano_ja_exibido = 1;
+                break;
+            }
+        }
+
+        if (!ano_ja_exibido) {
+            // Mostrar candidatos desse ano
+            printf("---- Ano %d ----\n", ano);
+            for (int i = 0; i < total_cand; i++) {
+                if (candidatos[i] == NULL) continue;
+                if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
+                    printf("Numero: %d | CPF: %s\n", candidatos[i]->numero, candidatos[i]->CPF);
+                }
+            }
+            anos_exibidos[total_anos++] = ano;
         }
     }
 }

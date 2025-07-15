@@ -47,6 +47,7 @@ void menuEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
         printf("0. Sair\n");
         printf("-------------------------------------\n");
         scanf("%d", &opcao_eleicao);
+        limparBuffer();
         switch (opcao_eleicao) {
             case 1:
                 inserirEleicao(eleicoes, num_eleicoes);
@@ -85,6 +86,7 @@ void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");
 
     scanf("%d", &codigo_uf);
+    limparBuffer();
     if (!verificarCodigo(codigo_uf)) {
         printf("nao existe uf com esse codigo\n");
         return;
@@ -93,6 +95,7 @@ void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
     int ano;
     printf("Digite o ano da eleicao: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     if (verificarAnoeCodigo(codigo_uf, ano)) {
         printf("Ja existe uma eleicao com essa configuracao\n");
@@ -109,7 +112,7 @@ void inserirEleicao(Eleicao *eleicoes[], int *num_eleicoes) {
     eleicoes[*num_eleicoes]->ano = ano;
 
     printf("Digite a descricao da eleicao: ");
-    ler(eleicoes[*num_eleicoes]->descricao, sizeof(eleicoes[*num_eleicoes]->descricao));
+    lerNaoObrigatorio(eleicoes[*num_eleicoes]->descricao, sizeof(eleicoes[*num_eleicoes]->descricao));
 
     FILE *feleicao = fopen("eleicao.data", "rb+");
     if (feleicao != NULL) {
@@ -150,8 +153,10 @@ void mostrarEleicao(Eleicao *eleicoes[], int total_eleicoes) {
 
     printf("Digite o codigo da UF: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
     printf("Digite o ano da eleicao: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     int encontrado = -1;
      for (int i = 0; i < total_eleicoes; i++) {
@@ -179,8 +184,10 @@ void alterarEleicao(Eleicao *eleicoes[], int num_eleicoes) {
 
     printf("Digite o codigo da eleicao a ser alterada: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
     printf("Digite o ano da eleicao: ");
     scanf("%d", &ano);
+    limparBuffer();
     for (int i = 0; i < num_eleicoes; i++) {
         if (eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
             do {
@@ -195,12 +202,14 @@ void alterarEleicao(Eleicao *eleicoes[], int num_eleicoes) {
                 printf("3. Ano (atual: %d)\n", eleicoes[i]->ano);
                 printf("0. Nada\n");
                 scanf("%d", &opcao_alterar_uf);
+                limparBuffer();
                 switch (opcao_alterar_uf) {
                     case 1:
                         int novo_codigo_uf;
                         printf("Digite o codigo da UF a qual pertence essa eleicao ou 0 para sair: ");
                         do {
                             scanf("%d", &novo_codigo_uf);
+                            limparBuffer();
                         } while (!verificarCodigo(novo_codigo_uf));
                         if (verificarAnoeCodigo(novo_codigo_uf, eleicoes[i]->ano)) {
                             printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
@@ -213,7 +222,7 @@ void alterarEleicao(Eleicao *eleicoes[], int num_eleicoes) {
                         break;
                     case 2:
                         printf("Digite a nova descricao da Eleicao: ");
-                        ler(eleicoes[i]->descricao, sizeof(eleicoes[i]->descricao));
+                        lerNaoObrigatorio(eleicoes[i]->descricao, sizeof(eleicoes[i]->descricao));
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
                         fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Descricao da eleicao alterada!\n");
@@ -223,6 +232,7 @@ void alterarEleicao(Eleicao *eleicoes[], int num_eleicoes) {
                         int novo_ano;
                         printf("Digite o ano em que essa eleicao foi realizada: ");
                         scanf("%d", &novo_ano);
+                        limparBuffer();
                         if (verificarAnoeCodigo(eleicoes[i]->codigo_uf, novo_ano)) {
                             printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
                             return;
@@ -268,8 +278,10 @@ void excluirEleicao(Eleicao *eleicoes[], int *total_eleicoes) {
 
     printf("Digite o codigo da eleicao que deseja excluir: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
     printf("Digite o ano da eleicao que deseja excluir: ");
     scanf("%d", &ano);
+    limparBuffer();
 
     int encontrado = -1;
 

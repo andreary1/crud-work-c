@@ -22,6 +22,16 @@ void ler(char sentenca[], int tamanho) {
     } while (strlen(sentenca) == 0);
 }
 
+void lerNaoObrigatorio(char sentenca[], int tamanho) {
+        fflush(stdin);
+        fgets(sentenca, tamanho, stdin);
+        sentenca[strcspn(sentenca, "\n")] = '\0';
+
+        if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
+            limparBuffer();
+        }
+}
+
 int verificarCodigo(int codigo_uf) {
 
     FILE *fuf = fopen("uf.data", "rb+");
@@ -124,7 +134,9 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
     do {
         printf("Digite um codigo valido pra UF\n");
         scanf("%d", &ufs[*num_ufs]->codigo);
+        limparBuffer();
     } while (verificarCodigo(ufs[*num_ufs]->codigo));
+
 
     printf("codigo atribuido: %d\n", ufs[*num_ufs]->codigo);
     printf("Digite o nome da UF: ");
@@ -155,6 +167,7 @@ void alterarUF(UF *ufs[], int num_ufs) {
 
     printf("Digite o codigo da UF a ser alterada: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i]->codigo == codigo_uf) {
             do {
@@ -168,6 +181,7 @@ void alterarUF(UF *ufs[], int num_ufs) {
                 printf("2. Sigla (atual: %s)\n", ufs[i]->sigla);
                 printf("0. Nada\n");
                 scanf("%d", &opcao_alterar_uf);
+                limparBuffer();
                 switch (opcao_alterar_uf) {
                     case 1:
                         printf("Novo nome da UF: ");
@@ -226,6 +240,7 @@ void mostrarUF(UF *ufs[], int num_ufs) {
     int codigo_uf;
     printf("Digite o codigo da UF que deseja observar: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
 
     int encontrado = -1;
     for (int i = 0; i < num_ufs; i++) {
@@ -249,6 +264,7 @@ void excluirUF(UF *ufs[], int *num_ufs) {
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
     scanf("%d", &codigo_uf);
+    limparBuffer();
 
     int encontrado = -1;
     for (int i = 0; i < *num_ufs; i++) {
