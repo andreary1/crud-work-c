@@ -198,6 +198,7 @@ int main() {
                     printf("3. Mostrar todos os votos das eleicoes\n");
                     printf("4. Mostrar comparecimentos por UF e ano\n");
                     printf("5. Mostrar todos os comparecimentos\n");
+                    printf("6. Contagem de Votos\n");
                     printf("0. Sair\n");
                     printf("------------------------------------------------------\n");
                     scanf("%c", &opcao_voto);
@@ -216,7 +217,7 @@ int main() {
                             mostrarComparecimentosEleicao(num_comparecimentos);
                             break;
                         case '5':
-                            //mostrarTodosOsComparecimentos(comparecimentos, num_comparecimentos);
+                            mostrarTodosOsComparecimentos(num_comparecimentos, num_ufs, num_eleicoes);
                             break;
                         case '0':
                             printf("Saindo\n");

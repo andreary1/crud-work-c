@@ -4,8 +4,12 @@
 #include <stdlib.h>
 
 #include "../eleicao/eleicao.h"
+#include "../voto/voto.h"
 
 extern Comparecimento **comparecimentos;
+extern Eleicao **eleicoes;
+extern UF **ufs;
+extern Voto **votos;
 
 int carregarComparecimentos(int *capacidade_comp) {
     FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
@@ -83,6 +87,33 @@ void mostrarComparecimentosEleicao(int total_comparecimentos) {
         if (comparecimentos[i]->codigo_uf == codigo_uf && comparecimentos[i]->ano == ano) {
             printf("%d. CPF: %s\n", contagem, comparecimentos[i]->CPF);
             contagem++;
+        }
+    }
+}
+
+void mostrarTodosOsComparecimentos(int num_comparecimentos, int num_ufs, int num_eleicoes) {
+
+    if (num_comparecimentos == 0) {
+        printf("Nao ha votos cadastrados\n");
+        return;
+    }
+
+    for (int i = 0; i < num_ufs; i++) {
+        if (ufs[i] == NULL) continue;
+        printf("---- %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
+        for (int j = 0; j < num_eleicoes; j++) {
+            if (eleicoes[j] == NULL) continue;
+            if (eleicoes[j]->codigo_uf == ufs[i]->codigo) {
+                int num = 1;
+                printf("Ano %d:\n", eleicoes[j]->ano);
+                for (int k = 0; k < num_comparecimentos; k++) {
+                    if (votos[k] == NULL) continue;
+                    if (eleicoes[j]->ano == comparecimentos[k]->ano && comparecimentos[k]->codigo_uf == eleicoes[j]->codigo_uf) {
+                        printf("%d. CPF: %s", num, comparecimentos[k]->CPF);
+                        num++;
+                    }
+                }
+            }
         }
     }
 }

@@ -16,6 +16,6 @@ typedef struct comparecimento Comparecimento;
 int carregarComparecimentos(int *capacidade_comp);
 void liberarComparecimentos(int capacidade_comp);
 void mostrarComparecimentosEleicao(int total_comparecimentos);
-void mostrarTodosOsComparecimentos(int total_comparecimentos);
+void mostrarTodosOsComparecimentos(int total_comparecimentos, int num_ufs, int num_eleicoes);
 
 #endif //COMPARECIMENTO_H
