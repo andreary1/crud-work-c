@@ -9,38 +9,6 @@
 #include "../comparecimento/comparecimento.h"
 #include "../pessoa/pessoa.h"
 
-void menuVotos(Voto *votos[], int *num_votos, UF *ufs[], int *num_ufs, Candidato *candidatos[], int *num_candidatos,
-               Comparecimento *comparecimentos[], int *num_comparecimentos) {
-    char opcao_voto;
-    do {
-        printf("-------------------OPCOES PARA VOTO-------------------\n");
-        printf("1. Inserir Voto\n");
-        printf("2. Mostrar todos os votos por candidato de uma eleicao\n");
-        printf("3. Mostrar todos os votos das eleicoes\n");
-        printf("0. Sair\n");
-        printf("------------------------------------------------------\n");
-        scanf("%c", &opcao_voto);
-        limparBuffer();
-        switch (opcao_voto) {
-            case '1':
-                inserirVoto(votos, num_votos, comparecimentos, num_comparecimentos);
-                break;
-            case '2':
-                mostrarVotosPorCandidato(votos, *num_votos, ufs, *num_ufs, candidatos, *num_candidatos);
-                break;
-            case '3':
-                //mostrarTodosOsVotos(votos, *num_votos, ufs, *num_ufs, candidatos, *num_candidatos)
-                break;
-            case '0':
-                printf("Saindo\n");
-                break;
-            default:
-                printf("Opcao invalida!\nDigite outra opcao\n");
-                break;
-        }
-    } while (opcao_voto != '0');
-}
-
 int carregarVotos(Voto *votos[], int total_votos) {
     FILE *fvoto = fopen("votos.data", "rb+");
     if (fvoto == NULL) return 0;

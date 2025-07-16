@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern UF **ufs;
+
 void limparBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -46,7 +48,7 @@ int verificarCodigo(int codigo_uf) {
     return 0;
 }
 
-int carregarUFs(UF *ufs[], int total_ufs) {
+int carregarUFs(int *capacidade_ufs) {
 
     FILE *fuf = fopen("uf.data", "rb+");
     if (fuf == NULL) return 0;
@@ -55,74 +57,59 @@ int carregarUFs(UF *ufs[], int total_ufs) {
     long int num_ufs = ftell(fuf);
     num_ufs /= sizeof(UF);
 
-    for (int i = 0; i < total_ufs; i++) {
-        ufs[i] = NULL;
+    while (num_ufs > *capacidade_ufs) {
+        *capacidade_ufs *= 2;
     }
+
+    ufs = malloc(*capacidade_ufs * sizeof(UF *));
+    if (ufs == NULL) {
+        printf("Erro na alocacao de memoria\n");
+        return 0;
+    }
+
     fseek(fuf, 0, SEEK_SET);
     for (int i = 0; i < num_ufs; i++) {
         UF *uf = (UF *)malloc(sizeof(UF));
+        if (uf == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return 0;
+        }
         fread(uf, sizeof(UF), 1, fuf);
 
         ufs[i] = uf;
+    }
+
+    for (int i = num_ufs; i < *capacidade_ufs; i++) {
+        ufs[i] = NULL;
     }
 
     fclose(fuf);
     return num_ufs;
 }
 
-void liberarUFs(UF *ufs[], int total_uf) {
+void liberarUFs(int total_uf) {
     for (int i = 0; i < total_uf; i++) {
         if (ufs[i] != NULL) {
             free(ufs[i]);
             ufs[i] = NULL;
         }
     }
+    free(ufs);
+    ufs = NULL;
 }
 
-void menuUF(UF *ufs[], int *num_ufs) {
-    char opcao_uf;
-    do {
-        printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
-        printf("1. Inserir UF\n");
-        printf("2. Alterar UF\n");
-        printf("3. Excluir UF\n");
-        printf("4. Mostrar dados de todas as UFs\n");
-        printf("5. Mostrar dados de uma UF\n");
-        printf("0. Sair\n");
-        printf("----------------------------------------\n");
-        scanf("%c", &opcao_uf);
-        limparBuffer();
-        switch (opcao_uf) {
-            case '1':
-                adicionarUF(ufs, num_ufs);
-                break;
-            case '2':
-                alterarUF(ufs, *num_ufs);
-                break;
-            case '3':
-                excluirUF(ufs, num_ufs);
-                break;
-            case '4':
-                mostrarDadosDasUFs(ufs, *num_ufs);
-                break;
-            case '5':
-                mostrarUF(ufs, *num_ufs);
-                break;
-            case '0':
-                printf("Saindo\n");
-                break;
-            default:
-                printf("Opcao invalida!\nDigite outra opcao\n");
-                break;
+void adicionarUF(int *num_ufs, int *capacidade_ufs) {
+
+    if (*num_ufs >= *capacidade_ufs) {
+        *capacidade_ufs *= 2;
+        ufs = realloc(ufs, *capacidade_ufs * sizeof(UF *));
+        if (ufs == NULL) {
+            printf("erro na alocacao de memoria\n");
+            return;
         }
-    } while (opcao_uf != '0');
-}
-
-void adicionarUF(UF *ufs[], int *num_ufs) {
-
-    if (*num_ufs >= 35) {
-        printf("maximo de UFs atingido\n");
-        return;
+        for (int i = *num_ufs; i < *capacidade_ufs; i++) {
+            ufs[i] = NULL;
+        }
     }
 
     ufs[*num_ufs] = (UF *)malloc(sizeof(UF));
@@ -160,7 +147,7 @@ void adicionarUF(UF *ufs[], int *num_ufs) {
     printf("UF adicionada!\n");
 }
 
-void alterarUF(UF *ufs[], int num_ufs) {
+void alterarUF(int num_ufs) {
 
     int codigo_uf;
     char opcao_alterar_uf;
@@ -216,7 +203,7 @@ void alterarUF(UF *ufs[], int num_ufs) {
     printf("Nao existe UF com esse codigo\n");
 }
 
-void mostrarDadosDasUFs(UF *ufs[], int num_ufs) {
+void mostrarDadosDasUFs(int num_ufs) {
 
     if (num_ufs == 0) {
         printf("Nao ha ufs cadastradas\n");
@@ -230,7 +217,7 @@ void mostrarDadosDasUFs(UF *ufs[], int num_ufs) {
 
 }
 
-void mostrarUF(UF *ufs[], int num_ufs) {
+void mostrarUF(int num_ufs) {
 
     if (num_ufs == 0) {
         printf("Nao ha UFs cadastradas\n");
@@ -259,7 +246,7 @@ void mostrarUF(UF *ufs[], int num_ufs) {
 
 }
 
-void excluirUF(UF *ufs[], int *num_ufs) {
+void excluirUF(int *num_ufs) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");

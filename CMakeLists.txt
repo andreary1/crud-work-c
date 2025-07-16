@@ -5,7 +5,8 @@ set(CMAKE_C_STANDARD 99)
 
 add_executable(trabalho_ajalmar
         main.c
-        UF/uf.c pessoa/pessoa.c
+        UF/uf.c
+        pessoa/pessoa.c
         eleicao/eleicao.c
         candidato/candidato_eleicao.c
         voto/voto.c

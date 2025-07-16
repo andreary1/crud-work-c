@@ -21,11 +21,10 @@ typedef struct pessoa Pessoa;
 typedef enum opcaoPessoa opcaoPessoa;
 
 int verificarCPF(char cpf[]);
-void menuPessoas(Pessoa *pessoas[], int *num_pessoas);
-int carregarPessoas(Pessoa *pessoas[], int num_pessoas);
-void liberarPessoas(Pessoa *pessoas[], int num_pessoas);
-void inserirPessoa(Pessoa *pessoas[], int *num_pessoas);
-void excluirPessoa(Pessoa *pessoas[], int *num_pessoas);
-void alterarPessoa(Pessoa *pessoas[], int num_pessoas);
-void mostrarPessoas(Pessoa *pessoas[], int num_pessoas);
-void mostrarPorTitulo(Pessoa *pessoas[], int num_pessoas);
+int carregarPessoas(int *capacidade_pessoas);
+void liberarPessoas(int num_pessoas);
+void inserirPessoa(int *num_pessoas, int *capacidade_pessoas);
+void excluirPessoa(int *num_pessoas);
+void alterarPessoa(int num_pessoas);
+void mostrarPessoas(int num_pessoas);
+void mostrarPorTitulo(int num_pessoas);

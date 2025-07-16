@@ -4,39 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void menuPessoas(Pessoa *pessoas[], int *num_pessoas) {
-    opcaoPessoa opcao_pessoa;
-    do {
-        printf("------------OPCOES PARA PESSOAS-------------\n");
-        printf("1. Inserir Pessoa\n");
-        printf("2. Alterar Pessoa\n");
-        printf("3. Excluir Pessoa\n");
-        printf("4. Mostrar dados de todas as pessoas\n");
-        printf("5. Mostrar uma pessoa pelo titulo de eleitor\n");
-        printf("0. Sair\n");
-        printf("--------------------------------------------\n");
-        scanf("%c", &opcao_pessoa);
-        limparBuffer();
-        switch (opcao_pessoa) {
-            case INSERIR_PESSOA: inserirPessoa(pessoas, num_pessoas);
-                break;
-            case ALTERAR_PESSOA: alterarPessoa(pessoas, *num_pessoas);
-                break;
-            case EXCLUIR_PESSOA: excluirPessoa(pessoas, num_pessoas);
-                break;
-            case MOSTRAR_PESSOAS: mostrarPessoas(pessoas, *num_pessoas);
-                break;
-            case MOSTRAR_POR_TITULO:mostrarPorTitulo(pessoas, *num_pessoas);
-                break;
-            case SAIR_PESSOA: printf("Saindo\n");
-                break;
-            default: printf("Opcao invalida!\nDigite outra opcao\n");
-                break;
-        }
-    } while (opcao_pessoa != SAIR_PESSOA);
-}
+extern Pessoa **pessoas;
 
-int carregarPessoas(Pessoa *pessoas[], int total_pessoas) {
+int carregarPessoas(int *capacidade_pessoas) {
     FILE *fpessoa = fopen("pessoas.data", "rb+");
     if (fpessoa == NULL) return 0;
 
@@ -44,28 +14,46 @@ int carregarPessoas(Pessoa *pessoas[], int total_pessoas) {
     long int num_pessoas = ftell(fpessoa);
     num_pessoas /= sizeof(Pessoa);
 
-    for (int i = 0; i < total_pessoas; i++) {
-        pessoas[i] = NULL;
+    while (num_pessoas >= *capacidade_pessoas) {
+        *capacidade_pessoas *= 2;
     }
+
+    pessoas = malloc(*capacidade_pessoas * sizeof(Pessoa *));
+    if (pessoas == NULL) {
+        printf("Erro na alocacao de memoria\n");
+        return 0;
+    }
+
+
     fseek(fpessoa, 0, SEEK_SET);
     for (int i = 0; i < num_pessoas; i++) {
         Pessoa *pessoa = (Pessoa *)malloc(sizeof(Pessoa));
+        if (pessoa == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return 0;
+        }
         fread(pessoa, sizeof(Pessoa), 1, fpessoa);
 
         pessoas[i] = pessoa;
+    }
+
+    for (int i = num_pessoas; i < *capacidade_pessoas; i++) {
+        pessoas[i] = NULL;
     }
 
     fclose(fpessoa);
     return num_pessoas;
 }
 
-void liberarPessoas(Pessoa *pessoas[], int total_pessoas) {
+void liberarPessoas(int total_pessoas) {
     for (int i = 0; i < total_pessoas; i++) {
         if (pessoas[i] != NULL) {
             free(pessoas[i]);
             pessoas[i] = NULL;
         }
     }
+    free(pessoas);
+    pessoas = NULL;
 }
 
 int verificarCPF(char cpf[]) {
@@ -82,11 +70,20 @@ int verificarCPF(char cpf[]) {
     return 0;
 }
 
-void inserirPessoa(Pessoa *pessoas[], int *num_pessoas) {
-    if (*num_pessoas >= 200) {
-        printf("Maximo de pessoas atingido\n");
-        return;
+void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
+
+    if (*num_pessoas >= *capacidade_pessoas) {
+        *capacidade_pessoas *= 2;
+        pessoas = realloc(pessoas, *capacidade_pessoas * sizeof(Pessoa *));
+        if (pessoas == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return;
+        }
+        for (int i = *num_pessoas; i < *capacidade_pessoas; i++) {
+            pessoas[i] = NULL;
+        }
     }
+
 
     pessoas[*num_pessoas] = (Pessoa *)malloc(sizeof(Pessoa));
     if (pessoas[*num_pessoas] == NULL) {
@@ -135,7 +132,7 @@ void inserirPessoa(Pessoa *pessoas[], int *num_pessoas) {
     printf("Pessoa adicionada!\n");
 }
 
-void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
+void alterarPessoa(int num_pessoas) {
 
     int opcao_alterar_pessoa;
     char cpf[30];
@@ -217,7 +214,7 @@ void alterarPessoa(Pessoa *pessoas[], int num_pessoas) {
     printf("Nao existe pessoa cadastrada com esse CPF\n");
 }
 
-void mostrarPessoas(Pessoa *pessoas[], int num_pessoas) {
+void mostrarPessoas(int num_pessoas) {
 
     if (num_pessoas == 0) {
         printf("Nao ha ufs cadastradas\n");
@@ -232,7 +229,7 @@ void mostrarPessoas(Pessoa *pessoas[], int num_pessoas) {
     }
 }
 
-void mostrarPorTitulo(Pessoa *pessoas[], int num_pessoas) {
+void mostrarPorTitulo(int num_pessoas) {
     if (num_pessoas == 0) {
         printf("Nao ha pessoas cadastradas\n");
         return;
@@ -262,7 +259,7 @@ void mostrarPorTitulo(Pessoa *pessoas[], int num_pessoas) {
 
 }
 
-void excluirPessoa(Pessoa *pessoas[], int *num_pessoas) {
+void excluirPessoa(int *num_pessoas) {
 
     char cpf[30];
     printf("Digite o CPF da pessoa que deseja excluir: ");

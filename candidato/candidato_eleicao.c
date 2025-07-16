@@ -39,40 +39,6 @@ void liberarCandidatos(Candidato *candidatos[], int total_cand) {
     }
 }
 
-void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_candidatos, int *total_ufs) {
-    int opcao_candidato;
-    do {
-        printf("--------------OPCOES PARA CANDIDATOS--------------\n");
-        printf("1. Inserir candidato\n");
-        printf("2. Excluir candidato\n");
-        printf("3. Mostrar candidatos de uma eleicao por UF e ano\n");
-        printf("4. Mostrar candidatos das eleicoes por ano\n");
-        printf("0. Sair\n");
-        printf("--------------------------------------------------\n");
-        scanf("%d", &opcao_candidato);
-        limparBuffer();
-        switch (opcao_candidato) {
-            case 1:
-                inserirCandidato(candidatos, num_candidatos);
-                break;
-            case 2:
-                excluirCandidato(candidatos, num_candidatos);
-                break;
-            case 3:
-                mostrarCandidatosPorUFeAno(candidatos, ufs, *num_candidatos, *total_ufs);
-                break;
-            case 4:
-                mostrarTodosOsCandidatos(candidatos, ufs, *num_candidatos, *total_ufs);
-                break;
-            case 0:
-                break;
-            default:
-                printf("Opcao invalida!\nDigite outra opcao\n");
-                break;
-        }
-    } while (opcao_candidato != 0);
-}
-
 int verificarNumero(int numero) {
 
         FILE *fcandidato = fopen("candidatos.data", "rb+");

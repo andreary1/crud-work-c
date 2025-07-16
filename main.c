@@ -8,26 +8,30 @@
 #include "pessoa/pessoa.h"
 #include "voto/voto.h"
 
+UF **ufs = NULL;
+Pessoa **pessoas = NULL;
+Eleicao **eleicoes = NULL;
+
+//Candidato **candidatos = NULL;
+//Voto **votos = NULL;
+//Comparecimento **comparecimentos = NULL;
+
 void carregarArquivos();
 
 int main() {
 
-    UF *ufs[35];
-    Pessoa *pessoas[400];
-    Eleicao *eleicoes[100];
-    Candidato *candidatos[200];
-    Voto *votos[1000];
-    Comparecimento *comparecimentos[1000];
-
+    int capacidade_ufs = 10;
+    int capacidade_pessoas = 10;
+    int capacidade_eleicoes = 10;
 
     carregarArquivos();
 
-    int num_ufs = carregarUFs(ufs, 35);
-    int num_pessoas = carregarPessoas(pessoas, 400);
-    int num_eleicoes = carregarEleicoes(eleicoes, 100);
-    int num_candidatos = carregarCandidatos(candidatos, 200);
-    int num_votos = carregarVotos(votos, 1000);
-    int num_comparecimentos = carregarComparecimentos(comparecimentos, 1000);
+    int num_ufs = carregarUFs(&capacidade_ufs);
+    int num_pessoas = carregarPessoas(&capacidade_pessoas);
+    int num_eleicoes = carregarEleicoes(&capacidade_eleicoes);
+    //int num_candidatos = carregarCandidatos(candidatos, 200);
+    //int num_votos = carregarVotos(votos, 1000);
+    //int num_comparecimentos = carregarComparecimentos(comparecimentos, 1000);
 
     char opcao;
     do {
@@ -36,30 +40,190 @@ int main() {
         printf("2 - Pessoas\n");
         printf("3 - Eleicoes\n");
         printf("4 - Candidatos\n");
-        printf("5 - Votos\n");
-        printf("6 - Comparecimentos\n");
+        printf("5 - Votos/comparecimentos\n");
         printf("0 - Sair\n");
         printf("------------------------\n");
         scanf("%c", &opcao);
         limparBuffer();
         switch (opcao) {
             case '1':
-                menuUF(ufs, &num_ufs);
+                char opcao_uf;
+                do {
+                    printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
+                    printf("1. Inserir UF\n");
+                    printf("2. Alterar UF\n");
+                    printf("3. Excluir UF\n");
+                    printf("4. Mostrar dados de todas as UFs\n");
+                    printf("5. Mostrar dados de uma UF\n");
+                    printf("0. Sair\n");
+                    printf("----------------------------------------\n");
+                    scanf("%c", &opcao_uf);
+                    limparBuffer();
+                    switch (opcao_uf) {
+                        case '1':
+                            adicionarUF(&num_ufs, &capacidade_ufs);
+                            break;
+                        case '2':
+                            alterarUF(num_ufs);
+                            break;
+                        case '3':
+                            excluirUF(&num_ufs);
+                            break;
+                        case '4':
+                            mostrarDadosDasUFs(num_ufs);
+                            break;
+                        case '5':
+                            mostrarUF(num_ufs);
+                            break;
+                        case '0':
+                            printf("Saindo\n");
+                            break;
+                        default:
+                            printf("Opcao invalida!\nDigite outra opcao\n");
+                            break;
+                    }
+                } while (opcao_uf != '0');
                 break;
             case '2':
-                menuPessoas(pessoas, &num_pessoas);
+                opcaoPessoa opcao_pessoa;
+                do {
+                    printf("------------OPCOES PARA PESSOAS-------------\n");
+                    printf("1. Inserir Pessoa\n");
+                    printf("2. Alterar Pessoa\n");
+                    printf("3. Excluir Pessoa\n");
+                    printf("4. Mostrar dados de todas as pessoas\n");
+                    printf("5. Mostrar uma pessoa pelo titulo de eleitor\n");
+                    printf("0. Sair\n");
+                    printf("--------------------------------------------\n");
+                    scanf("%c", &opcao_pessoa);
+                    limparBuffer();
+                    switch (opcao_pessoa) {
+                        case '1': inserirPessoa(&num_pessoas, &capacidade_pessoas);
+                            break;
+                        case '2': alterarPessoa(num_pessoas);
+                            break;
+                        case '3': excluirPessoa(&num_pessoas);
+                            break;
+                        case '4': mostrarPessoas(num_pessoas);
+                            break;
+                        case '5':mostrarPorTitulo(num_pessoas);
+                            break;
+                        case '0': printf("Saindo\n");
+                            break;
+                        default: printf("Opcao invalida!\nDigite outra opcao\n");
+                            break;
+                    }
+                } while (opcao_pessoa != '0');
                 break;
             case '3':
-                menuEleicao(eleicoes, &num_eleicoes);
+                int opcao_eleicao;
+                do {
+                    printf("----------OPCOES DE ELEICOES---------\n");
+                    printf("1. Inserir Eleicao\n");
+                    printf("2. Alterar Eleicao\n");
+                    printf("3. Excluir Eleicao\n");
+                    printf("4. Mostrar dados de todas as eleicoes\n");
+                    printf("5. Mostrar dados de uma eleicao\n");
+                    printf("0. Sair\n");
+                    printf("-------------------------------------\n");
+                    scanf("%d", &opcao_eleicao);
+                    limparBuffer();
+                    switch (opcao_eleicao) {
+                        case 1:
+                            inserirEleicao(&num_eleicoes, &capacidade_eleicoes);
+                            break;
+                        case 2:
+                            alterarEleicao(num_eleicoes);
+                            break;
+                        case 3:
+                            excluirEleicao(&num_eleicoes);
+                            break;
+                        case 4:
+                            mostrarDadosDasEleicoes(num_eleicoes);
+                            break;
+                        case 5:
+                            mostrarEleicao(num_eleicoes);
+                            break;
+                        case 0:
+                            printf("Saindo\n");
+                            break;
+                        default:
+                            printf("Opcao invalida!\nDigite outra opcao\n");
+                            break;
+                    }
+                } while (opcao_eleicao != 0);
                 break;
             case '4':
-                menuCandidatos(candidatos, ufs, &num_candidatos, &num_ufs);
+                int opcao_candidato;
+                do {
+                    printf("--------------OPCOES PARA CANDIDATOS--------------\n");
+                    printf("1. Inserir candidato\n");
+                    printf("2. Excluir candidato\n");
+                    printf("3. Mostrar candidatos de uma eleicao por UF e ano\n");
+                    printf("4. Mostrar candidatos das eleicoes por ano\n");
+                    printf("0. Sair\n");
+                    printf("--------------------------------------------------\n");
+                    scanf("%d", &opcao_candidato);
+                    limparBuffer();
+                    switch (opcao_candidato) {
+                        case 1:
+                            //inserirCandidato(candidatos, &num_candidatos);
+                            break;
+                        case 2:
+                            //excluirCandidato(candidatos, &num_candidatos);
+                            break;
+                        case 3:
+                            //mostrarCandidatosPorUFeAno(candidatos, ufs, num_candidatos, num_ufs);
+                            break;
+                        case 4:
+                            //mostrarTodosOsCandidatos(candidatos, ufs, num_candidatos, num_ufs);
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            printf("Opcao invalida!\nDigite outra opcao\n");
+                            break;
+                    }
+                } while (opcao_candidato != 0);
                 break;
             case '5':
-                menuVotos(votos, &num_votos, ufs, &num_ufs, candidatos, &num_candidatos, comparecimentos ,&num_comparecimentos);
+                char opcao_voto;
+                do {
+                    printf("-------------------OPCOES PARA VOTO-------------------\n");
+                    printf("1. Inserir Voto\n");
+                    printf("2. Mostrar todos os votos por candidato de uma eleicao\n");
+                    printf("3. Mostrar todos os votos das eleicoes\n");
+                    printf("4. Mostrar comparecimentos por UF e ano\n");
+                    printf("5. Mostrar todos os comparecimentos\n");
+                    printf("0. Sair\n");
+                    printf("------------------------------------------------------\n");
+                    scanf("%c", &opcao_voto);
+                    limparBuffer();
+                    switch (opcao_voto) {
+                        case '1':
+                            //inserirVoto(votos, &num_votos, comparecimentos, &num_comparecimentos);
+                            break;
+                        case '2':
+                            //mostrarVotosPorCandidato(votos, num_votos, ufs, num_ufs, candidatos, num_candidatos);
+                            break;
+                        case '3':
+                            //mostrarTodosOsVotos(votos, *num_votos, ufs, *num_ufs, candidatos, *num_candidatos)
+                            break;
+                        case '4':
+                            //mostrarComparecimentosEleicao(comparecimentos, num_comparecimentos);
+                            break;
+                        case '5':
+                            //mostrarTodosOsComparecimentos(comparecimentos, num_comparecimentos);
+                            break;
+                        case '0':
+                            printf("Saindo\n");
+                            break;
+                        default:
+                            printf("Opcao invalida!\nDigite outra opcao\n");
+                            break;
+                    }
+                } while (opcao_voto != '0');
                 break;
-            case '6':
-                menuComparecimento(comparecimentos, &num_comparecimentos, ufs, &num_ufs, candidatos, &num_candidatos);
             case '0':
                 break;
             default:
@@ -68,12 +232,12 @@ int main() {
         }
     } while (opcao != '0');
 
-    liberarUFs(ufs, 35);
-    liberarPessoas(pessoas, 400);
-    liberarEleicoes(eleicoes, 100);
-    liberarCandidatos(candidatos, 200);
-    liberarVotos(votos, 1000);
-    liberarComparecimentos(comparecimentos, 1000);
+    liberarUFs(capacidade_ufs);
+    liberarPessoas(capacidade_pessoas);
+    liberarEleicoes(capacidade_eleicoes);
+    //liberarCandidatos(candidatos, 200);
+    //liberarVotos(votos, 1000);
+    //liberarComparecimentos(comparecimentos, 1000);
 
     return 0;
 }

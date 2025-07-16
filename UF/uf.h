@@ -1,5 +1,6 @@
 #ifndef UF_H
 #define UF_H
+
 struct UF {
     int codigo;
     char descricao[30];
@@ -23,12 +24,11 @@ void limparBuffer();
 void ler(char sentenca[], int tamanho);
 void lerNaoObrigatorio(char sentenca[], int tamanho);
 int verificarCodigo(int codigo_uf);
-int carregarUFs(UF *ufs[], int total_ufs);
-void liberarUFs(UF *ufs[], int total_ufs);
-void menuUF(UF *ufs[], int *num_ufs);
-void adicionarUF(UF *ufs[], int *total_ufs);
-void mostrarDadosDasUFs(UF *ufs[], int num_ufs);
-void alterarUF(UF *ufs[], int num_ufs);
-void excluirUF(UF *ufs[], int *total_ufs);
-void mostrarUF(UF *ufs[], int num_ufs);
+int carregarUFs(int *total_ufs);
+void liberarUFs(int total_ufs);
+void adicionarUF(int *num_ufs, int *capacidade_ufs);
+void mostrarDadosDasUFs(int num_ufs);
+void alterarUF(int num_ufs);
+void excluirUF(int *total_ufs);
+void mostrarUF(int num_ufs);
 #endif

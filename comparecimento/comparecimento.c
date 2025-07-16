@@ -5,34 +5,6 @@
 
 #include "../eleicao/eleicao.h"
 
-void menuComparecimento(Comparecimento *comparecimentos[], int *num_comparecimentos, UF *ufs[], int *num_ufs,
-    Candidato *candidatos[], int *num_candidatos) {
-    char opcao_comparecimento;
-    do {
-        printf("--------------OPCOES PARA COMPARECIMENTO--------------\n");
-        printf("1. Mostrar comparecimentos por UF e ano\n");
-        printf("2. Mostrar todos os comparecimentos\n");
-        printf("0. Sair\n");
-        printf("------------------------------------------------------\n");
-        scanf("%c", &opcao_comparecimento);
-        limparBuffer();
-        switch (opcao_comparecimento) {
-            case '1':
-                mostrarComparecimentosEleicao(comparecimentos, *num_comparecimentos);
-                break;
-            case '2':
-                //mostrarVotosPorCandidato(votos, *num_votos, ufs, *num_ufs, candidatos, *num_candidatos);
-                break;
-            case '0':
-                printf("Saindo\n");
-                break;
-            default:
-                printf("Opcao invalida!\nDigite outra opcao\n");
-                break;
-        }
-    } while (opcao_comparecimento != '0');
-}
-
 int carregarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos) {
     FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
     if (fcomparecimento == NULL) return 0;

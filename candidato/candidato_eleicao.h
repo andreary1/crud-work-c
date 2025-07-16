@@ -22,7 +22,6 @@ typedef struct candidato Candidato;
 
 int carregarCandidatos(Candidato *candidatos[], int total_cand);
 void liberarCandidatos(Candidato *candidatos[], int total_cand);
-void menuCandidatos(Candidato *candidatos[], UF *ufs[], int *num_cand, int *total_ufs);
 int verificarNumero(int numero);
 void inserirCandidato(Candidato *candidatos[], int *total_cand);
 void excluirCandidato(Candidato *candidatos[], int *total_cand);

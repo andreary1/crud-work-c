@@ -11,8 +11,6 @@ struct voto {
 
 typedef struct voto Voto;
 
-void menuVotos(Voto *votos[], int *num_votos, UF *ufs[], int *num_ufs, Candidato *candidatos[], int *num_candidatos,
-    Comparecimento *comparecimentos[], int *num_comparecimentos);
 int carregarVotos(Voto *votos[], int num_votos);
 void liberarVotos(Voto *votos[], int num_votos);
 void inserirVoto(Voto *votos[], int *num_votos, Comparecimento *comparecimentos[], int *num_comparecimentos);

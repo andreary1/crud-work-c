@@ -13,7 +13,6 @@ struct comparecimento {
 
 typedef struct comparecimento Comparecimento;
 
-void menuComparecimento(Comparecimento *comparecimento[], int *num_comparecimentos, UF *ufs[], int *num_ufs, Candidato *candidatos[], int *num_candidatos);
 int carregarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos);
 void liberarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos);
 void mostrarComparecimentosEleicao(Comparecimento *comparecimentos[], int total_comparecimentos);
