@@ -109,7 +109,7 @@ void mostrarTodosOsComparecimentos(int num_comparecimentos, int num_ufs, int num
                 for (int k = 0; k < num_comparecimentos; k++) {
                     if (votos[k] == NULL) continue;
                     if (eleicoes[j]->ano == comparecimentos[k]->ano && comparecimentos[k]->codigo_uf == eleicoes[j]->codigo_uf) {
-                        printf("%d. CPF: %s", num, comparecimentos[k]->CPF);
+                        printf("%d. CPF: %s\n", num, comparecimentos[k]->CPF);
                         num++;
                     }
                 }
