@@ -5,7 +5,9 @@
 
 #include "../eleicao/eleicao.h"
 
-int carregarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos) {
+extern Comparecimento **comparecimentos;
+
+int carregarComparecimentos(int *capacidade_comp) {
     FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
     if (fcomparecimento == NULL) return 0;
 
@@ -13,29 +15,45 @@ int carregarComparecimentos(Comparecimento *comparecimentos[], int total_compare
     long int num_comparecimentos = ftell(fcomparecimento);
     num_comparecimentos /= sizeof(Comparecimento);
 
-    for (int i = 0; i < total_comparecimentos; i++) {
-        comparecimentos[i] = NULL;
+    while (num_comparecimentos >= *capacidade_comp) {
+        *capacidade_comp *= 2;
     }
+
+    comparecimentos = malloc(*capacidade_comp * sizeof(Comparecimento *));
+    if (comparecimentos == NULL) {
+        printf("Erro na alocacao de memoria\n");
+        return 0;
+    }
+
     fseek(fcomparecimento, 0, SEEK_SET);
     for (int i = 0; i < num_comparecimentos; i++) {
         Comparecimento *comparecimento = (Comparecimento *)malloc(sizeof(Comparecimento));
+        if (comparecimento == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return 0;
+        }
         fread(comparecimento, sizeof(Comparecimento), 1, fcomparecimento);
 
         comparecimentos[i] = comparecimento;
+    }
+    for (int i = num_comparecimentos; i < *capacidade_comp; i++) {
+        comparecimentos[i] = NULL;
     }
 
     fclose(fcomparecimento);
     return num_comparecimentos;
 }
 
-void liberarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos) {
-    for (int i = 0; i < total_comparecimentos; i++) {
+void liberarComparecimentos(int capacidade_comp) {
+    for (int i = 0; i < capacidade_comp; i++) {
         free(comparecimentos[i]);
         comparecimentos[i] = NULL;
     }
+    free(comparecimentos);
+    comparecimentos = NULL;
 }
 
-void mostrarComparecimentosEleicao(Comparecimento *comparecimentos[], int total_comparecimentos) {
+void mostrarComparecimentosEleicao(int total_comparecimentos) {
 
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");

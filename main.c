@@ -11,27 +11,29 @@
 UF **ufs = NULL;
 Pessoa **pessoas = NULL;
 Eleicao **eleicoes = NULL;
-
-//Candidato **candidatos = NULL;
-//Voto **votos = NULL;
-//Comparecimento **comparecimentos = NULL;
+Candidato **candidatos = NULL;
+Voto **votos = NULL;
+Comparecimento **comparecimentos = NULL;
 
 void carregarArquivos();
 
 int main() {
 
+    carregarArquivos();
+
     int capacidade_ufs = 10;
     int capacidade_pessoas = 10;
     int capacidade_eleicoes = 10;
-
-    carregarArquivos();
+    int capacidade_candidatos = 10;
+    int capacidade_votos = 10;
+    int capacidade_comp = 10;
 
     int num_ufs = carregarUFs(&capacidade_ufs);
     int num_pessoas = carregarPessoas(&capacidade_pessoas);
     int num_eleicoes = carregarEleicoes(&capacidade_eleicoes);
-    //int num_candidatos = carregarCandidatos(candidatos, 200);
-    //int num_votos = carregarVotos(votos, 1000);
-    //int num_comparecimentos = carregarComparecimentos(comparecimentos, 1000);
+    int num_candidatos = carregarCandidatos(&capacidade_candidatos);
+    int num_votos = carregarVotos(&capacidade_votos);
+    int num_comparecimentos = carregarComparecimentos(&capacidade_comp);
 
     char opcao;
     do {
@@ -85,7 +87,7 @@ int main() {
                 } while (opcao_uf != '0');
                 break;
             case '2':
-                opcaoPessoa opcao_pessoa;
+                char opcao_pessoa;
                 do {
                     printf("------------OPCOES PARA PESSOAS-------------\n");
                     printf("1. Inserir Pessoa\n");
@@ -116,7 +118,7 @@ int main() {
                 } while (opcao_pessoa != '0');
                 break;
             case '3':
-                int opcao_eleicao;
+                char opcao_eleicao;
                 do {
                     printf("----------OPCOES DE ELEICOES---------\n");
                     printf("1. Inserir Eleicao\n");
@@ -126,32 +128,32 @@ int main() {
                     printf("5. Mostrar dados de uma eleicao\n");
                     printf("0. Sair\n");
                     printf("-------------------------------------\n");
-                    scanf("%d", &opcao_eleicao);
+                    scanf("%c", &opcao_eleicao);
                     limparBuffer();
                     switch (opcao_eleicao) {
-                        case 1:
+                        case '1':
                             inserirEleicao(&num_eleicoes, &capacidade_eleicoes);
                             break;
-                        case 2:
+                        case '2':
                             alterarEleicao(num_eleicoes);
                             break;
-                        case 3:
+                        case '3':
                             excluirEleicao(&num_eleicoes);
                             break;
-                        case 4:
+                        case '4':
                             mostrarDadosDasEleicoes(num_eleicoes);
                             break;
-                        case 5:
+                        case '5':
                             mostrarEleicao(num_eleicoes);
                             break;
-                        case 0:
+                        case '0':
                             printf("Saindo\n");
                             break;
                         default:
                             printf("Opcao invalida!\nDigite outra opcao\n");
                             break;
                     }
-                } while (opcao_eleicao != 0);
+                } while (opcao_eleicao != '0');
                 break;
             case '4':
                 int opcao_candidato;
@@ -167,16 +169,17 @@ int main() {
                     limparBuffer();
                     switch (opcao_candidato) {
                         case 1:
-                            //inserirCandidato(candidatos, &num_candidatos);
+                            mostrarPessoas(num_pessoas);
+                            inserirCandidato(&num_candidatos, &capacidade_candidatos);
                             break;
                         case 2:
-                            //excluirCandidato(candidatos, &num_candidatos);
+                            excluirCandidato(&num_candidatos);
                             break;
                         case 3:
-                            //mostrarCandidatosPorUFeAno(candidatos, ufs, num_candidatos, num_ufs);
+                            mostrarCandidatosPorUFeAno(num_candidatos, num_ufs);
                             break;
                         case 4:
-                            //mostrarTodosOsCandidatos(candidatos, ufs, num_candidatos, num_ufs);
+                            mostrarTodosOsCandidatos(num_candidatos, num_ufs);
                             break;
                         case 0:
                             break;
@@ -201,16 +204,16 @@ int main() {
                     limparBuffer();
                     switch (opcao_voto) {
                         case '1':
-                            //inserirVoto(votos, &num_votos, comparecimentos, &num_comparecimentos);
+                            inserirVoto(&num_votos, &capacidade_votos, &num_comparecimentos, &capacidade_comp);
                             break;
                         case '2':
-                            //mostrarVotosPorCandidato(votos, num_votos, ufs, num_ufs, candidatos, num_candidatos);
+                            mostrarVotosPorCandidato(num_votos, num_ufs, num_candidatos);
                             break;
                         case '3':
-                            //mostrarTodosOsVotos(votos, *num_votos, ufs, *num_ufs, candidatos, *num_candidatos)
+                            mostrarTodosOsVotos(num_votos, num_ufs, num_candidatos);
                             break;
                         case '4':
-                            //mostrarComparecimentosEleicao(comparecimentos, num_comparecimentos);
+                            mostrarComparecimentosEleicao(num_comparecimentos);
                             break;
                         case '5':
                             //mostrarTodosOsComparecimentos(comparecimentos, num_comparecimentos);
@@ -235,9 +238,9 @@ int main() {
     liberarUFs(capacidade_ufs);
     liberarPessoas(capacidade_pessoas);
     liberarEleicoes(capacidade_eleicoes);
-    //liberarCandidatos(candidatos, 200);
-    //liberarVotos(votos, 1000);
-    //liberarComparecimentos(comparecimentos, 1000);
+    liberarCandidatos(capacidade_candidatos);
+    liberarVotos(capacidade_votos);
+    liberarComparecimentos(capacidade_comp);
 
     return 0;
 }

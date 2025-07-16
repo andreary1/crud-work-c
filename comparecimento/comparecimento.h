@@ -13,9 +13,9 @@ struct comparecimento {
 
 typedef struct comparecimento Comparecimento;
 
-int carregarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos);
-void liberarComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos);
-void mostrarComparecimentosEleicao(Comparecimento *comparecimentos[], int total_comparecimentos);
-void mostrarTodosOsComparecimentos(Comparecimento *comparecimentos[], int total_comparecimentos);
+int carregarComparecimentos(int *capacidade_comp);
+void liberarComparecimentos(int capacidade_comp);
+void mostrarComparecimentosEleicao(int total_comparecimentos);
+void mostrarTodosOsComparecimentos(int total_comparecimentos);
 
 #endif //COMPARECIMENTO_H

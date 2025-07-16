@@ -217,7 +217,7 @@ void alterarPessoa(int num_pessoas) {
 void mostrarPessoas(int num_pessoas) {
 
     if (num_pessoas == 0) {
-        printf("Nao ha ufs cadastradas\n");
+        printf("Nao ha pessoas cadastradas\n");
         return;
     }
 

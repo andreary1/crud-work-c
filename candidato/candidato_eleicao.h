@@ -20,12 +20,12 @@ enum opcaoCandidato {
 
 typedef struct candidato Candidato;
 
-int carregarCandidatos(Candidato *candidatos[], int total_cand);
-void liberarCandidatos(Candidato *candidatos[], int total_cand);
-int verificarNumero(int numero);
-void inserirCandidato(Candidato *candidatos[], int *total_cand);
-void excluirCandidato(Candidato *candidatos[], int *total_cand);
-void mostrarCandidatosPorUFeAno(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
-void mostrarTodosOsCandidatos(Candidato *candidatos[], UF *ufs[], int total_cand, int total_ufs);
+int carregarCandidatos(int *capacidade_candidatos);
+void liberarCandidatos(int capacidade_candidatos);
+int verificarCandidato(int numero, int ano, int codigo_uf);
+void inserirCandidato(int *total_cand, int *capacidade_cand);
+void excluirCandidato(int *total_cand);
+void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs);
+void mostrarTodosOsCandidatos(int total_cand, int total_ufs);
 
 #endif

@@ -17,7 +17,7 @@ int carregarEleicoes(int *capacidade_eleicoes) {
         *capacidade_eleicoes *= 2;
     }
 
-    eleicoes = malloc(num_eleicoes * sizeof(Eleicao *));
+    eleicoes = malloc(*capacidade_eleicoes * sizeof(Eleicao *));
     if (eleicoes == NULL) {
         printf("Erro na alocacao de memoria\n");
         return 0;
@@ -58,7 +58,7 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
 
     if (*num_eleicoes >= *capacidade_eleicoes) {
         *capacidade_eleicoes *= 2;
-        eleicoes = realloc(eleicoes, *capacidade_eleicoes * sizeof(Eleicao));
+        eleicoes = realloc(eleicoes, *capacidade_eleicoes * sizeof(Eleicao *));
         if (eleicoes == NULL) {
             printf("Erro na alocacao de memoria\n");
             return;
@@ -68,11 +68,17 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
         }
     }
 
+    eleicoes[*num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
+    if (eleicoes[*num_eleicoes] == NULL) {
+        printf("Erro ao alocar memória para nova UF.\n");
+        return;
+    }
+
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");
-
     scanf("%d", &codigo_uf);
     limparBuffer();
+
     if (!verificarCodigo(codigo_uf)) {
         printf("nao existe uf com esse codigo\n");
         return;
@@ -85,12 +91,6 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
 
     if (verificarAnoeCodigo(codigo_uf, ano)) {
         printf("Ja existe uma eleicao com essa configuracao\n");
-        return;
-    }
-
-    eleicoes[*num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
-    if (eleicoes[*num_eleicoes] == NULL) {
-        printf("Erro ao alocar memória para nova UF.\n");
         return;
     }
 

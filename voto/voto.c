@@ -9,7 +9,13 @@
 #include "../comparecimento/comparecimento.h"
 #include "../pessoa/pessoa.h"
 
-int carregarVotos(Voto *votos[], int total_votos) {
+extern Voto **votos;
+extern Comparecimento **comparecimentos;
+extern UF **ufs;
+extern Candidato **candidatos;
+extern Eleicao **eleicoes;
+
+int carregarVotos(int *capacidade_votos) {
     FILE *fvoto = fopen("votos.data", "rb+");
     if (fvoto == NULL) return 0;
 
@@ -17,34 +23,78 @@ int carregarVotos(Voto *votos[], int total_votos) {
     long int num_votos = ftell(fvoto);
     num_votos /= sizeof(Voto);
 
-    for (int i = 0; i < total_votos; i++) {
-        votos[i] = NULL;
+    while (num_votos >= *capacidade_votos) {
+        *capacidade_votos *= 2;
     }
+
+    votos = realloc(votos, *capacidade_votos * sizeof(Voto *));
+    if (votos == NULL) {
+        printf("Erro na alocacao de memoria\n");
+        return 0;
+    }
+
     fseek(fvoto, 0, SEEK_SET);
     for (int i = 0; i < num_votos; i++) {
         Voto *voto = (Voto *)malloc(sizeof(Voto));
+        if (voto == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return 0;
+        }
         fread(voto, sizeof(Voto), 1, fvoto);
 
         votos[i] = voto;
+    }
+
+    for (int i = num_votos; i < *capacidade_votos; i++) {
+        votos[i] = NULL;
     }
 
     fclose(fvoto);
     return num_votos;
 }
 
-void liberarVotos(Voto *votos[], int num_votos) {
-    for (int i = 0; i < num_votos; i++) {
+void liberarVotos(int capacidade_votos) {
+    for (int i = 0; i < capacidade_votos; i++) {
         if (votos[i] != NULL) {
             free(votos[i]);
             votos[i] = NULL;
         }
     }
-};
+    free(votos);
+    votos = NULL;
+}
 
-void inserirVoto(Voto *votos[], int *num_votos, Comparecimento *comparecimentos[], int *num_comparecimentos) {
-    if (*num_votos >= 1000 || *num_comparecimentos >= 1000) {
-        printf("maximo de votos e comparecimentos atingido\n");
-        return;
+int verificarVoto(int ano, char cpf[]) {
+    FILE *fvoto = fopen("votos.data", "rb+");
+    FILE *fcomparecimento = fopen("comparecimentos.data", "rb+");
+
+    Voto voto;
+    Comparecimento comp;
+    while (fread(&voto, sizeof(Voto), 1, fvoto) && fread(&comp, sizeof(Comparecimento), 1, fcomparecimento)) {
+        if (voto.ano == ano && strcmp(comp.CPF, cpf) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos, int *capacidade_comp) {
+    if (*num_votos >= *capacidade_votos || *num_comparecimentos >= *capacidade_comp) {
+        *capacidade_comp *= 2;
+        *capacidade_votos *= 2;
+        votos = realloc(votos, *capacidade_votos *= sizeof(Voto *));
+        comparecimentos = realloc(capacidade_comp, sizeof(Comparecimento *));
+        if (votos == NULL || comparecimentos == NULL) {
+            printf("Erro na alocacao de memoria\n");
+            return;
+        }
+        for (int i = *num_comparecimentos; i < *capacidade_comp; i++) {
+            comparecimentos[i] = NULL;
+        }
+        for (int i = *num_votos; i < *capacidade_votos; i++) {
+            votos[i] = NULL;
+        }
     }
 
     votos[*num_votos] = (Voto *)malloc(sizeof(Voto));
@@ -79,8 +129,8 @@ void inserirVoto(Voto *votos[], int *num_votos, Comparecimento *comparecimentos[
     scanf("%d", &numero);
     limparBuffer();
 
-    if (!verificarNumero(numero)) {
-        printf("Nao existe candidato cadastrado com esse numero\n");
+    if (!verificarCandidato(numero, ano, codigo_uf)) {
+        printf("Nao existe candidato cadastrado com essa configuracao\n");
         return;
     }
 
@@ -90,6 +140,11 @@ void inserirVoto(Voto *votos[], int *num_votos, Comparecimento *comparecimentos[
 
     if (!verificarCPF(cpf)) {
         printf("Esse CPF nao foi cadastrado\n");
+        return;
+    }
+
+    if (verificarVoto(ano, cpf)) {
+        printf("Essa pessoa ja votou nesse ano\n");
         return;
     }
 
@@ -134,7 +189,7 @@ void inserirVoto(Voto *votos[], int *num_votos, Comparecimento *comparecimentos[
     printf("Voto e informacoes do comparecimento adicionados!\n");
 }
 
-void mostrarVotosPorCandidato(Voto *votos[], int num_votos, UF *ufs[], int num_ufs, Candidato *candidatos[], int num_candidatos) {
+void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos) {
 
     int codigo_uf;
     printf("Digite o codigo da UF dessa eleicao: ");
@@ -175,6 +230,29 @@ void mostrarVotosPorCandidato(Voto *votos[], int num_votos, UF *ufs[], int num_u
 
 }
 
-//void mostrarTodosOsVotos(Voto *votos[], int num_votos, UF *ufs[], int num_ufs, Candidato *candidatos[], int num_candidatos) {
-//
-//}
+void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
+
+    if (num_votos == 0) {
+        printf("Nao ha votos cadastrados\n");
+        return;
+    }
+
+    for (int i = 0; i < num_ufs; i++) {
+        if (ufs[i] == NULL) continue;
+        printf("---- %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
+        for (int j = 0; j < num_eleicoes; j++) {
+            if (eleicoes[j] == NULL) continue;
+            if (eleicoes[j]->codigo_uf == ufs[i]->codigo) {
+                int num = 1;
+                printf("Ano %d:\n", eleicoes[j]->ano);
+                for (int k = 0; k < num_votos; k++) {
+                    if (votos[k] == NULL) continue;
+                    if (eleicoes[j]->ano == votos[k]->ano && votos[k]->codigo_uf == eleicoes[j]->codigo_uf) {
+                        printf("%d. data e hora: %s | numero votado: %d\n", num, votos[k]->data_hora, votos[k]->numero_candidato);
+                        num++;
+                    }
+                }
+            }
+        }
+    }
+}
