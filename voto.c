@@ -183,3 +183,34 @@ void inserirVoto (voto **votos, int *num_votos) {
 
     printf("Voto registrado com sucesso!\n");
 }
+void mostrarVotosCandidato (voto **voto, int *num_votos) {
+
+    if (*num_votos == 0) {
+        printf("Nenhum voto registrado.\n");
+        return;
+    }
+    printf ("Digite um numero de candidato para ver os votos:")
+    printf ("--------VOTOS REGISTRADOS DO CANDIDATO DE CODIGO %d --------\n", numero_candidato);
+    for (i = 0; i < *num_votos; i++) {
+        if (votos[i]->numero_candidato == numero_candidato) {
+            printf("%d. \tAno: %d \tUF: %d \tCandidato: %d \tData/Hora: %s\n", 
+                i + 1, votos[i]->ano, votos[i]->codigo_UF, votos[i]->numero_candidato, asctime(&votos[i]->data_hora));  // asctime coverte a data e hora para uma forma legível
+        }
+    }
+    printf ("------------------------------------------------------------\n");
+}
+
+void mostrarTudoVotos (voto **votos, int *num_votos) {
+
+    if (*num_votos == 0) {
+        printf ("Nenhum voto registrado.\n)");
+        return;
+    }
+
+    printf ("-------------- VOTOS REGISTRADOS ATÉ O MOMENTO --------------\n");
+    for (int i = 0; i < *num_votos; i++) {
+        printf("%d. \tAno: %d \tUF: %d \tCandidato: %d \tData/Hora: %s\n", 
+            i + 1, votos[i]->ano, votos[i]->codigo_UF, votos[i]->numero_candidato, asctime(&votos[i]->data_hora));
+    }
+    printf ("------------------------------------------------------------\n");
+}
