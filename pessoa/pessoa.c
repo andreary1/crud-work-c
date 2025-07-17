@@ -63,10 +63,28 @@ int verificarCPF(char cpf[]) {
     Pessoa pessoa;
     while (fread(&pessoa, sizeof(Pessoa), 1, fpessoa)) {
         if (strcmp(pessoa.cpf, cpf) == 0) {
+            fclose(fpessoa);
             return 1;
         }
     }
 
+    fclose(fpessoa);
+    return 0;
+}
+
+int verificarTitulo(char titulo[]) {
+
+    FILE *fpessoa = fopen("pessoas.data", "rb+");
+    if (fpessoa == NULL) return 0;
+    Pessoa pessoa;
+    while (fread(&pessoa, sizeof(Pessoa), 1, fpessoa)) {
+        if (strcmp(pessoa.titulo, titulo) == 0) {
+            fclose(fpessoa);
+            return 1;
+        }
+    }
+
+    fclose(fpessoa);
     return 0;
 }
 
@@ -105,8 +123,14 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     printf("Digite o nome da pessoa: ");
     ler(pessoas[*num_pessoas]->nome, sizeof(pessoas[*num_pessoas]->nome));
 
+    char titulo[30];
     printf("Digite o titulo da pessoa: ");
-    ler(pessoas[*num_pessoas]->titulo, sizeof(pessoas[*num_pessoas]->titulo));
+    ler(titulo, sizeof(titulo));
+
+    if (verificarTitulo(titulo)) {
+        printf("Esse titulo ja foi cadastrado\n");
+        return;
+    }
 
     printf("Digite o numero de telefone da pessoa:");
     lerNaoObrigatorio(pessoas[*num_pessoas]->fone, sizeof(pessoas[*num_pessoas]->fone));
@@ -223,7 +247,7 @@ void mostrarPessoas(int num_pessoas) {
 
     for (int i = 0; i < num_pessoas; i++) {
         if (pessoas[i] == NULL) continue;
-        printf("Nome: %s | CPF: %s | Telefone: %s | Titulo: %s | Endereco: %s | Data de Nascimento: %s\n",
+        printf("| Nome: %s | CPF: %s | Telefone: %s | Titulo: %s | Endereco: %s | Data de Nascimento: %s |\n",
             pessoas[i]->nome, pessoas[i]->cpf, pessoas[i]->fone, pessoas[i]->titulo, pessoas[i]->endereco,
             pessoas[i]->data_nascimento);
     }
@@ -253,7 +277,7 @@ void mostrarPorTitulo(int num_pessoas) {
     }
 
 
-    printf("Nome: %s | CPF: %s | Telefone: %s | Endereco: %s | Data de Nascimento: %s\n",
+    printf("| Nome: %s | CPF: %s | Telefone: %s | Endereco: %s | Data de Nascimento: %s |\n",
                 pessoas[encontrado]->nome, pessoas[encontrado]->cpf, pessoas[encontrado]->fone, pessoas[encontrado]->endereco,
                 pessoas[encontrado]->data_nascimento);
 

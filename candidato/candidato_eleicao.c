@@ -6,9 +6,14 @@
 
 #include "../eleicao/eleicao.h"
 #include "../pessoa/pessoa.h"
+#include "../comparecimento/comparecimento.h"
+#include "../voto/voto.h"
 
 extern Candidato **candidatos;
 extern UF **ufs;
+extern Eleicao **eleicoes;
+extern Voto **votos;
+extern Comparecimento **comparecimentos;
 
 int carregarCandidatos(int *capacidade_candidatos) {
 
@@ -153,7 +158,7 @@ void inserirCandidato(int *total_cand, int *capacidade_cand) {
     printf("Candidato adicionado!\n");
 }
 
-void excluirCandidato(int *total_cand) {
+void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimentos) {
 
     int codigo_uf;
     printf("Digite o codigo da UF em que o candidato concorreu: ");
@@ -171,7 +176,7 @@ void excluirCandidato(int *total_cand) {
     limparBuffer();
 
     int encontrado = -1;
-    for (int i = 0; i < *total_cand; i++) {
+    for (int i = 0; i < *num_candidatos; i++) {
         if (candidatos[i] != NULL && codigo_uf == candidatos[i]->codigo_uf && ano == candidatos[i]->ano &&
             numero_candidato == candidatos[i]->numero) {
             free(candidatos[i]);
@@ -186,11 +191,11 @@ void excluirCandidato(int *total_cand) {
         return;
     }
 
-    for (int i = encontrado; i < *total_cand - 1; i++) {
+    for (int i = encontrado; i < *num_candidatos - 1; i++) {
         candidatos[i] = candidatos[i + 1];
     }
-    candidatos[*total_cand - 1] = NULL;
-    (*total_cand)--;
+    candidatos[*num_candidatos - 1] = NULL;
+    (*num_candidatos)--;
 
     FILE *fcandidato = fopen("candidatos.data", "wb+");
     if (fcandidato == NULL) {
@@ -198,7 +203,7 @@ void excluirCandidato(int *total_cand) {
         return;
     }
 
-    for (int i = 0; i < *total_cand; i++) {
+    for (int i = 0; i < *num_candidatos; i++) {
         if (candidatos[i] != NULL) {
             fwrite(candidatos[i], sizeof(Candidato), 1, fcandidato);
         }
@@ -206,6 +211,60 @@ void excluirCandidato(int *total_cand) {
 
     fclose(fcandidato);
     printf("Candidato removido!\n");
+    exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, codigo_uf, ano, numero_candidato);
+}
+
+void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int codigo, int ano, int numero) {
+
+    int encontrado = -1;
+    for (int i = 0; i < *num_votos; i++) {
+        if (votos[i] != NULL && codigo == votos[i]->codigo_uf && ano == votos[i]->ano &&
+            numero == votos[i]->numero_candidato) {
+
+            free(comparecimentos[i]);
+            free(votos[i]);
+
+            votos[i] = NULL;
+            comparecimentos[i] = NULL;
+
+            encontrado = i;
+
+            for (int j = encontrado; j < *num_votos - 1; j++) {
+                votos[j] = votos[j + 1];
+                comparecimentos[j] = comparecimentos[j + 1];
+            }
+
+            comparecimentos[*num_comparecimentos - 1] = NULL;
+            votos[*num_votos - 1] = NULL;
+
+            (*num_comparecimentos)--;
+            (*num_votos)--;
+        }
+    }
+
+    FILE *fvoto = fopen("votos.data", "wb+");
+    FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
+
+    if (fvoto == NULL || fcomparecimento == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    if (encontrado == -1) {
+        return;
+    }
+
+    for (int i = 0; i < *num_votos; i++) {
+        if (votos[i] != NULL && comparecimentos[i] != NULL) {
+            fwrite(votos[i], sizeof(Voto), 1, fvoto);
+            fwrite(comparecimentos[i], sizeof(Comparecimento), 1, fcomparecimento);
+        }
+    }
+
+    fclose(fvoto);
+    fclose(fcomparecimento);
+
+    printf("Os votos e comparecimentos relacionados a esse candidato tambem foram excluidos\n");
 }
 
 void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs) {
@@ -250,67 +309,28 @@ void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs) {
     }
 }
 
-void mostrarTodosOsCandidatos(int total_cand, int total_ufs) {
-    if (total_cand == 0) {
+void mostrarTodosOsCandidatos(int num_candidatos, int num_eleicoes, int num_ufs) {
+    if (num_candidatos == 0) {
         printf("Nao ha candidatos cadastrados.\n");
         return;
     }
 
-    // Ordenar candidatos por codigo_uf
-    for (int i = 0; i < total_cand - 1; i++) {
-        for (int j = 0; j < total_cand - i - 1; j++) {
-            if (candidatos[j] == NULL || candidatos[j + 1] == NULL) continue;
-            if (candidatos[j]->codigo_uf > candidatos[j + 1]->codigo_uf) {
-                Candidato *temp = candidatos[j];
-                candidatos[j] = candidatos[j + 1];
-                candidatos[j + 1] = temp;
-            }
-        }
-    }
-
-    int codigo_uf_atual = -1;
-    int anos_exibidos[100];
-    int total_anos = 0;
-
-    for (int i = 0; i < total_cand; i++) {
-        if (candidatos[i] == NULL) continue;
-
-        int codigo_uf = candidatos[i]->codigo_uf;
-        int ano = candidatos[i]->ano;
-
-        // Se mudou a UF, reinicia anos_exibidos e mostra cabeçalho da UF
-        if (codigo_uf != codigo_uf_atual) {
-            codigo_uf_atual = codigo_uf;
-            total_anos = 0;
-
-            // Cabeçalho da UF
-            for (int j = 0; j < total_ufs; j++) {
-                if (ufs[j] != NULL && ufs[j]->codigo == codigo_uf) {
-                    printf("\n----- %s (%s) -----\n", ufs[j]->descricao, ufs[j]->sigla);
-                    break;
+    for (int i = 0; i < num_ufs; i++) {
+        if (ufs[i] == NULL) continue;
+        printf("---- %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
+        for (int j = 0; j < num_eleicoes; j++) {
+            if (eleicoes[j] == NULL) continue;
+            if (eleicoes[j]->codigo_uf == ufs[i]->codigo) {
+                int num = 1;
+                printf("Ano %d:\n", eleicoes[j]->ano);
+                for (int k = 0; k < num_candidatos; k++) {
+                    if (candidatos[k] == NULL) continue;
+                    if (eleicoes[j]->ano == candidatos[k]->ano && candidatos[k]->codigo_uf == eleicoes[j]->codigo_uf) {
+                        printf("%d. Numero: %d\n", num, candidatos[k]->numero);
+                        num++;
+                    }
                 }
             }
-        }
-
-        // Verificar se ano já foi exibido para essa UF
-        int ano_ja_exibido = 0;
-        for (int i = 0; i < total_anos; i++) {
-            if (anos_exibidos[i] == ano) {
-                ano_ja_exibido = 1;
-                break;
-            }
-        }
-
-        if (!ano_ja_exibido) {
-            // Mostrar candidatos desse ano
-            printf("---- Ano %d ----\n", ano);
-            for (int i = 0; i < total_cand; i++) {
-                if (candidatos[i] == NULL) continue;
-                if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
-                    printf("Numero: %d | CPF: %s\n", candidatos[i]->numero, candidatos[i]->CPF);
-                }
-            }
-            anos_exibidos[total_anos++] = ano;
         }
     }
 }

@@ -37,28 +37,28 @@ int main() {
 
     char opcao;
     do {
-        printf("----------MENU----------\n");
+        printf("==========MENU==========\n");
         printf("1 - Unidades Federativas\n");
         printf("2 - Pessoas\n");
         printf("3 - Eleicoes\n");
         printf("4 - Candidatos\n");
         printf("5 - Votos/comparecimentos\n");
         printf("0 - Sair\n");
-        printf("------------------------\n");
+        printf("========================\n");
         scanf("%c", &opcao);
         limparBuffer();
         switch (opcao) {
             case '1':
                 char opcao_uf;
                 do {
-                    printf("----OPCOES PARA UNIDADES FEDERATIVAS----\n");
+                    printf("====OPCOES PARA UNIDADES FEDERATIVAS====\n");
                     printf("1. Inserir UF\n");
                     printf("2. Alterar UF\n");
                     printf("3. Excluir UF\n");
                     printf("4. Mostrar dados de todas as UFs\n");
                     printf("5. Mostrar dados de uma UF\n");
                     printf("0. Sair\n");
-                    printf("----------------------------------------\n");
+                    printf("=========================================\n");
                     scanf("%c", &opcao_uf);
                     limparBuffer();
                     switch (opcao_uf) {
@@ -89,14 +89,14 @@ int main() {
             case '2':
                 char opcao_pessoa;
                 do {
-                    printf("------------OPCOES PARA PESSOAS-------------\n");
+                    printf("===========OPCOES PARA PESSOAS=============\n");
                     printf("1. Inserir Pessoa\n");
                     printf("2. Alterar Pessoa\n");
                     printf("3. Excluir Pessoa\n");
                     printf("4. Mostrar dados de todas as pessoas\n");
                     printf("5. Mostrar uma pessoa pelo titulo de eleitor\n");
                     printf("0. Sair\n");
-                    printf("--------------------------------------------\n");
+                    printf("============================================\n");
                     scanf("%c", &opcao_pessoa);
                     limparBuffer();
                     switch (opcao_pessoa) {
@@ -120,14 +120,14 @@ int main() {
             case '3':
                 char opcao_eleicao;
                 do {
-                    printf("----------OPCOES DE ELEICOES---------\n");
+                    printf("=========OPCOES PARA ELEICOES=========\n");
                     printf("1. Inserir Eleicao\n");
                     printf("2. Alterar Eleicao\n");
                     printf("3. Excluir Eleicao\n");
                     printf("4. Mostrar dados de todas as eleicoes\n");
                     printf("5. Mostrar dados de uma eleicao\n");
                     printf("0. Sair\n");
-                    printf("-------------------------------------\n");
+                    printf("=======================================\n");
                     scanf("%c", &opcao_eleicao);
                     limparBuffer();
                     switch (opcao_eleicao) {
@@ -173,13 +173,13 @@ int main() {
                             inserirCandidato(&num_candidatos, &capacidade_candidatos);
                             break;
                         case 2:
-                            excluirCandidato(&num_candidatos);
+                            excluirCandidato(&num_candidatos, &num_votos, &num_comparecimentos);
                             break;
                         case 3:
                             mostrarCandidatosPorUFeAno(num_candidatos, num_ufs);
                             break;
                         case 4:
-                            mostrarTodosOsCandidatos(num_candidatos, num_ufs);
+                            mostrarTodosOsCandidatos(num_candidatos, num_eleicoes, num_ufs);
                             break;
                         case 0:
                             break;
@@ -211,13 +211,16 @@ int main() {
                             mostrarVotosPorCandidato(num_votos, num_ufs, num_candidatos);
                             break;
                         case '3':
-                            mostrarTodosOsVotos(num_votos, num_ufs, num_candidatos);
+                            mostrarTodosOsVotos(num_votos, num_ufs, num_eleicoes);
                             break;
                         case '4':
                             mostrarComparecimentosEleicao(num_comparecimentos);
                             break;
                         case '5':
                             mostrarTodosOsComparecimentos(num_comparecimentos, num_ufs, num_eleicoes);
+                            break;
+                        case '6':
+                            contagemDeVotos(num_votos, num_candidatos);
                             break;
                         case '0':
                             printf("Saindo\n");

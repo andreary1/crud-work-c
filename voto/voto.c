@@ -76,6 +76,8 @@ int verificarVoto(int ano, char cpf[]) {
         }
     }
 
+    fclose(fvoto);
+    fclose(fcomparecimento);
     return 0;
 }
 
@@ -83,8 +85,8 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     if (*num_votos >= *capacidade_votos || *num_comparecimentos >= *capacidade_comp) {
         *capacidade_comp *= 2;
         *capacidade_votos *= 2;
-        votos = realloc(votos, *capacidade_votos *= sizeof(Voto *));
-        comparecimentos = realloc(capacidade_comp, sizeof(Comparecimento *));
+        votos = realloc(votos, *capacidade_votos * sizeof(Voto *));
+        comparecimentos = realloc(comparecimentos, *capacidade_comp * sizeof(Comparecimento *));
         if (votos == NULL || comparecimentos == NULL) {
             printf("Erro na alocacao de memoria\n");
             return;
@@ -239,7 +241,7 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
 
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i] == NULL) continue;
-        printf("---- %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
+        printf("---- eleicoes %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
         for (int j = 0; j < num_eleicoes; j++) {
             if (eleicoes[j] == NULL) continue;
             if (eleicoes[j]->codigo_uf == ufs[i]->codigo) {
@@ -255,4 +257,83 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
             }
         }
     }
+}
+
+void contagemDeVotos(int num_votos, int num_candidatos) {
+
+    int codigo_uf;
+    printf("Digite o codigo da UF em que ocorreu essa eleicao: ");
+    scanf("%d", &codigo_uf);
+    limparBuffer();
+
+    int ano;
+    printf("Digite o ano em que ocorreu essa eleicao: ");
+    scanf("%d", &ano);
+    limparBuffer();
+
+    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+        printf("Nao existe eleicao cadastrada com essa configuracao\n");
+        return;
+    }
+
+    int num_cand_eleicao_atual = 0;
+    for (int i = 0; i < num_candidatos; i++) {
+        if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
+            num_cand_eleicao_atual++;
+        }
+    }
+
+    if (num_cand_eleicao_atual == 0) {
+        printf("Nao ha candidatos cadastrados nessa eleicao\n");
+        return;
+    }
+
+    Candidato cand_eleicao_atual[num_cand_eleicao_atual];
+    int votos_para_cada[num_cand_eleicao_atual];
+
+    int indice = 0;
+    for (int i = 0; i < num_candidatos; i++) {
+        if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
+            cand_eleicao_atual[indice] = *candidatos[i];
+            votos_para_cada[indice] = 0;
+            indice++;
+        }
+    }
+
+    for (int i = 0; i < num_cand_eleicao_atual; i++) {
+        for (int j = 0; j < num_votos; j++) {
+            if (votos[j] != NULL && votos[j]->ano == cand_eleicao_atual[i].ano && votos[j]->codigo_uf == cand_eleicao_atual[i].codigo_uf
+                && votos[j]->numero_candidato == cand_eleicao_atual[i].numero) {
+                votos_para_cada[i]++;
+            }
+        }
+    }
+
+    for (int i = 0; i < num_cand_eleicao_atual; i++) {
+        for (int j = i + 1; j < num_cand_eleicao_atual; j++) {
+            if (votos_para_cada[i] < votos_para_cada[j]) {
+                const int aux = votos_para_cada[i];
+                votos_para_cada[i] = votos_para_cada[j];
+                votos_para_cada[j] = aux;
+
+                const Candidato c = cand_eleicao_atual[i];
+                cand_eleicao_atual[i] = cand_eleicao_atual[j];
+                cand_eleicao_atual[j] = c;
+            }
+        }
+    }
+
+    printf("Contagem de votos para eleicao %d - UF %d:\n", ano, codigo_uf);
+    for (int i = 0; i < num_cand_eleicao_atual; i++) {
+        printf("Candidato %d - %d votos\n", cand_eleicao_atual[i].numero, votos_para_cada[i]);
+    }
+
+    if (num_cand_eleicao_atual > 1 &&
+        votos_para_cada[0] == votos_para_cada[1]) {
+        printf("Empate na eleicao entre candidatos com %d votos\n", votos_para_cada[0]);
+        } else {
+            printf("O candidato numero %d ganhou a eleicao com %d votos!\n",
+                   cand_eleicao_atual[0].numero, votos_para_cada[0]);
+        }
+
 }

@@ -21,6 +21,7 @@ typedef struct pessoa Pessoa;
 typedef enum opcaoPessoa opcaoPessoa;
 
 int verificarCPF(char cpf[]);
+int verificarTitulo(char titulo[]);
 int carregarPessoas(int *capacidade_pessoas);
 void liberarPessoas(int num_pessoas);
 void inserirPessoa(int *num_pessoas, int *capacidade_pessoas);

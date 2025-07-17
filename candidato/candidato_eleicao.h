@@ -24,8 +24,9 @@ int carregarCandidatos(int *capacidade_candidatos);
 void liberarCandidatos(int capacidade_candidatos);
 int verificarCandidato(int numero, int ano, int codigo_uf);
 void inserirCandidato(int *total_cand, int *capacidade_cand);
-void excluirCandidato(int *total_cand);
+void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimentos);
+void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int codigo, int ano, int numero);
 void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs);
-void mostrarTodosOsCandidatos(int total_cand, int total_ufs);
+void mostrarTodosOsCandidatos(int total_cand, int num_eleicoes, int total_ufs);
 
 #endif

@@ -17,3 +17,4 @@ int verificarVotos(int ano, char cpf[]);
 void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos, int *capacidade_comparecimentos);
 void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos);
 void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes);
+void contagemDeVotos(int num_votos, int num_candidatos);

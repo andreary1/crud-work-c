@@ -1,6 +1,8 @@
 #include "../eleicao/eleicao.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "../UF/uf.h"
 
 extern Eleicao **eleicoes;
@@ -182,52 +184,20 @@ void alterarEleicao(int num_eleicoes) {
                     printf("Erro ao abrir arquivo para alterar\n");
                     return;
                 }
-                printf("O que gostaria de alterar nessa Eleicao?\n");
-                printf("1. Codigo (atual: %d)\n", eleicoes[i]->codigo_uf);
-                printf("2. Descricao (atual: %s)\n", eleicoes[i]->descricao);
-                printf("3. Ano (atual: %d)\n", eleicoes[i]->ano);
-                printf("0. Nada\n");
+                printf("Gostaria de alterar a descricao da eleicao?\n");
+                printf("1. Sim (atual: %s)\n", eleicoes[i]->descricao);
+                printf("0. Nao\n");
                 scanf("%d", &opcao_alterar_uf);
                 limparBuffer();
                 switch (opcao_alterar_uf) {
                     case 1:
-                        int novo_codigo_uf;
-                        printf("Digite o codigo da UF a qual pertence essa eleicao ou 0 para sair: ");
-                        do {
-                            scanf("%d", &novo_codigo_uf);
-                            limparBuffer();
-                        } while (!verificarCodigo(novo_codigo_uf));
-                        if (verificarAnoeCodigo(novo_codigo_uf, eleicoes[i]->ano)) {
-                            printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
-                            return;
-                        }
-                        eleicoes[i]->codigo_uf = novo_codigo_uf;
+                        char nova_descricao[50];
+                        printf("Nova descricao da eleicao: ");
+                        lerNaoObrigatorio(nova_descricao, sizeof(nova_descricao));
+                        strcpy(eleicoes[i]->descricao, nova_descricao);
                         fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
                         fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
                         printf("Localizacao da eleicao alterada!\n");
-                        break;
-                    case 2:
-                        printf("Digite a nova descricao da Eleicao: ");
-                        lerNaoObrigatorio(eleicoes[i]->descricao, sizeof(eleicoes[i]->descricao));
-                        fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
-                        fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
-                        printf("Descricao da eleicao alterada!\n");
-                        fclose(feleicao);
-                        break;
-                    case 3:
-                        int novo_ano;
-                        printf("Digite o ano em que essa eleicao foi realizada: ");
-                        scanf("%d", &novo_ano);
-                        limparBuffer();
-                        if (verificarAnoeCodigo(eleicoes[i]->codigo_uf, novo_ano)) {
-                            printf("Nao e possivel alterar, pois ja existe uma eleicao com essa configuracao\n");
-                            return;
-                        }
-                        eleicoes[i]->ano = novo_ano;
-                        fseek(feleicao, i * sizeof(Eleicao), SEEK_SET);
-                        fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
-                        printf("Ano da Eleicao alterado!\n");
-                        fclose(feleicao);
                         break;
                     case 0:
                         break;
@@ -245,16 +215,15 @@ void alterarEleicao(int num_eleicoes) {
 }
 
 int verificarAnoeCodigo(int codigo_uf, int ano) {
-    int ano_e_codigo_existe = 0;
 
     FILE *feleicao = fopen("eleicao.data", "rb+");
     Eleicao eleicao;
     while (fread(&eleicao, sizeof(Eleicao), 1, feleicao) == 1) {
         if (eleicao.codigo_uf == codigo_uf && eleicao.ano == ano)
-            ano_e_codigo_existe++;
+            return 1;
     }
     fclose(feleicao);
-    return ano_e_codigo_existe;
+    return 0;
 }
 
 void excluirEleicao(int *total_eleicoes) {
