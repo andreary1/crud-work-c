@@ -25,26 +25,23 @@ void ler(char sentenca[], int tamanho) {
 }
 
 void lerNaoObrigatorio(char sentenca[], int tamanho) {
-        fflush(stdin);
-        fgets(sentenca, tamanho, stdin);
-        sentenca[strcspn(sentenca, "\n")] = '\0';
+    fflush(stdin);
+    fgets(sentenca, tamanho, stdin);
+    sentenca[strcspn(sentenca, "\n")] = '\0';
 
-        if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
+    if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
             limparBuffer();
-        }
+    }
 }
 
-int verificarCodigo(int codigo_uf) {
+int verificarCodigo(int codigo_uf, int num_ufs) {
 
-    FILE *fuf = fopen("uf.data", "rb+");
-    UF uf;
-    while (fread(&uf, sizeof(UF), 1, fuf) == 1) {
-        if (uf.codigo == codigo_uf) {
-            fclose(fuf);
+    for (int i = 0; i < num_ufs; i++) {
+        if (ufs[i]->codigo == codigo_uf) {
             return 1;
         }
     }
-    fclose(fuf);
+
     return 0;
 }
 
@@ -112,25 +109,31 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
         }
     }
 
+    int codigo_uf;
+    do {
+        printf("Digite um codigo valido pra UF: ");
+        scanf("%d", &codigo_uf);
+        limparBuffer();
+    } while (verificarCodigo(codigo_uf, *num_ufs));
+
+    char desc[30];
+    printf("codigo atribuido: %d\n", codigo_uf);
+    printf("Digite o nome da UF: ");
+    ler(desc, sizeof(desc));
+
+    char sig[3];
+    printf("Digite a sigla da UF: ");
+    ler(sig, sizeof(sig));
+
     ufs[*num_ufs] = (UF *)malloc(sizeof(UF));
     if (ufs[*num_ufs] == NULL) {
         printf("Erro ao alocar memória para nova UF.\n");
         return;
     }
 
-    do {
-        printf("Digite um codigo valido pra UF\n");
-        scanf("%d", &ufs[*num_ufs]->codigo);
-        limparBuffer();
-    } while (verificarCodigo(ufs[*num_ufs]->codigo));
-
-
-    printf("codigo atribuido: %d\n", ufs[*num_ufs]->codigo);
-    printf("Digite o nome da UF: ");
-    ler(ufs[*num_ufs]->descricao, sizeof(ufs[*num_ufs]->descricao));
-
-    printf("Digite a sigla da UF: ");
-    ler(ufs[*num_ufs]->sigla, sizeof(ufs[*num_ufs]->sigla));
+    ufs[*num_ufs]->codigo = codigo_uf;
+    strcpy(ufs[*num_ufs]->descricao, desc);
+    strcpy(ufs[*num_ufs]->sigla, sig);
 
     FILE *fuf = fopen("uf.data", "rb+");
     if (fuf != NULL) {

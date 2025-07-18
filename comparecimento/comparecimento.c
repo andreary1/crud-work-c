@@ -57,7 +57,7 @@ void liberarComparecimentos(int capacidade_comp) {
     comparecimentos = NULL;
 }
 
-void mostrarComparecimentosEleicao(int total_comparecimentos) {
+void mostrarComparecimentosEleicao(int total_comparecimentos, int num_eleicoes) {
 
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");
@@ -69,7 +69,7 @@ void mostrarComparecimentosEleicao(int total_comparecimentos) {
     scanf("%d", &ano);
     limparBuffer();
 
-    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
         printf("Nao existe eleicao cadastrada com essa configuracao\n");
         return;
     }
@@ -85,7 +85,7 @@ void mostrarComparecimentosEleicao(int total_comparecimentos) {
     int contagem = 1;
     for (int i = 0; i < total_comparecimentos; i++) {
         if (comparecimentos[i]->codigo_uf == codigo_uf && comparecimentos[i]->ano == ano) {
-            printf("%d. CPF: %s\n", contagem, comparecimentos[i]->CPF);
+            printf("| %d. CPF: %s |\n", contagem, comparecimentos[i]->CPF);
             contagem++;
         }
     }

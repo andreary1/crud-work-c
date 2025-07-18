@@ -56,35 +56,25 @@ void liberarPessoas(int total_pessoas) {
     pessoas = NULL;
 }
 
-int verificarCPF(char cpf[]) {
+int verificarCPF(char cpf[], int num_pessoas) {
 
-    FILE *fpessoa = fopen("pessoas.data", "rb+");
-    if (fpessoa == NULL) return 0;
-    Pessoa pessoa;
-    while (fread(&pessoa, sizeof(Pessoa), 1, fpessoa)) {
-        if (strcmp(pessoa.cpf, cpf) == 0) {
-            fclose(fpessoa);
+    for (int i = 0; i < num_pessoas; i++) {
+        if (strcmp(pessoas[i]->cpf, cpf) == 0) {
             return 1;
         }
     }
 
-    fclose(fpessoa);
     return 0;
 }
 
-int verificarTitulo(char titulo[]) {
+int verificarTitulo(char titulo[], int num_pessoas) {
 
-    FILE *fpessoa = fopen("pessoas.data", "rb+");
-    if (fpessoa == NULL) return 0;
-    Pessoa pessoa;
-    while (fread(&pessoa, sizeof(Pessoa), 1, fpessoa)) {
-        if (strcmp(pessoa.titulo, titulo) == 0) {
-            fclose(fpessoa);
+    for (int i = 0; i < num_pessoas; i++) {
+        if (strcmp(pessoas[i]->titulo, titulo) == 0) {
             return 1;
         }
     }
 
-    fclose(fpessoa);
     return 0;
 }
 
@@ -113,7 +103,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     printf("Digite o CPF da pessoa: ");
     ler(cpf, sizeof(cpf));
 
-    if (verificarCPF(cpf)) {
+    if (verificarCPF(cpf, *num_pessoas)) {
         printf("Esse CPF ja foi cadastrado\n");
         return;
     }
@@ -127,7 +117,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     printf("Digite o titulo da pessoa: ");
     ler(titulo, sizeof(titulo));
 
-    if (verificarTitulo(titulo)) {
+    if (verificarTitulo(titulo, *num_pessoas)) {
         printf("Esse titulo ja foi cadastrado\n");
         return;
     }

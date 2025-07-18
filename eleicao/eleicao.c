@@ -56,7 +56,7 @@ void liberarEleicoes(int total_eleicoes) {
     eleicoes = NULL;
 }
 
-void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
+void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes, int num_ufs) {
 
     if (*num_eleicoes >= *capacidade_eleicoes) {
         *capacidade_eleicoes *= 2;
@@ -81,7 +81,7 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
     scanf("%d", &codigo_uf);
     limparBuffer();
 
-    if (!verificarCodigo(codigo_uf)) {
+    if (!verificarCodigo(codigo_uf, num_ufs)) {
         printf("nao existe uf com esse codigo\n");
         return;
     }
@@ -91,7 +91,7 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes) {
     scanf("%d", &ano);
     limparBuffer();
 
-    if (verificarAnoeCodigo(codigo_uf, ano)) {
+    if (verificarAnoeCodigo(codigo_uf, ano, *num_eleicoes)) {
         printf("Ja existe uma eleicao com essa configuracao\n");
         return;
     }
@@ -214,15 +214,12 @@ void alterarEleicao(int num_eleicoes) {
     printf("Nao existe eleicao com essa configuracao\n");
 }
 
-int verificarAnoeCodigo(int codigo_uf, int ano) {
+int verificarAnoeCodigo(int codigo_uf, int ano, int num_eleicoes) {
 
-    FILE *feleicao = fopen("eleicao.data", "rb+");
-    Eleicao eleicao;
-    while (fread(&eleicao, sizeof(Eleicao), 1, feleicao) == 1) {
-        if (eleicao.codigo_uf == codigo_uf && eleicao.ano == ano)
+    for (int i = 0; i < num_eleicoes; i++) {
+        if (eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano)
             return 1;
     }
-    fclose(feleicao);
     return 0;
 }
 
@@ -234,6 +231,7 @@ void excluirEleicao(int *total_eleicoes) {
     printf("Digite o codigo da eleicao que deseja excluir: ");
     scanf("%d", &codigo_uf);
     limparBuffer();
+
     printf("Digite o ano da eleicao que deseja excluir: ");
     scanf("%d", &ano);
     limparBuffer();

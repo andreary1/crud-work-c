@@ -65,30 +65,26 @@ void liberarCandidatos(int capacidade_cand) {
     candidatos = NULL;
 }
 
-int verificarCandidato(int numero, int ano, int codigo_uf) {
+int verificarCandidato(int numero, int ano, int codigo_uf, int num_candidatos) {
 
-        FILE *fcandidato = fopen("candidatos.data", "rb+");
-        Candidato candidato;
-        while (fread(&candidato, sizeof(Candidato), 1, fcandidato) == 1) {
-            if (candidato.numero == numero && candidato.codigo_uf == codigo_uf && candidato.ano == ano ) {
-                fclose(fcandidato);
+        for (int i = 0; i < num_candidatos; i++) {
+            if (candidatos[i]->numero == numero && candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano ) {
                 return 1;
             }
         }
-        fclose(fcandidato);
-        return 0;
 
+        return 0;
 }
 
-void inserirCandidato(int *total_cand, int *capacidade_cand) {
-    if (*total_cand >= *capacidade_cand) {
+void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, int num_pessoas, int num_eleicoes) {
+    if (*num_candidatos >= *capacidade_cand) {
         *capacidade_cand *= 2;
         candidatos = realloc(candidatos, *capacidade_cand * sizeof(Candidato *));
         if (candidatos == NULL) {
             printf("Erro na alocacao de memoria\n");
             return;
         }
-        for (int i = *total_cand; i < *capacidade_cand; i++) {
+        for (int i = *num_candidatos; i < *capacidade_cand; i++) {
             candidatos[i] = NULL;
         }
     }
@@ -98,7 +94,7 @@ void inserirCandidato(int *total_cand, int *capacidade_cand) {
 
     scanf("%d", &codigo_uf);
     limparBuffer();
-    if (!verificarCodigo(codigo_uf)) {
+    if (!verificarCodigo(codigo_uf, num_ufs)) {
         printf("nao existe uf com esse codigo\n");
         return;
     }
@@ -108,7 +104,7 @@ void inserirCandidato(int *total_cand, int *capacidade_cand) {
     scanf("%d", &ano);
     limparBuffer();
 
-    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
         printf("Essa eleicao nao foi cadastrada\n");
         return;
     }
@@ -118,7 +114,7 @@ void inserirCandidato(int *total_cand, int *capacidade_cand) {
     scanf("%d", &numero_candidato);
     limparBuffer();
 
-    if (verificarCandidato(numero_candidato, ano, codigo_uf)) {
+    if (verificarCandidato(numero_candidato, ano, codigo_uf, *num_candidatos)) {
         printf("Esse candidato ja foi cadastrado\n");
         return;
     }
@@ -127,33 +123,33 @@ void inserirCandidato(int *total_cand, int *capacidade_cand) {
     printf("Digite o CPF do candidato: ");
     ler(cpf, sizeof(cpf));
 
-    if (verificarCPF(cpf) == 0) {
+    if (!verificarCPF(cpf, num_pessoas)) {
         printf("Nao existe pessoa cadastrada com esse CPF\n");
         return;
     }
 
-    candidatos[*total_cand] = (Candidato *)malloc(sizeof(Candidato));
-    if (candidatos[*total_cand] == NULL) {
+    candidatos[*num_candidatos] = (Candidato *)malloc(sizeof(Candidato));
+    if (candidatos[*num_candidatos] == NULL) {
         printf("Erro ao alocar memória para novo candidato.\n");
         return;
     }
 
-    candidatos[*total_cand]->codigo_uf = codigo_uf;
-    candidatos[*total_cand]->ano = ano;
-    candidatos[*total_cand]->numero = numero_candidato;
-    strcpy(candidatos[*total_cand]->CPF, cpf);
+    candidatos[*num_candidatos]->codigo_uf = codigo_uf;
+    candidatos[*num_candidatos]->ano = ano;
+    candidatos[*num_candidatos]->numero = numero_candidato;
+    strcpy(candidatos[*num_candidatos]->CPF, cpf);
 
     FILE *fcandidato = fopen("candidatos.data", "rb+");
     if (fcandidato != NULL) {
         fseek(fcandidato, 0, SEEK_END);
-        fwrite(candidatos[*total_cand], sizeof(Candidato), 1, fcandidato);
+        fwrite(candidatos[*num_candidatos], sizeof(Candidato), 1, fcandidato);
         fclose(fcandidato);
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
         return;
     }
-    (*total_cand)++;
+    (*num_candidatos)++;
 
     printf("Candidato adicionado!\n");
 }
@@ -267,7 +263,7 @@ void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int
     printf("Os votos e comparecimentos relacionados a esse candidato tambem foram excluidos\n");
 }
 
-void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs) {
+void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs, int num_eleicoes) {
     if (total_cand == 0) {
         printf("Nao ha candidatos cadastrados\n");
         return;
@@ -283,30 +279,26 @@ void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs) {
     scanf("%d", &ano);
     limparBuffer();
 
-    int encontrado = -1;
-    for (int i = 0; i < total_cand; i++) {
-        if (candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
-            encontrado++;
-        }
-    }
-
-    if (encontrado == -1) {
-        printf("Nao existe candidato cadastrado com essa configuracao\n");
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
+        printf("Nao existe eleicao cadastrada com essa configuracao\n");
         return;
     }
 
     for (int i = 0; i < total_ufs; i++) {
         if (ufs[i] != NULL && ufs[i]->codigo == codigo_uf) {
-            printf("Eleicao %s %d\n", ufs[i]->descricao, ano);
+            printf("---- Candidatos eleicao %s (%d) ----\n", ufs[i]->descricao, ano);
             break;
         }
     }
 
+    int num = 1;
     for (int i = 0; i < total_cand; i++) {
         if (candidatos[i] != NULL && candidatos[i]->codigo_uf == codigo_uf && candidatos[i]->ano == ano) {
-            printf("numero: %d | CPF: %s\n", candidatos[i]->numero, candidatos[i]->CPF);
+            printf("| %d. numero: %d | CPF: %s |\n", num, candidatos[i]->numero, candidatos[i]->CPF);
+            num++;
         }
     }
+
 }
 
 void mostrarTodosOsCandidatos(int num_candidatos, int num_eleicoes, int num_ufs) {
@@ -317,7 +309,7 @@ void mostrarTodosOsCandidatos(int num_candidatos, int num_eleicoes, int num_ufs)
 
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i] == NULL) continue;
-        printf("---- %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
+        printf("----Candidatos Eleicoes %s (%s)----\n", ufs[i]->descricao, ufs[i]->sigla);
         for (int j = 0; j < num_eleicoes; j++) {
             if (eleicoes[j] == NULL) continue;
             if (eleicoes[j]->codigo_uf == ufs[i]->codigo) {
@@ -326,7 +318,7 @@ void mostrarTodosOsCandidatos(int num_candidatos, int num_eleicoes, int num_ufs)
                 for (int k = 0; k < num_candidatos; k++) {
                     if (candidatos[k] == NULL) continue;
                     if (eleicoes[j]->ano == candidatos[k]->ano && candidatos[k]->codigo_uf == eleicoes[j]->codigo_uf) {
-                        printf("%d. Numero: %d\n", num, candidatos[k]->numero);
+                        printf("| %d. Numero: %d | CPF : %s |\n", num, candidatos[k]->numero, candidatos[k]->CPF);
                         num++;
                     }
                 }

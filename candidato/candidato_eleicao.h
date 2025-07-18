@@ -22,11 +22,11 @@ typedef struct candidato Candidato;
 
 int carregarCandidatos(int *capacidade_candidatos);
 void liberarCandidatos(int capacidade_candidatos);
-int verificarCandidato(int numero, int ano, int codigo_uf);
-void inserirCandidato(int *total_cand, int *capacidade_cand);
+int verificarCandidato(int numero, int ano, int codigo_uf, int num_candidatos);
+void inserirCandidato(int *total_cand, int *capacidade_cand, int num_ufs, int num_pessoas, int num_eleicoes);
 void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimentos);
 void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int codigo, int ano, int numero);
-void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs);
+void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs, int num_eleicoes);
 void mostrarTodosOsCandidatos(int total_cand, int num_eleicoes, int total_ufs);
 
 #endif

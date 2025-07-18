@@ -81,7 +81,8 @@ int verificarVoto(int ano, char cpf[]) {
     return 0;
 }
 
-void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos, int *capacidade_comp) {
+void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos, int *capacidade_comp,
+    int num_pessoas, int num_eleicoes, int num_candidatos) {
     if (*num_votos >= *capacidade_votos || *num_comparecimentos >= *capacidade_comp) {
         *capacidade_comp *= 2;
         *capacidade_votos *= 2;
@@ -121,7 +122,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     scanf("%d", &ano);
     limparBuffer();
 
-    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
         printf("Nao existe eleicao cadastrada com essa configuracao\n");
         return;
     }
@@ -131,7 +132,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     scanf("%d", &numero);
     limparBuffer();
 
-    if (!verificarCandidato(numero, ano, codigo_uf)) {
+    if (!verificarCandidato(numero, ano, codigo_uf, num_candidatos)) {
         printf("Nao existe candidato cadastrado com essa configuracao\n");
         return;
     }
@@ -140,7 +141,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     printf("Digite o CPF do eleitor: ");
     ler(cpf, sizeof(cpf));
 
-    if (!verificarCPF(cpf)) {
+    if (!verificarCPF(cpf, num_pessoas)) {
         printf("Esse CPF nao foi cadastrado\n");
         return;
     }
@@ -191,7 +192,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     printf("Voto e informacoes do comparecimento adicionados!\n");
 }
 
-void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos) {
+void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos, int num_eleicoes) {
 
     int codigo_uf;
     printf("Digite o codigo da UF dessa eleicao: ");
@@ -203,7 +204,7 @@ void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos) {
     scanf("%d", &ano);
     limparBuffer();
 
-    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
         printf("Nao existe eleicao cadastrada com essa configuracao\n");
         return;
     }
@@ -259,7 +260,7 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
     }
 }
 
-void contagemDeVotos(int num_votos, int num_candidatos) {
+void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes) {
 
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu essa eleicao: ");
@@ -271,7 +272,7 @@ void contagemDeVotos(int num_votos, int num_candidatos) {
     scanf("%d", &ano);
     limparBuffer();
 
-    if (!verificarAnoeCodigo(codigo_uf, ano)) {
+    if (!verificarAnoeCodigo(codigo_uf, ano, num_eleicoes)) {
         printf("Nao existe eleicao cadastrada com essa configuracao\n");
         return;
     }
