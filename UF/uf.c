@@ -1,3 +1,4 @@
+//#define _GNU_SOURCE
 #include <stdio.h>
 #include "uf.h"
 #include "../eleicao/eleicao.h"
@@ -14,6 +15,7 @@ void limparBuffer() {
 void ler(char sentenca[], int tamanho) {
     do {
         fflush(stdin);
+        //__fpurge(stdin);
         fgets(sentenca, tamanho, stdin);
         sentenca[strcspn(sentenca, "\n")] = '\0';
 
@@ -38,6 +40,17 @@ int verificarCodigo(int codigo_uf, int num_ufs) {
 
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i]->codigo == codigo_uf) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int verificarSigla(char sig[], int num_ufs) {
+
+    for (int i = 0; i < num_ufs; i++) {
+        if (strcmp(ufs[i]->sigla, sig) == 0) {
             return 1;
         }
     }
@@ -122,8 +135,11 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
     ler(desc, sizeof(desc));
 
     char sig[3];
-    printf("Digite a sigla da UF: ");
-    ler(sig, sizeof(sig));
+    do {
+        printf("Digite a sigla da UF: ");
+        ler(sig, sizeof(sig));
+    } while (verificarSigla(sig, *num_ufs));
+
 
     ufs[*num_ufs] = (UF *)malloc(sizeof(UF));
     if (ufs[*num_ufs] == NULL) {
@@ -183,7 +199,11 @@ void alterarUF(int num_ufs) {
                         break;
                     case 2:
                         printf("Nova sigla da UF: ");
-                        ler(ufs[i]->sigla, sizeof(ufs[i]->sigla));
+                        char sig[3];
+                        do {
+                            ler(sig, sizeof(sig));
+                        } while (verificarSigla(sig, num_ufs));
+                        strcpy(ufs[i]->sigla, sig);
                         fseek(fuf, i * sizeof(UF), SEEK_SET);
                         fwrite(ufs[i], sizeof(UF), 1, fuf);
                         printf("Sigla da UF alterada!\n");

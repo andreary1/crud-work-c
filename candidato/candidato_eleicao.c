@@ -259,8 +259,6 @@ void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int
 
     fclose(fvoto);
     fclose(fcomparecimento);
-
-    printf("Os votos e comparecimentos relacionados a esse candidato tambem foram excluidos\n");
 }
 
 void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs, int num_eleicoes) {

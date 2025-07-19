@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../candidato/candidato_eleicao.h"
 #include "../UF/uf.h"
 
 extern Eleicao **eleicoes;
+extern Candidato **candidatos;
 
 int carregarEleicoes(int *capacidade_eleicoes) {
     FILE *feleicao = fopen("eleicao.data", "rb+");
@@ -124,7 +126,7 @@ void mostrarDadosDasEleicoes(int total_eleicoes) {
     }
 
     for (int i = 0; i < total_eleicoes; i++) {
-        printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicoes[i]->codigo_uf, eleicoes[i]->ano,
+        printf("| codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s |\n", eleicoes[i]->codigo_uf, eleicoes[i]->ano,
             eleicoes[i]->descricao);
     }
 }
@@ -223,7 +225,7 @@ int verificarAnoeCodigo(int codigo_uf, int ano, int num_eleicoes) {
     return 0;
 }
 
-void excluirEleicao(int *total_eleicoes) {
+void excluirEleicao(int *num_eleicoes) {
 
     int codigo_uf;
     int ano;
@@ -238,7 +240,7 @@ void excluirEleicao(int *total_eleicoes) {
 
     int encontrado = -1;
 
-    for (int i = 0; i < *total_eleicoes; i++) {
+    for (int i = 0; i < *num_eleicoes; i++) {
         if (eleicoes[i] != NULL && eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
             free(eleicoes[i]);
             eleicoes[i] = NULL;
@@ -252,12 +254,12 @@ void excluirEleicao(int *total_eleicoes) {
         return;
     }
 
-    for (int i = 0; i < *total_eleicoes - 1; i++) {
+    for (int i = 0; i < *num_eleicoes - 1; i++) {
         eleicoes[i] = eleicoes[i + 1];
     }
 
-    eleicoes[*total_eleicoes - 1] = NULL;
-    (*total_eleicoes)--;
+    eleicoes[*num_eleicoes - 1] = NULL;
+    (*num_eleicoes)--;
 
 
     FILE *feleicao = fopen("eleicao.data", "wb+");
@@ -265,7 +267,7 @@ void excluirEleicao(int *total_eleicoes) {
         printf("erro ao abrir arquivo\n");
         return;
     }
-    for (int i = 0; i < *total_eleicoes; i++) {
+    for (int i = 0; i < *num_eleicoes; i++) {
         if (eleicoes[i] != NULL) {
             fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
         }

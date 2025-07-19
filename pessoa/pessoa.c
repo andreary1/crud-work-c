@@ -100,8 +100,11 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     }
 
     char cpf[30];
-    printf("Digite o CPF da pessoa: ");
-    ler(cpf, sizeof(cpf));
+    do {
+        printf("Digite o CPF da pessoa: ");
+        ler(cpf, sizeof(cpf));
+    } while (strlen(cpf) != 11);
+
 
     if (verificarCPF(cpf, *num_pessoas)) {
         printf("Esse CPF ja foi cadastrado\n");
@@ -114,13 +117,18 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     ler(pessoas[*num_pessoas]->nome, sizeof(pessoas[*num_pessoas]->nome));
 
     char titulo[30];
-    printf("Digite o titulo da pessoa: ");
-    ler(titulo, sizeof(titulo));
+    do {
+        printf("Digite o titulo da pessoa: ");
+        ler(titulo, sizeof(titulo));
+    } while (strlen(titulo) != 12);
+
 
     if (verificarTitulo(titulo, *num_pessoas)) {
         printf("Esse titulo ja foi cadastrado\n");
         return;
     }
+
+    strcpy(pessoas[*num_pessoas]->titulo, titulo);
 
     printf("Digite o numero de telefone da pessoa:");
     lerNaoObrigatorio(pessoas[*num_pessoas]->fone, sizeof(pessoas[*num_pessoas]->fone));
@@ -128,8 +136,13 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     printf("Digite o endereco da pessoa: ");
     lerNaoObrigatorio(pessoas[*num_pessoas]->endereco, sizeof(pessoas[*num_pessoas]->endereco));
 
-    printf("Digite a data de nascimento da pessoa: ");
-    ler(pessoas[*num_pessoas]->data_nascimento, sizeof(pessoas[*num_pessoas]->data_nascimento));
+    char data_nasc[11];
+    do {
+        printf("Digite a data de nascimento da pessoa (dd/mm/aaaa): ");
+        ler(data_nasc, sizeof(data_nasc));
+    } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != 5);
+
+    strcpy(pessoas[*num_pessoas]->data_nascimento, data_nasc);
 
     FILE *fpessoa = fopen("pessoas.data", "rb+");
     if (fpessoa != NULL) {
@@ -149,7 +162,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 void alterarPessoa(int num_pessoas) {
 
     int opcao_alterar_pessoa;
-    char cpf[30];
+    char cpf[20];
 
     printf("Digite o CPF da pessoa a ser alterada: ");
     ler(cpf, sizeof(cpf));
@@ -189,7 +202,14 @@ void alterarPessoa(int num_pessoas) {
                         break;
                     case 3:
                         printf("Novo titulo da pessoa: ");
-                        ler(pessoas[i]->titulo, sizeof(pessoas[i]->titulo));
+                        char titulo[20];
+                        do {
+                            ler(titulo, sizeof(titulo));
+                        } while (strlen(titulo) != 12);
+                        if (verificarTitulo(titulo, num_pessoas)) {
+                            printf("Esse titulo ja foi cadastrado\n");
+                            break;
+                        }
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
                         printf("Titulo da pessoa alterado!\n");
@@ -205,7 +225,11 @@ void alterarPessoa(int num_pessoas) {
                         break;
                     case 5:
                         printf("Nova data de nascimento da pessoa (dd/mm/aaaa): ");
-                        ler(pessoas[i]->data_nascimento, sizeof(pessoas[i]->data_nascimento));
+                        char data_nasc[11];
+                        do {
+                            ler(data_nasc, sizeof(data_nasc));
+                        } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != 5);
+                        strcpy(pessoas[i]->data_nascimento, data_nasc);
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
                         printf("Data de nascimento da pessoa alterada!\n");

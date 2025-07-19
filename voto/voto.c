@@ -236,10 +236,11 @@ void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos, in
 void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
 
     if (num_votos == 0) {
-        printf("Nao ha votos cadastrados\n");
+        printf("Nenhum voto registrado.\n");
         return;
     }
 
+    printf ("-------------- VOTOS REGISTRADOS ATÉ O MOMENTO --------------\n");
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i] == NULL) continue;
         printf("---- eleicoes %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
@@ -258,6 +259,7 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
             }
         }
     }
+    printf ("-------------------------------------------------------------\n");
 }
 
 void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes) {
@@ -332,9 +334,9 @@ void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes) {
     if (num_cand_eleicao_atual > 1 &&
         votos_para_cada[0] == votos_para_cada[1]) {
         printf("Empate na eleicao entre candidatos com %d votos\n", votos_para_cada[0]);
-        } else {
-            printf("O candidato numero %d ganhou a eleicao com %d votos!\n",
-                   cand_eleicao_atual[0].numero, votos_para_cada[0]);
-        }
+    } else {
+        printf("O candidato numero %d ganhou a eleicao com %d votos!\n",
+        cand_eleicao_atual[0].numero, votos_para_cada[0]);
+    }
 
 }

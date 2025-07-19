@@ -24,6 +24,7 @@ void limparBuffer();
 void ler(char sentenca[], int tamanho);
 void lerNaoObrigatorio(char sentenca[], int tamanho);
 int verificarCodigo(int codigo_uf, int num_ufs);
+int verificarSigla(char sig[], int num_ufs);
 int carregarUFs(int *total_ufs);
 void liberarUFs(int total_ufs);
 void adicionarUF(int *num_ufs, int *capacidade_ufs);

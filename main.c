@@ -156,7 +156,7 @@ int main() {
                 } while (opcao_eleicao != '0');
                 break;
             case '4':
-                int opcao_candidato;
+                char opcao_candidato;
                 do {
                     printf("==============OPCOES PARA CANDIDATOS==============\n");
                     printf("1. Inserir candidato\n");
@@ -165,29 +165,29 @@ int main() {
                     printf("4. Mostrar candidatos das eleicoes por ano\n");
                     printf("0. Sair\n");
                     printf("==================================================\n");
-                    scanf("%d", &opcao_candidato);
+                    scanf("%c", &opcao_candidato);
                     limparBuffer();
                     switch (opcao_candidato) {
-                        case 1:
+                        case '1':
                             mostrarPessoas(num_pessoas);
                             inserirCandidato(&num_candidatos, &capacidade_candidatos, num_ufs, num_pessoas, num_eleicoes);
                             break;
-                        case 2:
+                        case '2':
                             excluirCandidato(&num_candidatos, &num_votos, &num_comparecimentos);
                             break;
-                        case 3:
+                        case '3':
                             mostrarCandidatosPorUFeAno(num_candidatos, num_ufs, num_eleicoes);
                             break;
-                        case 4:
+                        case '4':
                             mostrarTodosOsCandidatos(num_candidatos, num_eleicoes, num_ufs);
                             break;
-                        case 0:
+                        case '0':
                             break;
                         default:
                             printf("Opcao invalida!\nDigite outra opcao\n");
                             break;
                     }
-                } while (opcao_candidato != 0);
+                } while (opcao_candidato != '0');
                 break;
             case '5':
                 char opcao_voto;
