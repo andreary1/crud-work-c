@@ -6,6 +6,7 @@
 #include <string.h>
 
 extern UF **ufs;
+extern Eleicao **eleicoes;
 
 void limparBuffer() {
     int c;
@@ -50,7 +51,7 @@ int verificarCodigo(int codigo_uf, int num_ufs) {
 int verificarSigla(char sig[], int num_ufs) {
 
     for (int i = 0; i < num_ufs; i++) {
-        if (strcmp(ufs[i]->sigla, sig) == 0) {
+        if (strcasecmp(ufs[i]->sigla, sig) == 0) {
             return 1;
         }
     }
@@ -127,7 +128,7 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
         printf("Digite um codigo valido pra UF: ");
         scanf("%d", &codigo_uf);
         limparBuffer();
-    } while (verificarCodigo(codigo_uf, *num_ufs));
+    } while (verificarCodigo(codigo_uf, *num_ufs) || codigo_uf == 0);
 
     char desc[30];
     printf("codigo atribuido: %d\n", codigo_uf);
@@ -159,6 +160,7 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(ufs[*num_ufs]);
         return;
     }
 
@@ -233,10 +235,16 @@ void mostrarDadosDasUFs(int num_ufs) {
         return;
     }
 
+    printf("=====================================================\n");
+    printf("| %-7s | %-30s | %-6s |\n",
+           "Codigo", "Nome", "Sigla");
+    printf("=====================================================\n");
+
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i] == NULL) continue;
-        printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", ufs[i]->codigo, ufs[i]->descricao, ufs[i]->sigla);
+        printf("| %-7d | %-30s | %-6s |\n", ufs[i]->codigo, ufs[i]->descricao, ufs[i]->sigla);
     }
+    printf("=====================================================\n");
 
 }
 
@@ -264,12 +272,18 @@ void mostrarUF(int num_ufs) {
         return;
     }
 
-    printf("codigo da UF: %d | nome da UF: %s | sigla da UF: %s\n", ufs[encontrado]->codigo, ufs[encontrado]->descricao,
+    printf("=====================================================\n");
+    printf("| %-7s | %-30s | %-6s |\n",
+           "Codigo", "Nome", "Sigla");
+    printf("=====================================================\n");
+
+    printf("| %-7d | %-30s | %-6s |\n", ufs[encontrado]->codigo, ufs[encontrado]->descricao,
         ufs[encontrado]->sigla);
+    printf("=====================================================\n");
 
 }
 
-void excluirUF(int *num_ufs) {
+void excluirUF(int *num_ufs, int *num_eleicoes) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
@@ -311,4 +325,48 @@ void excluirUF(int *num_ufs) {
 
     fclose(fuf);
     printf("UF removida!\n");
+    exclusaoEleicoesPorUF(num_eleicoes, codigo_uf);
+}
+
+void exclusaoEleicoesPorUF(int *num_eleicoes, int codigo) {
+
+    int encontrado = -1;
+    for (int i = 0; i < *num_eleicoes; i++) {
+        if (eleicoes[i] != NULL && codigo == eleicoes[i]->codigo_uf) {
+
+            free(eleicoes[i]);
+
+            eleicoes[i] = NULL;
+
+            encontrado = i;
+
+            for (int j = encontrado; j < *num_eleicoes - 1; j++) {
+                eleicoes[j] = eleicoes[j + 1];
+            }
+
+            eleicoes[*num_eleicoes - 1] = NULL;
+
+            (*num_eleicoes)--;
+            i--;
+        }
+    }
+
+    if (encontrado == -1) {
+        return;
+    }
+
+    FILE *feleicao = fopen("eleicao.data", "wb+");
+
+    if (feleicao == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    for (int i = 0; i < *num_eleicoes; i++) {
+        if (eleicoes[i] != NULL) {
+            fwrite(eleicoes[i], sizeof(Eleicao), 1, feleicao);
+        }
+    }
+
+    fclose(feleicao);
 }

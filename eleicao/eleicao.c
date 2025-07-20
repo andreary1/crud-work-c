@@ -125,10 +125,17 @@ void mostrarDadosDasEleicoes(int total_eleicoes) {
         return;
     }
 
+    printf("======================================================\n");
+    printf("| %-7s | %-7s | %-30s |\n",
+           "Codigo", "Ano", "Descricao");
+    printf("======================================================\n");
+
+
     for (int i = 0; i < total_eleicoes; i++) {
-        printf("| codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s |\n", eleicoes[i]->codigo_uf, eleicoes[i]->ano,
+        printf("| %-7d | %-7d | %-30s |\n", eleicoes[i]->codigo_uf, eleicoes[i]->ano,
             eleicoes[i]->descricao);
     }
+    printf("======================================================\n");
 }
 
 void mostrarEleicao(int total_eleicoes) {
@@ -161,8 +168,14 @@ void mostrarEleicao(int total_eleicoes) {
         return;
     }
 
-    printf("codigo da UF: %d | ano da eleicao: %d | descricao da eleicao: %s\n", eleicoes[encontrado]->codigo_uf,
-        eleicoes[encontrado]->ano, eleicoes[encontrado]->descricao);
+    printf("======================================================\n");
+    printf("| %-7s | %-7s | %-30s |\n",
+           "Codigo", "Ano", "Descricao");
+    printf("======================================================\n");
+
+    printf("| %-7d | %-7d | %-30s |\n", eleicoes[encontrado]->codigo_uf, eleicoes[encontrado]->ano,
+        eleicoes[encontrado]->descricao);
+    printf("======================================================\n");
 
 }
 
@@ -254,7 +267,7 @@ void excluirEleicao(int *num_eleicoes) {
         return;
     }
 
-    for (int i = 0; i < *num_eleicoes - 1; i++) {
+    for (int i = encontrado; i < *num_eleicoes - 1; i++) {
         eleicoes[i] = eleicoes[i + 1];
     }
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "../eleicao/eleicao.h"
 #include "../UF/uf.h"
@@ -89,7 +90,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
         votos = realloc(votos, *capacidade_votos * sizeof(Voto *));
         comparecimentos = realloc(comparecimentos, *capacidade_comp * sizeof(Comparecimento *));
         if (votos == NULL || comparecimentos == NULL) {
-            printf("Erro na alocacao de memoria\n");
+            printf("Erro na realocacao de memoria\n");
             return;
         }
         for (int i = *num_comparecimentos; i < *capacidade_comp; i++) {
@@ -98,18 +99,6 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
         for (int i = *num_votos; i < *capacidade_votos; i++) {
             votos[i] = NULL;
         }
-    }
-
-    votos[*num_votos] = (Voto *)malloc(sizeof(Voto));
-    comparecimentos[*num_comparecimentos] = (Comparecimento *)malloc(sizeof(Comparecimento));
-
-    if (votos[*num_votos] == NULL) {
-        printf("Erro ao alocar memória para novo voto.\n");
-        return;
-    }
-    if (comparecimentos[*num_comparecimentos] == NULL) {
-        printf("Erro ao alocar memória para novo comparecimento.\n");
-        return;
     }
 
     int codigo_uf;
@@ -151,14 +140,29 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
         return;
     }
 
-    char data_hora[25];
-    printf("Digite a data e a hora em que esse voto foi computado: ");
-    ler(data_hora, sizeof(data_hora));
+    time_t horavoto;
+    time(&horavoto);
+    struct tm *informacoestempo = localtime(&horavoto);
+
+    char data_formatada[20];
+    strftime(data_formatada, sizeof(data_formatada), "%d/%m %H:%M", informacoestempo);
+
+    votos[*num_votos] = (Voto *)malloc(sizeof(Voto));
+    comparecimentos[*num_comparecimentos] = (Comparecimento *)malloc(sizeof(Comparecimento));
+
+    if (votos[*num_votos] == NULL) {
+        printf("Erro ao alocar memória para novo voto.\n");
+        return;
+    }
+    if (comparecimentos[*num_comparecimentos] == NULL) {
+        printf("Erro ao alocar memoria para novo comparecimento.\n");
+        return;
+    }
 
     votos[*num_votos]->codigo_uf = codigo_uf;
     votos[*num_votos]->ano = ano;
     votos[*num_votos]->numero_candidato = numero;
-    strcpy(votos[*num_votos]->data_hora, data_hora);
+    strcpy(votos[*num_votos]->data_hora, data_formatada);
 
     comparecimentos[*num_comparecimentos]->codigo_uf = codigo_uf;
     comparecimentos[*num_comparecimentos]->ano = ano;
@@ -172,6 +176,10 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(votos[*num_votos]);
+        free(comparecimentos[*num_comparecimentos]);
+        votos[*num_votos] = NULL;
+        comparecimentos[*num_comparecimentos] = NULL;
         return;
     }
 
@@ -183,6 +191,10 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(votos[*num_votos]);
+        free(comparecimentos[*num_comparecimentos]);
+        votos[*num_votos] = NULL;
+        comparecimentos[*num_comparecimentos] = NULL;
         return;
     }
 
@@ -240,7 +252,7 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
         return;
     }
 
-    printf ("-------------- VOTOS REGISTRADOS ATÉ O MOMENTO --------------\n");
+    printf ("=================VOTOS REGISTRADOS ATE O MOMENTO=================\n");
     for (int i = 0; i < num_ufs; i++) {
         if (ufs[i] == NULL) continue;
         printf("---- eleicoes %s (%s) ----\n", ufs[i]->descricao, ufs[i]->sigla);
@@ -259,7 +271,7 @@ void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes) {
             }
         }
     }
-    printf ("-------------------------------------------------------------\n");
+    printf ("=================================================================\n");
 }
 
 void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes) {

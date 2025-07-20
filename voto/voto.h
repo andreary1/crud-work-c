@@ -9,7 +9,18 @@ struct voto {
     char data_hora[25];
 };
 
+enum opcao_voto {
+    INSERIR_VOTO = '1',
+    MOSTRAR_VOTOS_CANDIDATOS = '2',
+    MOSTRAR_TUDO_VOTOS = '3',
+    MOSTRAR_COMPARECIMENTOS_ELEICAO = '4',
+    MOSTRAR_COMPARECIMENTOS = '5',
+    CONTAGEM_VOTOS = '6',
+    SAIR_VOTOS_COMPARECIMENTOS = '0',
+};
+
 typedef struct voto Voto;
+typedef enum opcao_voto opcaoVoto;
 
 int carregarVotos(int *capacidade_votos);
 void liberarVotos(int capacidade_votos);

@@ -1,11 +1,20 @@
-
 struct eleicao {
     int ano;
     int codigo_uf;
     char descricao[50];
 };
 
+enum opcaoEleicao {
+    INSERIR_ELEICAO = '1',
+    ALTERAR_ELEICAO = '2',
+    EXCLUIR_ELEICAO = '3',
+    MOSTRAR_DADOS_ELEICOES = '4',
+    MOSTRAR_ELEICAO = '5',
+    SAIR_ELEICAO = '0',
+};
+
 typedef struct eleicao Eleicao;
+typedef enum opcaoEleicao opcaoEleicao;
 
 int verificarAnoeCodigo(int codigo_uf, int ano, int num_eleicoes);
 int carregarEleicoes(int *capacidade_eleicoes);

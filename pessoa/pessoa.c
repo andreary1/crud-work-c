@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include "pessoa.h"
 #include "../UF/uf.h"
+#include "../candidato/candidato_eleicao.h"
 #include <stdlib.h>
 #include <string.h>
 
 extern Pessoa **pessoas;
+extern Candidato **candidatos;
 
 int carregarPessoas(int *capacidade_pessoas) {
     FILE *fpessoa = fopen("pessoas.data", "rb+");
@@ -103,7 +105,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     do {
         printf("Digite o CPF da pessoa: ");
         ler(cpf, sizeof(cpf));
-    } while (strlen(cpf) != 11);
+    } while (strlen(cpf) != 11 || strspn(cpf, "0123456789") != strlen(cpf));
 
 
     if (verificarCPF(cpf, *num_pessoas)) {
@@ -120,7 +122,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     do {
         printf("Digite o titulo da pessoa: ");
         ler(titulo, sizeof(titulo));
-    } while (strlen(titulo) != 12);
+    } while (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo));
 
 
     if (verificarTitulo(titulo, *num_pessoas)) {
@@ -140,7 +142,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     do {
         printf("Digite a data de nascimento da pessoa (dd/mm/aaaa): ");
         ler(data_nasc, sizeof(data_nasc));
-    } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != 5);
+    } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != '/');
 
     strcpy(pessoas[*num_pessoas]->data_nascimento, data_nasc);
 
@@ -205,11 +207,12 @@ void alterarPessoa(int num_pessoas) {
                         char titulo[20];
                         do {
                             ler(titulo, sizeof(titulo));
-                        } while (strlen(titulo) != 12);
+                        } while (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo));
                         if (verificarTitulo(titulo, num_pessoas)) {
                             printf("Esse titulo ja foi cadastrado\n");
                             break;
                         }
+                        strcpy(pessoas[i]->titulo, titulo);
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
                         printf("Titulo da pessoa alterado!\n");
@@ -228,7 +231,7 @@ void alterarPessoa(int num_pessoas) {
                         char data_nasc[11];
                         do {
                             ler(data_nasc, sizeof(data_nasc));
-                        } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != 5);
+                        } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != '/');
                         strcpy(pessoas[i]->data_nascimento, data_nasc);
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
@@ -258,13 +261,23 @@ void mostrarPessoas(int num_pessoas) {
         printf("Nao ha pessoas cadastradas\n");
         return;
     }
+    printf("======================================================================================================================\n");
+    printf("| %-30s | %-11s | %-15s | %-12s | %-20s | %-10s |\n",
+           "Nome", "CPF", "Titulo", "Telefone", "Endereco", "Nascimento");
+    printf("======================================================================================================================\n");
 
     for (int i = 0; i < num_pessoas; i++) {
         if (pessoas[i] == NULL) continue;
-        printf("| Nome: %s | CPF: %s | Telefone: %s | Titulo: %s | Endereco: %s | Data de Nascimento: %s |\n",
-            pessoas[i]->nome, pessoas[i]->cpf, pessoas[i]->fone, pessoas[i]->titulo, pessoas[i]->endereco,
-            pessoas[i]->data_nascimento);
+        printf("| %-30s | %-11s | %-15s | %-12s | %-20s | %-10s |\n",
+               pessoas[i]->nome,
+               pessoas[i]->cpf,
+               pessoas[i]->titulo,
+               pessoas[i]->fone,
+               pessoas[i]->endereco,
+               pessoas[i]->data_nascimento);
     }
+
+    printf("======================================================================================================================\n");
 }
 
 void mostrarPorTitulo(int num_pessoas) {
@@ -290,14 +303,22 @@ void mostrarPorTitulo(int num_pessoas) {
         return;
     }
 
-
-    printf("| Nome: %s | CPF: %s | Telefone: %s | Endereco: %s | Data de Nascimento: %s |\n",
-                pessoas[encontrado]->nome, pessoas[encontrado]->cpf, pessoas[encontrado]->fone, pessoas[encontrado]->endereco,
-                pessoas[encontrado]->data_nascimento);
+    printf("======================================================================================================================\n");
+    printf("| %-30s | %-11s | %-15s | %-12s | %-20s | %-10s |\n",
+           "Nome", "CPF", "Titulo", "Telefone", "Endereco", "Nascimento");
+    printf("======================================================================================================================\n");
+    printf("| %-30s | %-11s | %-15s | %-12s | %-20s | %-10s |\n",
+       pessoas[encontrado]->nome,
+       pessoas[encontrado]->cpf,
+       pessoas[encontrado]->titulo,
+       pessoas[encontrado]->fone,
+       pessoas[encontrado]->endereco,
+       pessoas[encontrado]->data_nascimento);
+    printf("======================================================================================================================\n");
 
 }
 
-void excluirPessoa(int *num_pessoas) {
+void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *num_comparecimentos) {
 
     char cpf[30];
     printf("Digite o CPF da pessoa que deseja excluir: ");
@@ -338,4 +359,43 @@ void excluirPessoa(int *num_pessoas) {
 
     fclose(fpessoa);
     printf("Pessoa removida!\n");
+    exclusaoCandidatoPeloCPF(num_candidatos, cpf);
+    exclusaoVotosEComparecimentosPeloCPF(num_votos, num_comparecimentos, cpf);
+}
+
+void exclusaoCandidatoPeloCPF(int *num_candidatos, char cpf[]) {
+
+    int encontrado = -1;
+    for (int i = 0; i < *num_candidatos; i++) {
+        if (candidatos[i] != NULL && strcmp(candidatos[i]->CPF, cpf) == 0) {
+            free(candidatos[i]);
+            candidatos[i] = NULL;
+            encontrado = i;
+            break;
+        }
+    }
+
+    if (encontrado == -1) {
+        return;
+    }
+
+    for (int i = encontrado; i < *num_candidatos - 1; i++) {
+        candidatos[i] = candidatos[i + 1];
+    }
+    candidatos[*num_candidatos - 1] = NULL;
+    (*num_candidatos)--;
+
+    FILE *fcandidato = fopen("candidatos.data", "wb+");
+    if (fcandidato == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    for (int i = 0; i < *num_candidatos; i++) {
+        if (candidatos[i] != NULL) {
+            fwrite(candidatos[i], sizeof(Candidato), 1, fcandidato);
+        }
+    }
+
+    fclose(fcandidato);
 }

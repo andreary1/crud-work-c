@@ -8,12 +8,12 @@ struct UF {
 };
 
 enum opcaoUF {
-    INSERIR_UF = 1,
-    ALTERAR_UF = 2,
-    EXCLUIR_UF = 3,
-    MOSTRAR_DADOS = 4,
-    MOSTRAR_UF = 5,
-    SAIR_UF = 0,
+    INSERIR_UF = '1',
+    ALTERAR_UF = '2',
+    EXCLUIR_UF = '3',
+    MOSTRAR_DADOS = '4',
+    MOSTRAR_UF = '5',
+    SAIR_UF = '0',
 };
 
 typedef enum opcaoUF opcaoUF;
@@ -30,6 +30,7 @@ void liberarUFs(int total_ufs);
 void adicionarUF(int *num_ufs, int *capacidade_ufs);
 void mostrarDadosDasUFs(int num_ufs);
 void alterarUF(int num_ufs);
-void excluirUF(int *total_ufs);
+void excluirUF(int *num_ufs, int *num_eleicoes);
+void exclusaoEleicoesPorUF(int *num_eleicoes, int codigo);
 void mostrarUF(int num_ufs);
 #endif
