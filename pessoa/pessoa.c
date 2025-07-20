@@ -142,7 +142,7 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     do {
         printf("Digite a data de nascimento da pessoa (dd/mm/aaaa): ");
         ler(data_nasc, sizeof(data_nasc));
-    } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != '/');
+    } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/');
 
     strcpy(pessoas[*num_pessoas]->data_nascimento, data_nasc);
 
@@ -231,7 +231,7 @@ void alterarPessoa(int num_pessoas) {
                         char data_nasc[11];
                         do {
                             ler(data_nasc, sizeof(data_nasc));
-                        } while (strlen(data_nasc) != 10 && data_nasc[2] != '/' && data_nasc[5] != '/');
+                        } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/');
                         strcpy(pessoas[i]->data_nascimento, data_nasc);
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
@@ -318,7 +318,7 @@ void mostrarPorTitulo(int num_pessoas) {
 
 }
 
-void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *num_comparecimentos) {
+void excluirPessoa(int *num_pessoas, int *num_candidatos) {
 
     char cpf[30];
     printf("Digite o CPF da pessoa que deseja excluir: ");
@@ -327,6 +327,7 @@ void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *n
     int encontrado = -1;
     for (int i = 0; i < *num_pessoas; i++) {
         if (pessoas[i] != NULL && strcmp(cpf, pessoas[i]->cpf) == 0) {
+
             free(pessoas[i]);
             pessoas[i] = NULL;
             encontrado = i;
@@ -360,7 +361,6 @@ void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *n
     fclose(fpessoa);
     printf("Pessoa removida!\n");
     exclusaoCandidatoPeloCPF(num_candidatos, cpf);
-    exclusaoVotosEComparecimentosPeloCPF(num_votos, num_comparecimentos, cpf);
 }
 
 void exclusaoCandidatoPeloCPF(int *num_candidatos, char cpf[]) {

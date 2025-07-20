@@ -25,7 +25,7 @@ int verificarTitulo(char titulo[], int num_pessoas);
 int carregarPessoas(int *capacidade_pessoas);
 void liberarPessoas(int num_pessoas);
 void inserirPessoa(int *num_pessoas, int *capacidade_pessoas);
-void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *num_comparecimentos);
+void excluirPessoa(int *num_pessoas, int *num_candidatos);
 void alterarPessoa(int num_pessoas);
 void mostrarPessoas(int num_pessoas);
 void mostrarPorTitulo(int num_pessoas);

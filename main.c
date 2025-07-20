@@ -96,7 +96,7 @@ int main() {
                             break;
                         case ALTERAR_PESSOA: alterarPessoa(num_pessoas);
                             break;
-                        case EXCLUIR_PESSOA: excluirPessoa(&num_pessoas, &num_candidatos, &num_votos, &num_comparecimentos);
+                        case EXCLUIR_PESSOA: excluirPessoa(&num_pessoas, &num_candidatos);
                             break;
                         case MOSTRAR_PESSOAS: mostrarPessoas(num_pessoas);
                             break;

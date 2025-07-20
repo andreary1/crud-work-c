@@ -262,58 +262,6 @@ void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int
     fclose(fcomparecimento);
 }
 
-void exclusaoVotosEComparecimentosPeloCPF(int *num_votos, int *num_comparecimentos, char cpf[]) {
-
-    int encontrado = -1;
-    for (int i = 0; i < *num_comparecimentos; i++) {
-        if (votos[i] != NULL && strcmp(comparecimentos[i]->CPF, cpf) == 0) {
-
-            free(comparecimentos[i]);
-            free(votos[i]);
-
-            votos[i] = NULL;
-            comparecimentos[i] = NULL;
-
-            encontrado = i;
-
-            for (int j = encontrado; j < *num_votos - 1; j++) {
-                votos[j] = votos[j + 1];
-                comparecimentos[j] = comparecimentos[j + 1];
-            }
-
-            comparecimentos[*num_comparecimentos - 1] = NULL;
-            votos[*num_votos - 1] = NULL;
-
-            (*num_comparecimentos)--;
-            (*num_votos)--;
-            i--;
-        }
-    }
-
-    FILE *fvoto = fopen("votos.data", "wb+");
-    FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
-
-    if (fvoto == NULL || fcomparecimento == NULL) {
-        printf("Erro ao abrir arquivo\n");
-        return;
-    }
-
-    if (encontrado == -1) {
-        return;
-    }
-
-    for (int i = 0; i < *num_votos; i++) {
-        if (votos[i] != NULL && comparecimentos[i] != NULL) {
-            fwrite(votos[i], sizeof(Voto), 1, fvoto);
-            fwrite(comparecimentos[i], sizeof(Comparecimento), 1, fcomparecimento);
-        }
-    }
-
-    fclose(fvoto);
-    fclose(fcomparecimento);
-}
-
-
 void mostrarCandidatosPorUFeAno(int total_cand, int total_ufs, int num_eleicoes) {
     if (total_cand == 0) {
         printf("Nao ha candidatos cadastrados\n");
