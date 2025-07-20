@@ -30,7 +30,7 @@ void liberarUFs(int total_ufs);
 void adicionarUF(int *num_ufs, int *capacidade_ufs);
 void mostrarDadosDasUFs(int num_ufs);
 void alterarUF(int num_ufs);
-void excluirUF(int *num_ufs, int *num_eleicoes);
-void exclusaoEleicoesPorUF(int *num_eleicoes, int codigo);
+void excluirUF(int *num_ufs, int *num_eleicoes, int *num_candidatos, int *num_votos,int *num_comparecimentos);
+void exclusaoEleicoesPorUF(int *num_eleicoes, int *num_candidatos, int *num_votos, int *num_comparecimentos, int codigo);
 void mostrarUF(int num_ufs);
 #endif

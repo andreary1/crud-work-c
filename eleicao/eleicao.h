@@ -22,5 +22,6 @@ void liberarEleicoes(int total_eleicoes);
 void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes, int num_ufs);
 void mostrarDadosDasEleicoes(int total_eleicoes);
 void alterarEleicao(int total_eleicoes);
-void excluirEleicao(int *total_eleicoes);
+void excluirEleicao(int *total_eleicoes, int *num_candidatos, int *num_votos, int *num_comparecimentos);
+void exclusaoCandidatoPelaEleicao(int *num_candidatos, int *num_votos, int *num_comparecimentos, Eleicao e);
 void mostrarEleicao(int total_eleicoes);

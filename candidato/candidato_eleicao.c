@@ -172,12 +172,15 @@ void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimen
     limparBuffer();
 
     int encontrado = -1;
+    Candidato c;
     for (int i = 0; i < *num_candidatos; i++) {
         if (candidatos[i] != NULL && codigo_uf == candidatos[i]->codigo_uf && ano == candidatos[i]->ano &&
             numero_candidato == candidatos[i]->numero) {
+            c = *candidatos[i];
             free(candidatos[i]);
             candidatos[i] = NULL;
             encontrado = i;
+            exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, c);
             break;
         }
     }
@@ -207,15 +210,14 @@ void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimen
 
     fclose(fcandidato);
     printf("Candidato removido!\n");
-    exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, codigo_uf, ano, numero_candidato);
 }
 
-void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int codigo, int ano, int numero) {
+void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, Candidato c) {
 
     int encontrado = -1;
     for (int i = 0; i < *num_votos; i++) {
-        if (votos[i] != NULL && codigo == votos[i]->codigo_uf && ano == votos[i]->ano &&
-            numero == votos[i]->numero_candidato) {
+        if (votos[i] != NULL && c.codigo_uf == votos[i]->codigo_uf && c.ano == votos[i]->ano &&
+            c.numero == votos[i]->numero_candidato) {
 
             free(comparecimentos[i]);
             free(votos[i]);
@@ -239,15 +241,15 @@ void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, int
         }
     }
 
+    if (encontrado == -1) {
+        return;
+    }
+
     FILE *fvoto = fopen("votos.data", "wb+");
     FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
 
     if (fvoto == NULL || fcomparecimento == NULL) {
         printf("Erro ao abrir arquivo\n");
-        return;
-    }
-
-    if (encontrado == -1) {
         return;
     }
 

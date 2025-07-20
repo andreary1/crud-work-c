@@ -64,7 +64,8 @@ int main() {
                             break;
                         case ALTERAR_UF: alterarUF(num_ufs);
                             break;
-                        case EXCLUIR_UF: excluirUF(&num_ufs, &num_eleicoes);
+                        case EXCLUIR_UF: excluirUF(&num_ufs, &num_eleicoes, &num_candidatos, &num_votos,
+                            &num_comparecimentos);
                             break;
                         case MOSTRAR_DADOS: mostrarDadosDasUFs(num_ufs);
                             break;
@@ -96,7 +97,7 @@ int main() {
                             break;
                         case ALTERAR_PESSOA: alterarPessoa(num_pessoas);
                             break;
-                        case EXCLUIR_PESSOA: excluirPessoa(&num_pessoas, &num_candidatos);
+                        case EXCLUIR_PESSOA: excluirPessoa(&num_pessoas, &num_candidatos, &num_votos, &num_comparecimentos);
                             break;
                         case MOSTRAR_PESSOAS: mostrarPessoas(num_pessoas);
                             break;
@@ -127,7 +128,7 @@ int main() {
                             break;
                         case ALTERAR_ELEICAO: alterarEleicao(num_eleicoes);
                             break;
-                        case EXCLUIR_ELEICAO: excluirEleicao(&num_eleicoes);
+                        case EXCLUIR_ELEICAO: excluirEleicao(&num_eleicoes, &num_candidatos, &num_votos, &num_comparecimentos);
                             break;
                         case MOSTRAR_DADOS_ELEICOES: mostrarDadosDasEleicoes(num_eleicoes);
                             break;

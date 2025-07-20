@@ -238,7 +238,7 @@ int verificarAnoeCodigo(int codigo_uf, int ano, int num_eleicoes) {
     return 0;
 }
 
-void excluirEleicao(int *num_eleicoes) {
+void excluirEleicao(int *num_eleicoes, int *num_candidatos, int *num_votos, int *num_comparecimentos) {
 
     int codigo_uf;
     int ano;
@@ -255,9 +255,11 @@ void excluirEleicao(int *num_eleicoes) {
 
     for (int i = 0; i < *num_eleicoes; i++) {
         if (eleicoes[i] != NULL && eleicoes[i]->codigo_uf == codigo_uf && eleicoes[i]->ano == ano) {
+            Eleicao e = *eleicoes[i];
             free(eleicoes[i]);
             eleicoes[i] = NULL;
             encontrado = i;
+            exclusaoCandidatoPelaEleicao(num_candidatos, num_votos, num_comparecimentos, e);
             break;
         }
     }
@@ -288,4 +290,43 @@ void excluirEleicao(int *num_eleicoes) {
 
     fclose(feleicao);
     printf("Eleicao removida!\n");
+}
+
+void exclusaoCandidatoPelaEleicao(int *num_candidatos, int *num_votos, int *num_comparecimentos, Eleicao e) {
+
+        int encontrado = -1;
+        for (int i = 0; i < *num_candidatos; i++) {
+            if (candidatos[i] != NULL && e.codigo_uf == candidatos[i]->codigo_uf && e.ano == candidatos[i]->ano) {
+
+                Candidato c = *candidatos[i];
+                free(candidatos[i]);
+                candidatos[i] = NULL;
+
+                encontrado = i;
+
+                for (int j = encontrado; j < *num_candidatos - 1; j++) {
+                    candidatos[j] = candidatos[j + 1];
+                }
+
+                candidatos[*num_candidatos - 1] = NULL;
+
+                (*num_candidatos)--;
+                i--;
+                exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, c);
+            }
+        }
+
+        if (encontrado == -1) {
+            return;
+        }
+
+        FILE *fcandidato = fopen("candidatos.data", "wb+");
+
+        for (int i = 0; i < *num_votos; i++) {
+            if (candidatos[i] != NULL) {
+                fwrite(candidatos[i], sizeof(Candidato), 1, fcandidato);
+            }
+        }
+
+        fclose(fcandidato);
 }

@@ -318,7 +318,7 @@ void mostrarPorTitulo(int num_pessoas) {
 
 }
 
-void excluirPessoa(int *num_pessoas, int *num_candidatos) {
+void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *num_comparecimentos) {
 
     char cpf[30];
     printf("Digite o CPF da pessoa que deseja excluir: ");
@@ -327,10 +327,10 @@ void excluirPessoa(int *num_pessoas, int *num_candidatos) {
     int encontrado = -1;
     for (int i = 0; i < *num_pessoas; i++) {
         if (pessoas[i] != NULL && strcmp(cpf, pessoas[i]->cpf) == 0) {
-
             free(pessoas[i]);
             pessoas[i] = NULL;
             encontrado = i;
+            exclusaoCandidatoPeloCPF(num_candidatos, num_votos, num_comparecimentos, cpf);
             break;
         }
     }
@@ -360,17 +360,19 @@ void excluirPessoa(int *num_pessoas, int *num_candidatos) {
 
     fclose(fpessoa);
     printf("Pessoa removida!\n");
-    exclusaoCandidatoPeloCPF(num_candidatos, cpf);
 }
 
-void exclusaoCandidatoPeloCPF(int *num_candidatos, char cpf[]) {
+void exclusaoCandidatoPeloCPF(int *num_candidatos, int *num_votos, int *num_comparecimentos, char cpf[]) {
 
     int encontrado = -1;
+    Candidato c;
     for (int i = 0; i < *num_candidatos; i++) {
         if (candidatos[i] != NULL && strcmp(candidatos[i]->CPF, cpf) == 0) {
+            c = *candidatos[i];
             free(candidatos[i]);
             candidatos[i] = NULL;
             encontrado = i;
+            exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, c);
             break;
         }
     }

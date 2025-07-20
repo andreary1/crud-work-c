@@ -283,7 +283,7 @@ void mostrarUF(int num_ufs) {
 
 }
 
-void excluirUF(int *num_ufs, int *num_eleicoes) {
+void excluirUF(int *num_ufs, int *num_eleicoes, int *num_candidatos, int *num_votos,int *num_comparecimentos) {
 
     int codigo_uf;
     printf("Digite o codigo da UF que deseja excluir: ");
@@ -296,6 +296,7 @@ void excluirUF(int *num_ufs, int *num_eleicoes) {
             free(ufs[i]);
             ufs[i] = NULL;
             encontrado = i;
+            exclusaoEleicoesPorUF(num_eleicoes, num_candidatos, num_votos, num_comparecimentos, codigo_uf);
             break;
         }
     }
@@ -325,17 +326,16 @@ void excluirUF(int *num_ufs, int *num_eleicoes) {
 
     fclose(fuf);
     printf("UF removida!\n");
-    exclusaoEleicoesPorUF(num_eleicoes, codigo_uf);
 }
 
-void exclusaoEleicoesPorUF(int *num_eleicoes, int codigo) {
+void exclusaoEleicoesPorUF(int *num_eleicoes, int *num_candidatos, int *num_votos, int *num_comparecimentos, int codigo) {
 
     int encontrado = -1;
+
     for (int i = 0; i < *num_eleicoes; i++) {
         if (eleicoes[i] != NULL && codigo == eleicoes[i]->codigo_uf) {
-
+            Eleicao e = *eleicoes[i];
             free(eleicoes[i]);
-
             eleicoes[i] = NULL;
 
             encontrado = i;
@@ -348,6 +348,7 @@ void exclusaoEleicoesPorUF(int *num_eleicoes, int codigo) {
 
             (*num_eleicoes)--;
             i--;
+            exclusaoCandidatoPelaEleicao(num_candidatos, num_votos, num_comparecimentos, e);
         }
     }
 
