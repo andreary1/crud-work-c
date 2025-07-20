@@ -377,20 +377,19 @@ void exclusaoCandidatoPeloCPF(int *num_candidatos, int *num_votos, int *num_comp
             free(candidatos[i]);
             candidatos[i] = NULL;
             encontrado = i;
+            for (int j = encontrado; j < *num_candidatos - 1; j++) {
+                candidatos[j] = candidatos[j + 1];
+            }
+            candidatos[*num_candidatos - 1] = NULL;
+            (*num_candidatos)--;
+            i--;
             exclusaoVotosEComparecimentos(num_votos, num_comparecimentos, c);
-            break;
         }
     }
 
     if (encontrado == -1) {
         return;
     }
-
-    for (int i = encontrado; i < *num_candidatos - 1; i++) {
-        candidatos[i] = candidatos[i + 1];
-    }
-    candidatos[*num_candidatos - 1] = NULL;
-    (*num_candidatos)--;
 
     FILE *fcandidato = fopen("candidatos.data", "wb+");
     if (fcandidato == NULL) {

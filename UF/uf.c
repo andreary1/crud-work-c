@@ -24,7 +24,7 @@ void ler(char sentenca[], int tamanho) {
             limparBuffer();
         }
 
-    } while (strlen(sentenca) == 0);
+    } while (strlen(sentenca) == 0 || strspn(sentenca, " ") == strlen(sentenca));
 }
 
 void lerNaoObrigatorio(char sentenca[], int tamanho) {
@@ -33,7 +33,7 @@ void lerNaoObrigatorio(char sentenca[], int tamanho) {
     sentenca[strcspn(sentenca, "\n")] = '\0';
 
     if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
-            limparBuffer();
+        limparBuffer();
     }
 }
 
