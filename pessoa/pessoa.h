@@ -30,3 +30,4 @@ void alterarPessoa(int num_pessoas);
 void mostrarPessoas(int num_pessoas);
 void mostrarPorTitulo(int num_pessoas);
 void exclusaoCandidatoPeloCPF(int *num_candidatos, int *num_votos, int *num_comparecimentos, char cpf[]);
+void exclusaoVotosEComparecimentosPeloCPF(int *num_votos, int *num_comparecimentos, char cpf[]);

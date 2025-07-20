@@ -2,11 +2,15 @@
 #include "pessoa.h"
 #include "../UF/uf.h"
 #include "../candidato/candidato_eleicao.h"
+#include "../voto/voto.h"
+#include "../comparecimento/comparecimento.h"
 #include <stdlib.h>
 #include <string.h>
 
 extern Pessoa **pessoas;
 extern Candidato **candidatos;
+extern Voto **votos;
+extern Comparecimento **comparecimentos;
 
 int carregarPessoas(int *capacidade_pessoas) {
     FILE *fpessoa = fopen("pessoas.data", "rb+");
@@ -360,6 +364,7 @@ void excluirPessoa(int *num_pessoas, int *num_candidatos, int *num_votos, int *n
 
     fclose(fpessoa);
     printf("Pessoa removida!\n");
+    exclusaoVotosEComparecimentosPeloCPF(num_votos, num_comparecimentos, cpf);
 }
 
 void exclusaoCandidatoPeloCPF(int *num_candidatos, int *num_votos, int *num_comparecimentos, char cpf[]) {
@@ -400,4 +405,55 @@ void exclusaoCandidatoPeloCPF(int *num_candidatos, int *num_votos, int *num_comp
     }
 
     fclose(fcandidato);
+}
+
+void exclusaoVotosEComparecimentosPeloCPF(int *num_votos, int *num_comparecimentos, char cpf[]) {
+
+    int encontrado = -1;
+    for (int i = 0; i < *num_comparecimentos; i++) {
+        if (comparecimentos[i] != NULL && strcmp(comparecimentos[i]->CPF, cpf) == 0) {
+
+            free(comparecimentos[i]);
+            free(votos[i]);
+
+            votos[i] = NULL;
+            comparecimentos[i] = NULL;
+
+            encontrado = i;
+
+            for (int j = encontrado; j < *num_votos - 1; j++) {
+                votos[j] = votos[j + 1];
+                comparecimentos[j] = comparecimentos[j + 1];
+            }
+
+            comparecimentos[*num_comparecimentos - 1] = NULL;
+            votos[*num_votos - 1] = NULL;
+
+            (*num_comparecimentos)--;
+            (*num_votos)--;
+            i--;
+        }
+    }
+
+    if (encontrado == -1) {
+        return;
+    }
+
+    FILE *fvoto = fopen("votos.data", "wb+");
+    FILE *fcomparecimento = fopen("comparecimentos.data", "wb+");
+
+    if (fvoto == NULL || fcomparecimento == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    for (int i = 0; i < *num_votos; i++) {
+        if (votos[i] != NULL && comparecimentos[i] != NULL) {
+            fwrite(votos[i], sizeof(Voto), 1, fvoto);
+            fwrite(comparecimentos[i], sizeof(Comparecimento), 1, fcomparecimento);
+        }
+    }
+
+    fclose(fvoto);
+    fclose(fcomparecimento);
 }

@@ -145,7 +145,7 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     struct tm *informacoestempo = localtime(&horavoto);
 
     char data_formatada[20];
-    strftime(data_formatada, sizeof(data_formatada), "%d/%m %H:%M", informacoestempo);
+    strftime(data_formatada, sizeof(data_formatada), "%d/%m %H:%M:%S", informacoestempo);
 
     votos[*num_votos] = (Voto *)malloc(sizeof(Voto));
     comparecimentos[*num_comparecimentos] = (Comparecimento *)malloc(sizeof(Comparecimento));
