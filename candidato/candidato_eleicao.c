@@ -110,9 +110,11 @@ void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, in
     }
 
     int numero_candidato;
-    printf("Digite o numero desse candidato: ");
-    scanf("%d", &numero_candidato);
-    limparBuffer();
+    do {
+        printf("Digite o numero desse candidato: ");
+        scanf("%d", &numero_candidato);
+        limparBuffer();
+    } while (numero_candidato < 10 || numero_candidato > 100);
 
     if (verificarCandidato(numero_candidato, ano, codigo_uf, *num_candidatos)) {
         printf("Esse candidato ja foi cadastrado\n");
@@ -147,10 +149,12 @@ void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, in
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(candidatos[*num_candidatos]);
+        candidatos[*num_candidatos] = NULL;
         return;
     }
-    (*num_candidatos)++;
 
+    (*num_candidatos)++;
     printf("Candidato adicionado!\n");
 }
 

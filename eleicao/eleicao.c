@@ -72,12 +72,6 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes, int num_ufs) {
         }
     }
 
-    eleicoes[*num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
-    if (eleicoes[*num_eleicoes] == NULL) {
-        printf("Erro ao alocar memória para nova UF.\n");
-        return;
-    }
-
     int codigo_uf;
     printf("Digite o codigo da UF em que ocorreu a eleicao: ");
     scanf("%d", &codigo_uf);
@@ -98,6 +92,12 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes, int num_ufs) {
         return;
     }
 
+    eleicoes[*num_eleicoes] = (Eleicao *)malloc(sizeof(Eleicao));
+    if (eleicoes[*num_eleicoes] == NULL) {
+        printf("Erro ao alocar memória para nova UF.\n");
+        return;
+    }
+
     eleicoes[*num_eleicoes]->codigo_uf = codigo_uf;
     eleicoes[*num_eleicoes]->ano = ano;
 
@@ -112,6 +112,8 @@ void inserirEleicao(int *num_eleicoes, int *capacidade_eleicoes, int num_ufs) {
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(eleicoes[*num_eleicoes]);
+        eleicoes[*num_eleicoes] = NULL;
         return;
     }
 

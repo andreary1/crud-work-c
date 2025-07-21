@@ -98,13 +98,6 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
         }
     }
 
-
-    pessoas[*num_pessoas] = (Pessoa *)malloc(sizeof(Pessoa));
-    if (pessoas[*num_pessoas] == NULL) {
-        printf("Erro ao alocar memoria para nova Pessoa\n");
-        return;
-    }
-
     char cpf[30];
     do {
         printf("Digite o CPF da pessoa: ");
@@ -114,6 +107,12 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 
     if (verificarCPF(cpf, *num_pessoas)) {
         printf("Esse CPF ja foi cadastrado\n");
+        return;
+    }
+
+    pessoas[*num_pessoas] = (Pessoa *)malloc(sizeof(Pessoa));
+    if (pessoas[*num_pessoas] == NULL) {
+        printf("Erro ao alocar memoria para nova Pessoa\n");
         return;
     }
 
@@ -131,6 +130,8 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 
     if (verificarTitulo(titulo, *num_pessoas)) {
         printf("Esse titulo ja foi cadastrado\n");
+        free(pessoas[*num_pessoas]);
+        pessoas[*num_pessoas] = NULL;
         return;
     }
 
@@ -158,6 +159,8 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     }
     else {
         printf("Erro ao abrir arquivo para escrita\n");
+        free(pessoas[*num_pessoas]);
+        pessoas[*num_pessoas] = NULL;
         return;
     }
 
