@@ -117,7 +117,7 @@ void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, in
     } while (numero_candidato < 10 || numero_candidato > 100);
 
     if (verificarCandidato(numero_candidato, ano, codigo_uf, *num_candidatos)) {
-        printf("Esse candidato ja foi cadastrado\n");
+        printf("Ja existe candidato cadastrado com essa configuracao\n");
         return;
     }
 
@@ -127,6 +127,16 @@ void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, in
 
     if (!verificarCPF(cpf, num_pessoas)) {
         printf("Nao existe pessoa cadastrada com esse CPF\n");
+        return;
+    }
+
+    if (verificarCandidatura(cpf, ano, *num_candidatos)) {
+        printf("Essa pessoa ja se candidatou esse ano\n");
+        return;
+    }
+
+    if (!verificarIdade(cpf, ano, *num_candidatos)) {
+        printf("Essa pessoa nao tem idade para se candidatar\n");
         return;
     }
 
@@ -330,4 +340,13 @@ void mostrarTodosOsCandidatos(int num_candidatos, int num_eleicoes, int num_ufs)
             }
         }
     }
+}
+
+int verificarCandidatura(char cpf[], int ano, int num_candidatos) {
+    for (int i = 0; i < num_candidatos; i++) {
+        if (candidatos[i] != NULL && candidatos[i]->ano == ano && strcmp(candidatos[i]->CPF, cpf) == 0) {
+            return 1;
+        }
+    }
+    return 0;
 }

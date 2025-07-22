@@ -15,7 +15,7 @@ void limparBuffer() {
 
 void ler(char sentenca[], int tamanho) {
     do {
-        fflush(stdin);
+        //fflush(stdin);
         //__fpurge(stdin);
         fgets(sentenca, tamanho, stdin);
         sentenca[strcspn(sentenca, "\n")] = '\0';
@@ -28,7 +28,8 @@ void ler(char sentenca[], int tamanho) {
 }
 
 void lerNaoObrigatorio(char sentenca[], int tamanho) {
-    fflush(stdin);
+    //fflush(stdin);
+    //__fpurge(stdin);
     fgets(sentenca, tamanho, stdin);
     sentenca[strcspn(sentenca, "\n")] = '\0';
 
@@ -128,7 +129,7 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
         printf("Digite um codigo valido pra UF: ");
         scanf("%d", &codigo_uf);
         limparBuffer();
-    } while (verificarCodigo(codigo_uf, *num_ufs) || codigo_uf == 0);
+    } while (verificarCodigo(codigo_uf, *num_ufs) || codigo_uf <= 0);
 
     char desc[30];
     printf("codigo atribuido: %d\n", codigo_uf);

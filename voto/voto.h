@@ -30,3 +30,4 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
 void mostrarVotosPorCandidato(int num_votos, int num_ufs, int num_candidatos, int num_eleicoes);
 void mostrarTodosOsVotos(int num_votos, int num_ufs, int num_eleicoes);
 void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes);
+int verificarIdade(char cpf[], int ano_eleicao, int num_pessoas);

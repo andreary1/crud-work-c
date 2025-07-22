@@ -15,6 +15,7 @@ extern Comparecimento **comparecimentos;
 extern UF **ufs;
 extern Candidato **candidatos;
 extern Eleicao **eleicoes;
+extern Pessoa **pessoas;
 
 int carregarVotos(int *capacidade_votos) {
     FILE *fvoto = fopen("votos.data", "rb+");
@@ -137,6 +138,11 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
 
     if (verificarVoto(ano, cpf)) {
         printf("Essa pessoa ja votou nesse ano\n");
+        return;
+    }
+
+    if (!verificarIdade(cpf, ano, num_pessoas)) {
+        printf("Essa pessoa nao tem idade para votar esse ano\n");
         return;
     }
 
@@ -351,4 +357,26 @@ void contagemDeVotos(int num_votos, int num_candidatos, int num_eleicoes) {
         cand_eleicao_atual[0].numero, votos_para_cada[0]);
     }
 
+}
+
+int verificarIdade(char cpf[], int ano_eleicao, int num_pessoas) {
+
+    char data_nasc[10];
+
+    for (int i = 0; i < num_pessoas; i++) {
+        if (strcmp(pessoas[i]->cpf, cpf) == 0) {
+            strcpy(data_nasc, pessoas[i]->data_nascimento);
+        }
+    }
+
+    if (strlen(data_nasc) < 10)
+        return 0;
+
+    int ano_nasc = atoi(&data_nasc[6]);
+
+    if (ano_eleicao - ano_nasc >= 16) {
+        return 1;
+    }
+
+    return 0;
 }

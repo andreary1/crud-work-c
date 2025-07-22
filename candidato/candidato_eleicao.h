@@ -24,6 +24,7 @@ typedef enum opcaoCandidato opcaoCandidato;
 int carregarCandidatos(int *capacidade_candidatos);
 void liberarCandidatos(int capacidade_candidatos);
 int verificarCandidato(int numero, int ano, int codigo_uf, int num_candidatos);
+int verificarCandidatura(char cpf[], int ano, int num_candidatos);
 void inserirCandidato(int *total_cand, int *capacidade_cand, int num_ufs, int num_pessoas, int num_eleicoes);
 void excluirCandidato(int *num_candidatos, int *num_votos, int *num_comparecimentos);
 void exclusaoVotosEComparecimentos(int *num_votos, int *num_comparecimentos, Candidato c);
