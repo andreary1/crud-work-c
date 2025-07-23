@@ -1,6 +1,9 @@
 //#define _GNU_SOURCE
 #include <stdio.h>
 #include "uf.h"
+
+#include <ctype.h>
+
 #include "../eleicao/eleicao.h"
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +38,12 @@ void lerNaoObrigatorio(char sentenca[], int tamanho) {
 
     if (strlen(sentenca) == tamanho - 1 && sentenca[tamanho - 2] != '\n') {
         limparBuffer();
+    }
+}
+
+void maiusculo(char str[]) {
+    for (int i = 0; i < strlen(str); i++) {
+        str[i] = toupper(str[i]);
     }
 }
 
@@ -129,6 +138,12 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
         printf("Digite um codigo valido pra UF: ");
         scanf("%d", &codigo_uf);
         limparBuffer();
+        if (verificarCodigo(codigo_uf, *num_ufs)) {
+            printf("Esse codigo ja esta cadastrado!\n");
+        }
+        if (codigo_uf <= 0) {
+            printf("Esse codigo nao e valido!\n");
+        }
     } while (verificarCodigo(codigo_uf, *num_ufs) || codigo_uf <= 0);
 
     char desc[30];
@@ -140,6 +155,10 @@ void adicionarUF(int *num_ufs, int *capacidade_ufs) {
     do {
         printf("Digite a sigla da UF: ");
         ler(sig, sizeof(sig));
+        maiusculo(sig);
+        if (verificarSigla(sig, *num_ufs)) {
+            printf("Essa sigla ja esta cadastrada!\n");
+        }
     } while (verificarSigla(sig, *num_ufs));
 
 
@@ -205,6 +224,10 @@ void alterarUF(int num_ufs) {
                         char sig[3];
                         do {
                             ler(sig, sizeof(sig));
+                            maiusculo(sig);
+                            if (verificarSigla(sig, num_ufs)) {
+                                printf("essa sigla ja esta cadastrada!\n");
+                            }
                         } while (verificarSigla(sig, num_ufs));
                         strcpy(ufs[i]->sigla, sig);
                         fseek(fuf, i * sizeof(UF), SEEK_SET);

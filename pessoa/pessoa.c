@@ -100,8 +100,11 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 
     char cpf[30];
     do {
-        printf("Digite o CPF da pessoa: ");
+        printf("Digite o CPF da pessoa (11 digitos numericos): ");
         ler(cpf, sizeof(cpf));
+        if (strlen(cpf) != 11 || strspn(cpf, "0123456789") != strlen(cpf)) {
+            printf("Por favor, digite um CPF valido!\n");
+        }
     } while (strlen(cpf) != 11 || strspn(cpf, "0123456789") != strlen(cpf));
 
 
@@ -123,8 +126,11 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 
     char titulo[30];
     do {
-        printf("Digite o titulo da pessoa: ");
+        printf("Digite o titulo da pessoa (12 digitos numericos): ");
         ler(titulo, sizeof(titulo));
+        if (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo)) {
+            printf("Por favor, digite um titulo valido!\n");
+        }
     } while (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo));
 
 
@@ -214,6 +220,9 @@ void alterarPessoa(int num_pessoas) {
                         char titulo[20];
                         do {
                             ler(titulo, sizeof(titulo));
+                            if (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo)) {
+                                printf("Por favor, digite um titulo valido!\n");
+                            }
                         } while (strlen(titulo) != 12 || strspn(titulo, "0123456789") != strlen(titulo));
                         if (verificarTitulo(titulo, num_pessoas)) {
                             printf("Esse titulo ja foi cadastrado\n");

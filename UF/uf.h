@@ -23,6 +23,7 @@ typedef struct UF UF;
 void limparBuffer();
 void ler(char sentenca[], int tamanho);
 void lerNaoObrigatorio(char sentenca[], int tamanho);
+void maiusculo(char str[]);
 int verificarCodigo(int codigo_uf, int num_ufs);
 int verificarSigla(char sig[], int num_ufs);
 int carregarUFs(int *total_ufs);
