@@ -118,11 +118,11 @@ void inserirVoto(int *num_votos, int *capacidade_votos, int *num_comparecimentos
     }
 
     int numero;
-    printf("Digite o numero do candidato que foi votado ou 0 para anular o voto: ");
+    printf("Digite o numero do candidato que foi votado: ");
     scanf("%d", &numero);
     limparBuffer();
 
-    if (!verificarCandidato(numero, ano, codigo_uf, num_candidatos) && numero != 0) {
+    if (!verificarCandidato(numero, ano, codigo_uf, num_candidatos)) {
         printf("Nao existe candidato cadastrado com essa configuracao\n");
         return;
     }

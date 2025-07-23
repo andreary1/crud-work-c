@@ -323,8 +323,12 @@ void exclusaoCandidatoPelaEleicao(int *num_candidatos, int *num_votos, int *num_
         }
 
         FILE *fcandidato = fopen("candidatos.data", "wb+");
+        if (fcandidato == NULL) {
+            printf("Erro ao abrir arquivo candidatos.data\n");
+            return;
+        }
 
-        for (int i = 0; i < *num_votos; i++) {
+        for (int i = 0; i < *num_candidatos; i++) {
             if (candidatos[i] != NULL) {
                 fwrite(candidatos[i], sizeof(Candidato), 1, fcandidato);
             }

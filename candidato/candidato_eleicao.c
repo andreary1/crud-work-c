@@ -135,7 +135,7 @@ void inserirCandidato(int *num_candidatos, int *capacidade_cand, int num_ufs, in
         return;
     }
 
-    if (!verificarIdade(cpf, ano, *num_candidatos)) {
+    if (!verificarIdade(cpf, ano, num_pessoas)) {
         printf("Essa pessoa nao tem idade para se candidatar\n");
         return;
     }
