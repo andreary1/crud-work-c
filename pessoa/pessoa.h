@@ -22,6 +22,7 @@ typedef enum opcaoPessoa opcaoPessoa;
 
 int verificarCPF(char cpf[], int num_pessoas);
 int verificarTitulo(char titulo[], int num_pessoas);
+int verificarDataDeNascimento(char data_nasc[]);
 int carregarPessoas(int *capacidade_pessoas);
 void liberarPessoas(int num_pessoas);
 void inserirPessoa(int *num_pessoas, int *capacidade_pessoas);

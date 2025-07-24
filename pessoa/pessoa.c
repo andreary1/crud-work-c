@@ -84,6 +84,18 @@ int verificarTitulo(char titulo[], int num_pessoas) {
     return 0;
 }
 
+int verificarDataDeNascimento(char data_nasc[]) {
+    int dia, mes;
+
+    sscanf(data_nasc, "%d/%d", &dia, &mes);
+
+    if (dia > 31 || dia <= 0 || mes > 12 || mes <= 0) {
+        return 0;
+    }
+
+    return 1;
+}
+
 void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
 
     if (*num_pessoas >= *capacidade_pessoas) {
@@ -153,7 +165,10 @@ void inserirPessoa(int *num_pessoas, int *capacidade_pessoas) {
     do {
         printf("Digite a data de nascimento da pessoa (dd/mm/aaaa): ");
         ler(data_nasc, sizeof(data_nasc));
-    } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/');
+        if (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/' || !verificarDataDeNascimento(data_nasc)) {
+            printf("Por favor, digite um data de nascimento valida!\n");
+        }
+    } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/' || !verificarDataDeNascimento(data_nasc));
 
     strcpy(pessoas[*num_pessoas]->data_nascimento, data_nasc);
 
@@ -247,7 +262,10 @@ void alterarPessoa(int num_pessoas) {
                         char data_nasc[11];
                         do {
                             ler(data_nasc, sizeof(data_nasc));
-                        } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/');
+                            if (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/' || !verificarDataDeNascimento(data_nasc)) {
+                                printf("Por favor, digite um data de nascimento valida!\n");
+                            }
+                        } while (strlen(data_nasc) != 10 || data_nasc[2] != '/' || data_nasc[5] != '/' || !verificarDataDeNascimento(data_nasc));
                         strcpy(pessoas[i]->data_nascimento, data_nasc);
                         fseek(fpessoa, i * sizeof(Pessoa), SEEK_SET);
                         fwrite(pessoas[i], sizeof(Pessoa), 1, fpessoa);
